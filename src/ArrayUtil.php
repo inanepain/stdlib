@@ -1,18 +1,16 @@
 <?php
-
 /**
- * This file is part of the InaneTools package.
+ * Inane: Stdlib
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Inane Standard Library
  *
- * @author Philip Michael Raab <philip@inane.co.za>
+ * PHP version 8.1
+ *
  * @package Inane\Stdlib
+ * @author Philip Michael Raab<peep@inane.co.za>
  *
- * @license MIT
- * @license https://inane.co.za/license/MIT
- *
- * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
+ * @license UNLICENSE
+ * @license https://github.com/inanepain/event/raw/develop/UNLICENSE UNLICENSE
  */
 
 declare(strict_types=1);
@@ -68,7 +66,7 @@ class ArrayUtil {
     public static string $pathAssignor = '=';
 
     /**
-     * Complete missing keys
+     * Creates a new array by merging missing keys and values
      *
      * The middle ground between `array_merge` and `array_merge_recursive`
      *
@@ -97,7 +95,7 @@ class ArrayUtil {
     }
 
     /**
-     * Update missing keys and existing values
+     * Creates a new array by merging $arrays by updating existing values and adding missing keys
      *
      * The middle ground between `array_merge` and `array_merge_recursive`
      *
