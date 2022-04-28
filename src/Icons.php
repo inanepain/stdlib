@@ -12,8 +12,6 @@
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/event/raw/develop/UNLICENSE UNLICENSE
- *
- * @copyright 2013-2022 Philip Michael Raab <peep@inane.co.za>
  */
 
 declare(strict_types=1);
