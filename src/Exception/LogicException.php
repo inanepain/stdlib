@@ -16,6 +16,8 @@
 
 namespace Inane\Stdlib\Exception;
 
+use Inane\Stdlib\Exception\Exception;
+
 /**
  * Exception that represents error in the program logic. This kind of exception should lead directly to a fix in your code.
  *
@@ -23,4 +25,4 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class LogicException extends \LogicException implements ExceptionInterface {}
+class LogicException extends Exception implements ExceptionInterface {}

@@ -16,13 +16,16 @@
 
 namespace Inane\Stdlib\Exception;
 
-use InvalidArgumentException as BaseInvalidArgumentException;
+use Inane\Stdlib\Exception\LogicException;
 
 /**
  * Exception thrown if an argument is not of the expected type.
  *
  * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
- * @version 0.2.0
+ * @version 0.3.0
  */
-class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface {}
+class InvalidArgumentException extends LogicException implements ExceptionInterface {
+    // base code for invalid argument exceptions
+    protected $code = 750;
+}

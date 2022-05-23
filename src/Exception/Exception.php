@@ -27,7 +27,7 @@ use Throwable;
  *
  * @package Inane\Exception
  *
- * @version 0.3.0
+ * @version 0.3.1
  */
 class Exception extends SystemException implements ExceptionInterface {
     /**
@@ -39,32 +39,28 @@ class Exception extends SystemException implements ExceptionInterface {
      *
      * @return void
      */
-    // public function __construct($message = '', $code = 0, Throwable $previous = null) {
-    //     // some code
+    public function __construct($message = '', $code = 0, Throwable $previous = null) {
+        // modifications
+        $code = $this->code + $code;
 
-    //     // make sure everything is assigned properly, call parent construct
-    //     parent::__construct($message, $code, $previous);
-    // }
+        // make sure everything is assigned properly, call parent construct
+        parent::__construct($message, $code, $previous);
+    }
 
     /**
      * toString
      *
      * @return string error as string
      */
-    public function __toString() {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
-    }
+    public function __toString(): string {
+        $class = __CLASS__;
 
-    /**
-     * Dump exception
-     *
-     * Uses Dumper to log exception
-     *
-     * @return void
-     *
-     * @throws \ReflectionException
-     */
-    public function dump(): void {
-        \Inane\Debug\Dumper::dump("{$this->code}: {$this->message}", 'Exception');
+        return <<<MESSAGE
+{$this->getMessage()}:
+{$class}[{$this->getCode()}]:
+{$this->getFile()}({$this->getLine()}):
+{$this->getTraceAsString()}
+{$this->getPrevious()}
+MESSAGE;
     }
 }

@@ -26,8 +26,8 @@ namespace Inane\Stdlib\Exception;
 class InvalidPropertyException extends \LogicException implements ExceptionInterface {
     protected $message = 'Property exception: `magic_property_properties` property invalid';   // exception message
     protected $code = 200;                        // user defined exception code
-    protected $file;                            // source filename of exception
-    protected $line;                            // source line of exception
+    protected string $file;                            // source filename of exception
+    protected int $line;                            // source line of exception
 
     /**
      * __construct
