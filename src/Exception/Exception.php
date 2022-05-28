@@ -1,20 +1,19 @@
 <?php
+
 /**
- * InaneTools
+ * Inane: Stdlib
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Inane Standard Library
  *
- * PHP version 8
+ * PHP version 8.1
  *
- * @author Philip Michael Raab <philip@inane.co.za>
- * @package Inane\Exception
+ * @author Philip Michael Raab<peep@inane.co.za>
+ * @package Inane\Stdlib
  *
- * @license MIT
- * @license https://inane.co.za/license/MIT
- *
- * @copyright 2015-2021 Philip Michael Raab <philip@inane.co.za>
+ * @license UNLICENSE
+ * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
  */
+
 declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
