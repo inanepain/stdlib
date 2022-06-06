@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Inane: Stdlib
  *
@@ -10,7 +11,7 @@
  * @author Philip Michael Raab<peep@inane.co.za>
  *
  * @license UNLICENSE
- * @license https://github.com/inanepain/event/raw/develop/UNLICENSE UNLICENSE
+ * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
  */
 
 declare(strict_types=1);
@@ -52,7 +53,7 @@ use function is_array;
  * Array Utility
  *
  * @package Inane\Stdlib
- * @version 0.3.1
+ * @version 0.3.2
  */
 class ArrayUtil {
     /**
@@ -91,6 +92,30 @@ class ArrayUtil {
                     null,
                     false
                 ])) $m[$k] = $v;
+        return $m;
+    }
+
+    /**
+     * Returns array merged by only updating existing keys
+     *
+     *  - keys updated only
+     *
+     * @since 0.3.2
+     *
+     * @param array ...$arrays to merge with increasing priority left to right
+     *
+     * @return array updated array
+     */
+    public static function modify(array ...$arrays): array {
+        $arrays = array_filter($arrays, fn ($a) => count($a) > 0) ?: [[]];
+        $m = array_shift($arrays);
+
+        while ($a = array_shift($arrays))
+            foreach ($a as $k => $v)
+                if (array_key_exists($k, $m)) {
+                    if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::modify($v, $m[$k]);
+                    else $m[$k] = $v;
+                }
         return $m;
     }
 

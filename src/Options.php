@@ -6,6 +6,12 @@
  * Inane Standard Library
  *
  * PHP version 8.1
+ *
+ * @author Philip Michael Raab<peep@inane.co.za>
+ * @package Inane\Stdlib
+ *
+ * @license UNLICENSE
+ * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
  */
 
 declare(strict_types=1);

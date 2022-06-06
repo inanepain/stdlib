@@ -1,28 +1,33 @@
 <?php
+
 /**
- * This file is part of the InaneTools package.
+ * Inane: Stdlib
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Inane Standard Library
  *
- * @author Philip Michael Raab <philip@inane.co.za>
- * @package Inane\Exception
+ * PHP version 8.1
  *
- * @license MIT
- * @license https://inane.co.za/license/MIT
+ * @author Philip Michael Raab<peep@inane.co.za>
+ * @package Inane\Stdlib
  *
- * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
+ * @license UNLICENSE
+ * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
  */
+
+declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
 
-use InvalidArgumentException as BaseInvalidArgumentException;
+use Inane\Stdlib\Exception\LogicException;
 
 /**
  * Exception thrown if an argument is not of the expected type.
  *
  * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
- * @version 0.2.0
+ * @version 0.3.0
  */
-class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface {}
+class InvalidArgumentException extends LogicException implements ExceptionInterface {
+    // base code for invalid argument exceptions
+    protected $code = 750;
+}

@@ -1,6 +1,6 @@
 {
 	"name" : "inanepain/stdlib",
-	"description" : "An assortment of commonly used classes by inane packages..",
+	"description" : "An assortment of commonly used classes by inane packages.",
 	"type" : "library",
 	"license" : "UNLICENSE",
 	"authors" : [{
