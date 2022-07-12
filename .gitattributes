@@ -1,2 +1,2 @@
-# *.php ident
 *.php filter=indent
+*.php filter=dater
