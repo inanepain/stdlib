@@ -10,7 +10,7 @@
  * @author Philip Michael Raab<peep@inane.co.za>
  * @package Inane\Stdlib
  *
- * @version    GIT: $Id$
+ * @version    $Id$
  * @date       $Date$
  *
  * @license UNLICENSE
