@@ -1,2 +1,4 @@
-*.php filter=indent
-*.php filter=dater
+# *.php filter=indent
+# *.php ident
+# *.php filter=dater
+*.php filter=tagger
