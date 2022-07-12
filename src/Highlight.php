@@ -10,6 +10,8 @@
  * @author Philip Michael Raab<peep@inane.co.za>
  * @package Inane\Stdlib
  *
+ * @version    GIT: $Id$
+ *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
  */
