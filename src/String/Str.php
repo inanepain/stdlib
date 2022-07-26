@@ -12,6 +12,9 @@
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ *
+ * @version $Id$
+ * $Date$
  */
 
 declare(strict_types=1);
@@ -52,7 +55,7 @@ use Inane\Stdlib\{
  * @property-read public length
  * @property public string
  *
- * @version 0.4.0
+ * @version 0.5.0
  */
 class Str implements Stringable {
     use OptionMagicPropertyTrait;
@@ -94,6 +97,19 @@ class Str implements Stringable {
      */
     public function __destruct() {
         if (isset($this->id) && false) unset(static::$buffer[$this->id]);
+    }
+
+    /**
+     * Create from string
+     *
+     * @since 0.5.0
+     *
+     * @param string $string string
+     *
+     * @return static
+     */
+    public static function from(string $string): static {
+        return new static($string);
     }
 
     /**

@@ -1,1 +1,3 @@
-# Changelog: Db
+# Changelog: Components
+
+> version: $Id$ ($Date$)

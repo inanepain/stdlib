@@ -1,4 +1,4 @@
-< ? php
+<?php
 
 /**
  * Inane: Stdlib
@@ -12,13 +12,16 @@
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ *
+ * @version $Id$
+ * $Date$
  */
 
 declare(strict_types = 1);
 
-namespace	Inane \ Stdlib \ Exception;
+namespace Inane\Stdlib\Exception;
 
-use		Inane \	Stdlib \ Exception \ Exception as InaneException;
+use Inane\Stdlib\Exception\Exception as InaneException;
 
 /**
  * ConfigurationException

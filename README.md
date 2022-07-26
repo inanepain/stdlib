@@ -1,5 +1,7 @@
 # Readme: Stdlib
 
+> version: $Id$ ($Date$)
+
 An assortment of commonly used classes by inane packages.
 
 **Contents:**

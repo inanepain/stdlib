@@ -8,10 +8,13 @@
  * PHP version 8.1
  *
  * @package Inane\Stdlib
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author  Philip Michael Raab<peep@inane.co.za>
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ *
+ * @version $Id$
+ * $Date$
  */
 
 declare(strict_types=1);

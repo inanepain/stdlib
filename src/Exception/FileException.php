@@ -22,13 +22,12 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Exception;
 
 /**
- * StubException
- *
- * Code only a stub and needs completing.
+ * Exception thrown if an error which can only be found on runtime occurs.
  *
  * @package Inane\Exception
- *
- * @version 1.0.0
+ * @implements \Inane\Stdlib\Exception\ExceptionInterface
+ * @version 0.2.0
  */
-class StubException extends Exception {
+class FileException extends RuntimeException implements ExceptionInterface {
+    protected $code = 780;
 }
