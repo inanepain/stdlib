@@ -17,18 +17,18 @@
  * $Date$
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Inane\Stdlib\Exception;
 
+use Inane\Stdlib\Exception\Exception as InaneException;
+
 /**
- * StubException
+ * ConfigurationException
  *
- * Code only a stub and needs completing.
+ * @package Inane\Stdlib
  *
- * @package Inane\Exception
- *
- * @version 1.0.0
+ * @version 0.1.0
  */
-class StubException extends Exception {
+class ConfigurationException extends InaneException {
 }

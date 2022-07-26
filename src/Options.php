@@ -12,6 +12,9 @@
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ *
+ * @version $Id$
+ * $Date$
  */
 
 declare(strict_types=1);
@@ -50,7 +53,7 @@ use Inane\Stdlib\Exception\{
  * to facilitate easy access to the data.
  *
  * @package Inane\Stdlib
- * @version 0.10.1
+ * @version 0.10.2
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
 
@@ -116,7 +119,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * Options
      *
-     * @param array $data values
+     * @since 0.10.2
+     *  - takes \ArrayObject
+     *
+     * @param array|\ArrayObject $data values
      * @param bool $allowModifications
      *
      * @return void
@@ -125,14 +131,17 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
         /**
          * Variables
          */
-        array $data = [],
+        array|\ArrayObject $data = [],
         /**
          * Whether modifications to configuration data are allowed
          */
         private bool $allowModifications = true
     ) {
-        foreach ($data as $key => $value) if (is_array($value)) $this->data[$key] = new static($value, $this->allowModifications);
-        else $this->data[$key] = $value;
+        if ($data instanceof \ArrayObject) $data = $data->getArrayCopy();
+
+        foreach ($data as $key => $value)
+            if (is_array($value) || $value instanceof \ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
+            else $this->data[$key] = $value;
     }
 
     /**
@@ -353,15 +362,21 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * Merge another Config with this one.
      *
+     * @since 0.10.2
+     *  - takes array and \ArrayObject
+     *
      * For duplicate keys, the following will be performed:
      * - Nested Configs will be recursively merged.
      * - Items in $merge with INTEGER keys will be appended.
      * - Items in $merge with STRING keys will overwrite current values.
      *
-     * @param Options $merge
-     * @return self
+     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     *
+     * @return \Inane\Stdlib\Options
      */
-    public function merge(Options $merge): self {
+    public function merge(array|\ArrayObject|Options $merge): self {
+        if (!$merge instanceof self) $merge = new static($merge);
+
         /** @var Options $value */
         foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
             if (is_int($key)) $this->data[] = $value;
