@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use ArrayIterator;
 use ArrayObject as SystemArrayObject;
 
 use function is_array;
@@ -28,12 +29,11 @@ use function is_array;
 /**
  * ArrayObject
  *
- * Inane Array Object defaults to ARRAY_AS_PROPS and works recursively.
+ * differences from parent:
+ *  - ARRAY_AS_PROPS set
+ *  - Arrays converted to ArrayObject
  *
- * TODO: store value in private storage
- * TODO: implement __set to convert arrays to objects
- *
- * @version 0.2.0
+ * @version 0.2.1
  * @package Inane\Stdlib
  */
 class ArrayObject extends SystemArrayObject {
@@ -46,7 +46,11 @@ class ArrayObject extends SystemArrayObject {
         $this->setFlags(static::ARRAY_AS_PROPS);
 
         foreach ($array as $key => $value) if (is_array($value)) $array[$key] = new static($value);
-        parent::__construct($array, static::ARRAY_AS_PROPS);
+        parent::__construct(
+                $array,
+                static::ARRAY_AS_PROPS,
+                ArrayIterator::class
+        );
     }
 
     /**
@@ -82,6 +86,7 @@ class ArrayObject extends SystemArrayObject {
      *
      * @param  mixed $key
      * @param  mixed $value
+     *
      * @return void
      */
     public function set($key, $value): void {
@@ -93,10 +98,12 @@ class ArrayObject extends SystemArrayObject {
      *
      * @param  mixed $key
      * @param  mixed $value
+     *
      * @return void
      */
     public function offsetSet($key, $value): void {
         if (is_array($value)) $value = new static($value);
+
         parent::offsetSet($key, $value);
     }
 }
