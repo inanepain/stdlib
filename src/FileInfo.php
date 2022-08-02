@@ -45,7 +45,7 @@ use function unserialize;
  * @method FileInfo getFileInfo()
  *
  * @package Inane\File
- * @version 0.7.1
+ * @version 0.7.2
  */
 class FileInfo extends SplFileInfo {
     /**
@@ -103,7 +103,7 @@ class FileInfo extends SplFileInfo {
      * @return null|string
      */
     public function getMimetype(?string $default = null): ?string {
-        $mimes = unserialize(file_get_contents(__DIR__ . '/../../mimeic.blast'));
+        $mimes = unserialize(file_get_contents(__DIR__ . '/../mimeic.blast'));
         return $mimes['mimes'][$this->getExtension(Capitalisation::lowercase)] ?? $default;
     }
 
