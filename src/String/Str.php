@@ -25,6 +25,7 @@ use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
 use Stringable;
 
 use function array_merge;
+use function basename;
 use function count;
 use function in_array;
 use function is_null;
@@ -55,7 +56,7 @@ use Inane\Stdlib\{
  * @property-read public length
  * @property public string
  *
- * @version 0.5.0
+ * @version 0.6.0
  */
 class Str implements Stringable {
     use OptionMagicPropertyTrait;
@@ -181,6 +182,36 @@ class Str implements Stringable {
      */
     public function __toString(): string {
         return $this->_str;
+    }
+
+    /**
+     * basename
+     *
+     * @since 0.6.0
+     *
+     * @param string $suffix to remove
+     *
+     * @return \Inane\Stdlib\String\Str
+     */
+    public function baseName(string $suffix = ''): Str {
+        $this->_str = basename($this->_str, $suffix);
+
+        return $this;
+    }
+
+    /**
+     * Get: basename
+     *
+     * GET Methods: don't effect value of Str just return the result of method on Str
+     *
+     * @since 0.6.0
+     *
+     * @param string $suffix to remove
+     *
+     * @return string
+     */
+    public function getBaseName(string $suffix = ''): string {
+        return basename($this->_str, $suffix);
     }
 
     /**
