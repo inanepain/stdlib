@@ -4,6 +4,7 @@
 
 ## History
 
-### x.x.x @2022 Aug xx
+### 0.1.5 @2022 Aug 04
 
  - Str: added method basename
+ - FileInfo: moved to `inanepain/file` with ns `\Inane\File`
