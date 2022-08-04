@@ -33,7 +33,5 @@
 	"require" : {
 		"php" : ">=8.1",
 		"psr/container": "*"
-	},
-	"require-dev": {
-    }
+	}
 }
