@@ -53,10 +53,10 @@ use Inane\Stdlib\Exception\{
  * to facilitate easy access to the data.
  *
  * @package Inane\Stdlib
+ *
  * @version 0.10.2
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
-
     /**
      * Variables
      */

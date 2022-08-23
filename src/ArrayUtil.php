@@ -51,12 +51,16 @@ use function count;
 use function explode;
 use function in_array;
 use function is_array;
+use function str_contains;
+use const false;
+use const null;
 
 /**
  * Array Utility
  *
  * @package Inane\Stdlib
- * @version 0.3.2
+ *
+ * @version 0.3.3
  */
 class ArrayUtil {
     /**
@@ -190,14 +194,14 @@ class ArrayUtil {
      * ```
      *
      * @param array $array array to update
-     * @param string $input assignment string
+     * @param string $arrayPath assignment string
      * @param null|string $separator path separator character (default: /)
      * @param null|string $assignor assignment character (default: =)
      *
      * @return array updated array
      */
-    public static  function writeWithPath(array &$array, string $input, ?string $separator = null, ?string $assignor = null): array {
-        list($path, $value) = explode($assignor ?? static::$pathAssignor, $input);
+    public static function writeWithPath(array &$array, string $arrayPath, ?string $separator = null, ?string $assignor = null): array {
+        list($path, $value) = explode($assignor ?? static::$pathAssignor, $arrayPath);
 
         $explodedPath = explode($separator ?? static::$pathSeparator, $path);
 
@@ -207,5 +211,49 @@ class ArrayUtil {
         unset($temp);
 
         return $array;
+    }
+
+    /**
+     * Set value using path but separate $value
+     *
+     * This allows for $value to be anything you can normally add to an array
+     *
+     * @param array $array array to update
+     * @param string $arrayPath assignment string
+     * @param mixed $value assignment value
+     * @param null|string $separator path separator character (default: /)
+     * @param null|string $assignor assignment character (default: =)
+     *
+     * @return array updated array
+     */
+    public static function writeToPath(array &$array, string $arrayPath, mixed $value, ?string $separator = null, ?string $assignor = null): array {
+        $explodedPath = explode($separator ?? static::$pathSeparator, $arrayPath);
+
+        $temp = &$array;
+        foreach ($explodedPath as $key) $temp = &$temp[$key];
+        $temp = $value;
+        unset($temp);
+
+        return $array;
+    }
+
+    /**
+     * Read or Write path value based on $pathAction
+     *
+     * Separator: `static::$pathSeparator`
+     * Assignor : `static::$pathAssignor`
+     *
+     * @since 0.3.3
+     *
+     * @param array       $array array to update
+     * @param string      $pathAction string array path to read or assign value to
+     *
+     * @return mixed read value|updated array
+     */
+    public static function stringPath(array &$array, string $pathAction): mixed {
+        if (str_contains($pathAction, static::$pathAssignor))
+            return static::writeWithPath($array, $pathAction);
+
+        return static::readWithPath($array, $pathAction);
     }
 }
