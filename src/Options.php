@@ -26,7 +26,9 @@ use Countable;
 use Iterator;
 use Psr\Container\ContainerInterface;
 
+use function array_keys;
 use function array_pop;
+use function array_values;
 use function count;
 use function current;
 use function in_array;
@@ -54,9 +56,11 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.2
+ * @version 0.10.3
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
+    use Converters\ArrayToXML;
+
     /**
      * Variables
      */
@@ -318,22 +322,6 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * Return an associative array of the stored data.
-     *
-     * @return array
-     */
-    public function toArray(): array {
-        $array = [];
-        $data = $this->data;
-
-        /** @var self $value */
-        foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
-        else $array[$key] = $value;
-
-        return $array;
-    }
-
-    /**
      * updates properties 2+ into first array with decreasing importance
      * so only unset keys are assigned values
      *
@@ -417,5 +405,71 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      */
     public function isLocked(): bool {
         return !$this->allowModifications;
+    }
+
+    /**
+     * Returns keys
+     *
+     * @since 0.10.3
+     *
+     * @return iterable keys
+     */
+    public function keys(): iterable {
+        return array_keys($this->toArray());
+    }
+
+    /**
+     * Returns values
+     *
+     * @since 0.10.3
+     *
+     * @return iterable values
+     */
+    public function values(): iterable {
+        $values = array_values($this->toArray());
+        return new static($values, $this->allowModifications);
+    }
+
+    /**
+     * Checks if a $value exists in an Option's values
+     *
+     * @since 0.10.3
+     *
+     * @see in_array
+     *
+     * @param mixed $value The searched value
+     * @param bool $strict If set to true then the type of the value is also checked
+     *
+     * @return bool Returns true if value is found, false otherwise
+     */
+    public function contains(mixed $value, bool $strict = false): bool {
+        return in_array($value, $this->toArray(), $strict);
+    }
+
+    /**
+     * Return an associative array of the stored data.
+     *
+     * @return array
+     */
+    public function toArray(): array {
+        $array = [];
+        $data = $this->data;
+
+        /** @var self $value */
+        foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
+        else $array[$key] = $value;
+
+        return $array;
+    }
+
+    /**
+     * Return data as an XML string
+     *
+     * @since 0.10.3
+     *
+     * @return string XML string
+     */
+    public function toXML(): string {
+        return static::arrayToXML($this->toArray())->asXML();
     }
 }
