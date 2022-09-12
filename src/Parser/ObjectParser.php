@@ -31,9 +31,9 @@ use function trim;
 use const PHP_EOL;
 
 /**
- * RecursiveParser
+ * ObjectParser
  *
- * Recursive variable parser
+ * Recursive object/variable parser
  *
  * @package Inane\Stdlib
  *
@@ -49,7 +49,8 @@ class ObjectParser {
     public static int $depth = 4;
 
     /**
-     * Object Parser
+     * Object Parser: private constructor
+     *  So instantiation can only be done internally.
      */
     private function __construct() {
     }
@@ -111,6 +112,7 @@ class ObjectParser {
 
     /**
      * Creates the dump string for a variable
+     *  calling other parse methods if needed.
      *
      * @param mixed $var the variable
      * @param int $level current depth
