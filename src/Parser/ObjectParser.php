@@ -26,6 +26,7 @@ use function array_push;
 use function array_search;
 use function get_class;
 use function str_repeat;
+use function str_replace;
 use function strtr;
 use function trim;
 use const PHP_EOL;
@@ -37,7 +38,7 @@ use const PHP_EOL;
  *
  * @package Inane\Stdlib
  *
- * @version 1.0.0
+ * @version 1.0.1
  */
 class ObjectParser {
     /**
@@ -72,7 +73,7 @@ class ObjectParser {
             $keys = array_keys($array);
             $spaces = str_repeat(' ', $level * 4);
             $output .= '[';
-            foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1);
+            foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1). ',';
             $output .= PHP_EOL . "{$spaces}]";
         }
 
@@ -123,7 +124,8 @@ class ObjectParser {
     private static function parseVariable(mixed $var, int $level = 0, array &$cache = []): string {
         return match (gettype($var)) {
             'boolean' => $var ? 'true' : 'false',
-            'integer', 'double', 'string' => "$var",
+            'integer', 'double' => "$var",
+            'string' => "'".str_replace("'", "\'", $var)."'",
             'resource' => '{resource}',
             'NULL' => 'null',
             'unknown type' => '{unknown}',

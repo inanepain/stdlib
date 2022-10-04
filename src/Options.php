@@ -35,6 +35,7 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function is_null;
+use function json_encode;
 use function key;
 use function next;
 use function reset;
@@ -56,7 +57,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.3
+ * @version 0.10.4
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     use Converters\ArrayToXML;
@@ -74,7 +75,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * @param mixed $key key
      * @return mixed|Options value
      */
-    public function __get($key) {
+    public function __get(string $key) {
         return $this->get($key);
     }
 
@@ -88,7 +89,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      *
      * @throws RuntimeException
      */
-    public function __set($key, $value) {
+    public function __set(string $key, mixed $value) {
         if ($this->allowModifications) {
             if (is_array($value)) $value = new static($value);
 
@@ -100,12 +101,13 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * Whether or not an data exists by key
      *
-     * @param string An data key to check for
-     * @access public
+     * @param mixed $key An data key to check for
+     *
      * @return boolean
+     *
      * @abstracting ArrayAccess
      */
-    public function __isset($key) {
+    public function __isset(mixed $key): bool {
         return isset($this->data[$key]);
     }
 
@@ -232,7 +234,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * @param string $offset key
      * @return bool exists
      */
-    public function offsetExists($offset): bool {
+    public function offsetExists(mixed $offset): bool {
         return $this->__isset($offset);
     }
 
@@ -243,17 +245,18 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
      * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @param mixed $id Identifier of the entry to look for.
      *
      * @return bool
      */
-    public function has(string $id): bool {
+    public function has(mixed $id): bool {
         return $this->__isset($id);
     }
 
     /**
      * get offset
-     * @param string $offset offset
+     * @param mixed $offset offset
+     *
      * @return mixed|Options value
      */
     public function offsetGet(mixed $offset): mixed {
@@ -267,14 +270,14 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      *
      * @return mixed|Options value
      */
-    public function get($key, $default = null) {
+    public function get(mixed $key, mixed $default = null) {
         return $this->offsetExists($key) ? $this->data[$key] : $default;
     }
 
     /**
      * set offset
      *
-     * @param string $offset offset
+     * @param mixed $offset offset
      * @param mixed $value value
      *
      * @return void
@@ -295,7 +298,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      *
      * @throws RuntimeException
      */
-    public function set($key, $value): Options {
+    public function set(mixed $key, mixed $value): Options {
         $this->offsetSet($key, $value);
         return $this;
     }
@@ -313,10 +316,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * delete key
      *
-     * @param string $offset key
+     * @param mixed $offset key
      * @return Options
      */
-    public function unset($key): Options {
+    public function unset(mixed $key): Options {
         $this->offsetUnset($key);
         return $this;
     }
@@ -471,5 +474,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      */
     public function toXML(): string {
         return static::arrayToXML($this->toArray())->asXML();
+    }
+
+    /**
+     * Return data as an JSON string
+     *
+     * @since 0.10.4
+     *
+     * @param int $flags Bitmask consisting of `JSON_FORCE_OBJECT`, `JSON_HEX_QUOT`, `JSON_HEX_TAG`, `JSON_HEX_AMP`, `JSON_HEX_APOS`, `JSON_INVALID_UTF8_IGNORE`, `JSON_INVALID_UTF8_SUBSTITUTE`, `JSON_NUMERIC_CHECK`, `JSON_PARTIAL_OUTPUT_ON_ERROR`, `JSON_PRESERVE_ZERO_FRACTION`, `JSON_PRETTY_PRINT`, `JSON_UNESCAPED_LINE_TERMINATORS`, `JSON_UNESCAPED_SLASHES`, `JSON_UNESCAPED_UNICODE`, `JSON_THROW_ON_ERROR`. The behaviour of these constants is described on the `JSON constants` page.
+     * @param int $depth Set the maximum depth. Must be greater than zero.
+     *
+     * @return string JSON string
+     */
+    public function toJSON(int $flags = 0, int $depth = 512): string {
+        return json_encode($this->toArray(), $flags, $depth);
     }
 }

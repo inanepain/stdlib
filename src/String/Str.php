@@ -71,7 +71,7 @@ class Str implements Stringable {
      *
      * A shared buffer for storing values
      *
-     * @var \Inane\Type\ArrayObject
+     * @var \Inane\Stdlib\ArrayObject
      */
     protected static $buffer;
 
