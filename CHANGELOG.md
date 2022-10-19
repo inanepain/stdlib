@@ -4,6 +4,13 @@
 
 ## History
 
+### 0.3.0-dev @2022 Oct xx
+
+- todo: `...able` more able interfaces
+- todo: `ArrayKit` test more functions and add @method tags for them
+- todo: `ArrayKit` move to lib base
+- todo: `String` move to lib base
+
 ### 0.2.0 @2022 Oct 19
 
 - new: `ArrayPathAccessTrait` allows read/write array data using strings, read: "users/bob/age", write: "users/bob/age=30"
