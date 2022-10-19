@@ -4,7 +4,7 @@
 
 ## History
 
-### 0.2.0-dev (2022 Oct xx)
+### 0.2.0 @2022 Oct 19
 
 - new: `ArrayPathAccessTrait` allows read/write array data using strings, read: "users/bob/age", write: "users/bob/age=30"
 - new: `Highlight::render` applies highlight to **$code** parameter
