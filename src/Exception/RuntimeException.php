@@ -21,8 +21,6 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
 
-use RuntimeException as BaseRuntimeException;
-
 /**
  * Exception thrown if an error which can only be found on runtime occurs.
  *
@@ -30,6 +28,6 @@ use RuntimeException as BaseRuntimeException;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class RuntimeException extends BaseRuntimeException implements ExceptionInterface {
-    protected $code = 750;
+class RuntimeException extends Exception {
+    protected $code = 200;
 }

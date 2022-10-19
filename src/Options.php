@@ -55,7 +55,7 @@ use Inane\Stdlib\Exception\{
  *
  * @version 0.10.4
  */
-class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
+class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
 
     /**

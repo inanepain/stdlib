@@ -28,6 +28,6 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class FileException extends RuntimeException implements ExceptionInterface {
+class FileException extends RuntimeException {
     protected $code = 780;
 }

@@ -36,9 +36,9 @@ use const null;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.3.0
  */
-class InvalidPropertyException extends LogicException implements ExceptionInterface {
+class InvalidPropertyException extends LogicException {
     protected $message = 'Property exception: `magic_property_properties` property invalid';   // exception message
-    protected $code = 200;                        // user defined exception code
+    protected $code = 360;                        // user defined exception code
 
     /**
      * __construct

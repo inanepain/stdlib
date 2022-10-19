@@ -30,5 +30,5 @@ use Inane\Stdlib\Exception\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class LogicException extends Exception implements ExceptionInterface {
+class LogicException extends Exception {
 }

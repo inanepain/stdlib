@@ -9,6 +9,7 @@
  *
  * @author Philip Michael Raab<peep@inane.co.za>
  * @package Inane\Stdlib
+ * @category converter
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
@@ -17,16 +18,22 @@
  * $Date$
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Inane\Stdlib\Exception;
+namespace Inane\Stdlib\Converters;
 
 /**
- * ConfigurationException
+ * XML Export Interface
  *
  * @package Inane\Stdlib
  *
  * @version 0.1.0
  */
-class ConfigurationException extends Exception {
+interface XMLable {
+    /**
+     * Return XML representation of data
+     *
+     * @return array as XML
+     */
+    public function toXML(): string;
 }

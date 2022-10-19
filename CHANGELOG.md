@@ -4,18 +4,22 @@
 
 ## History
 
-### current: 0.1.6 (2022 Aug xx)
+### 0.2.0-dev (2022 Oct xx)
 
-- New: `ArrayPathAccessTrait` allows read/write array data using strings, read: "users/bob/age", write: "users/bob/age=30"
-- New: `Highlight::render` applies highlight to **$code** parameter
-- Update: `Options` added access to data via string paths
-- New: `Options::toXML` export data as XML string
-- New: `Options::keys` returns iterable of keys
-- New: `Options::values` returns iterable of values
-- Update: `InvalidPropertyException` now able to specify `Object`
-- New: `Inflector::hyphenate` @see `Inflector::underscore`
-- New: `ArrayUtil::stringPath` single string command for read/write actions
-- New: `Converters::ArrayToXML` trait to convert an array to xml
+- new: `ArrayPathAccessTrait` allows read/write array data using strings, read: "users/bob/age", write: "users/bob/age=30"
+- new: `Highlight::render` applies highlight to **$code** parameter
+- new: `Options::toXML` export data as XML string
+- new: `Options::keys` returns iterable of keys
+- new: `Options::values` returns iterable of values
+- new: `Inflector::hyphenate` @see `Inflector::underscore`
+- new: `ArrayUtil::stringPath` single string command for read/write actions
+- new: `ArrayKit` wrapper for array_... functions
+- new: `Converters::ArrayToXML` trait to convert an array to xml
+- new: `StringUtility` some string processing tools
+- new: `{Array,JSON,XML}able` interfaces for to{Array,JSON,XML} export methods
+- update: `Options` added access to data via string paths
+- update: `InvalidPropertyException` now able to specify `Object`
+- update: `Exceptions` changed inheritance and some error codes
 
 ### 0.1.5 @2022 Aug 04
 

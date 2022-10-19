@@ -17,16 +17,19 @@
  * $Date$
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
 
 /**
- * ConfigurationException
+ * ParseException
  *
- * @package Inane\Stdlib
+ * Parsing related exceptions.
+ *
+ * @package Inane\Exception
  *
  * @version 0.1.0
  */
-class ConfigurationException extends Exception {
+class ParseException extends Exception {
+    protected $code = 300;
 }

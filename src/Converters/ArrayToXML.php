@@ -9,6 +9,7 @@
  *
  * @author Philip Michael Raab<peep@inane.co.za>
  * @package Inane\Stdlib
+ * @category converter
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE

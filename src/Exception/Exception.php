@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Exception;
 
 use Exception as SystemException;
+use Stringable;
 use Throwable;
 
 /**
@@ -31,7 +32,7 @@ use Throwable;
  *
  * @version 0.3.1
  */
-class Exception extends SystemException implements ExceptionInterface {
+class Exception extends SystemException implements ExceptionInterface, Stringable {
     /**
      * Custom construct template
      *
