@@ -28,5 +28,5 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class DomainException extends \DomainException implements ExceptionInterface {
+class DomainException extends LogicException {
 }

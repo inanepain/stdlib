@@ -64,6 +64,15 @@ namespace Inane\Stdlib\Exception;
 /**
  * ExceptionInterface
  *
+ *  - 0  : Exception
+ *  - 100: ExampleException
+ *  - 200: RuntimeException
+ *  - 300: ParseException
+ *  - 350: ParseMethodException
+ *  - 355: InvalidArgumentException
+ *  - 360: InvalidPropertyException
+ *  - 780: FileException
+ *
  * @package Inane\Exception
  *
  * @version 1.0.0

@@ -21,8 +21,6 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
 
-use Inane\Stdlib\Exception\Exception as InaneException;
-
 /**
  * ExampleException
  *
@@ -32,7 +30,7 @@ use Inane\Stdlib\Exception\Exception as InaneException;
  *
  * @version 0.1.0
  */
-class ExampleException extends InaneException {
+class ExampleException extends Exception {
     protected $message = 'Example exception';    // exception message
     protected $code = 100;                       // user defined exception code
     protected string $file;                      // source filename of exception

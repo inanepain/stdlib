@@ -36,7 +36,7 @@ use function ucwords;
 /**
  * Inflector
  *
- * @version 1.0.0
+ * @version 1.1.0
  *
  * @package Inane\Stdlib
  */
@@ -215,6 +215,24 @@ class Inflector {
     public static function underscore(string $word): string {
         $word =  strtolower(preg_replace('/([^A-Z])([A-Z])/', "$1_$2", $word));
         return str_replace('\_', '/', $word);
+    }
+
+    /**
+     * Hyphenate word
+     *
+     * Examples:
+     *  - ActiveModel => active-model
+     *  - ActiveModel\Errors => active-model/errors
+     *
+     * @since 1.1.0
+     *
+     * @param string $word word
+     *
+     * @return string word
+     */
+    public static function hyphenate(string $word): string {
+        $word =  strtolower(preg_replace('/([^A-Z])([A-Z])/', "$1-$2", $word));
+        return str_replace('\-', '/', $word);
     }
 
     /**

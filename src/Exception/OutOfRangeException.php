@@ -28,5 +28,5 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class OutOfRangeException extends \OutOfRangeException implements ExceptionInterface {
+class OutOfRangeException extends LogicException {
 }

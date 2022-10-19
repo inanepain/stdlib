@@ -28,5 +28,5 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class UnderflowException extends \UnderflowException implements ExceptionInterface {
+class UnderflowException extends RuntimeException {
 }

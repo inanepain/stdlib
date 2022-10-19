@@ -23,28 +23,43 @@ namespace Inane\Stdlib\Exception;
 
 use Inane\Stdlib\Exception\LogicException;
 
+use function array_unshift;
+use function explode;
+use function str_contains;
+use function str_replace;
+use const null;
+
 /**
  * Magic GET/SET reject property
  *
  * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
- * @version 0.2.0
+ * @version 0.3.0
  */
-class InvalidPropertyException extends LogicException implements ExceptionInterface {
+class InvalidPropertyException extends LogicException {
     protected $message = 'Property exception: `magic_property_properties` property invalid';   // exception message
-    protected $code = 200;                        // user defined exception code
+    protected $code = 360;                        // user defined exception code
 
     /**
      * __construct
      *
-     * @param null|string $message
+     * message: Object:=message
+     *  split on := with [0] replacing `Object` and [1] the message
+     *
+     * @param null|string $message error message
      * @param int $code
      * @param Exception|null $previous
      * @return void
      */
     public function __construct(?string $message = null, $code = 0, Exception $previous = null) {
-        if ($previous === null) $this->message = str_replace('magic_property_properties', 'Object', $this->message);
-        $message = $this->message . ($message ? ': ' . $message : '');
+        if ($previous === null) {
+            $values = [$message];
+            if (str_contains($message, ':=')) {
+                $values = explode(':=', $message);
+            } else array_unshift($values, 'Object');
+            $this->message = str_replace('magic_property_properties', $values[0], $this->message);
+        }
+        $message = $this->message . ($values[1] ? ': ' . $values[1] : '');
         $code = $this->code + $code;
 
         // make sure everything is assigned properly

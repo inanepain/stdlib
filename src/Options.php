@@ -26,13 +26,16 @@ use Countable;
 use Iterator;
 use Psr\Container\ContainerInterface;
 
+use function array_keys;
 use function array_pop;
+use function array_values;
 use function count;
 use function current;
 use function in_array;
 use function is_array;
 use function is_int;
 use function is_null;
+use function json_encode;
 use function key;
 use function next;
 use function reset;
@@ -43,22 +46,20 @@ use Inane\Stdlib\Exception\{
 };
 
 /**
- * Options
+ * Options: key, value store
  *
  * Provides a property based interface to an array.
- * The data are read-only unless $allowModifications is set to true
- * on construction.
- *
- * Implements Countable, Iterator and ArrayAccess
- * to facilitate easy access to the data.
+ * The data can be made read-only by setting $allowModifications to false with the `lock` method,
  *
  * @package Inane\Stdlib
- * @version 0.10.2
+ *
+ * @version 0.10.4
  */
-class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
+class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
+    use Converters\ArrayToXML;
 
     /**
-     * Variables
+     * Value store
      */
     private array $data = [];
 
@@ -70,21 +71,21 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * @param mixed $key key
      * @return mixed|Options value
      */
-    public function __get($key) {
+    public function __get(mixed $key) {
         return $this->get($key);
     }
 
     /**
      * Assigns a value to the specified data
      *
-     * @param string The data key to assign the value to
+     * @param mixed The data key to assign the value to
      * @param mixed  The value to set
      *
      * @return void
      *
      * @throws RuntimeException
      */
-    public function __set($key, $value) {
+    public function __set(mixed $key, mixed $value) {
         if ($this->allowModifications) {
             if (is_array($value)) $value = new static($value);
 
@@ -96,12 +97,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * Whether or not an data exists by key
      *
-     * @param string An data key to check for
-     * @access public
+     * @param mixed $key An data key to check for
+     *
      * @return boolean
-     * @abstracting ArrayAccess
      */
-    public function __isset($key) {
+    public function __isset(mixed $key): bool {
         return isset($this->data[$key]);
     }
 
@@ -109,7 +109,6 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * Unset data by key
      *
      * @param string The key to unset
-     * @access public
      */
     public function __unset($key) {
         if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
@@ -129,11 +128,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      */
     public function __construct(
         /**
-         * Variables
+         * Initial value store
          */
         array|\ArrayObject $data = [],
         /**
-         * Whether modifications to configuration data are allowed
+         * Whether modifications to the data are allowed
          */
         private bool $allowModifications = true
     ) {
@@ -145,7 +144,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * Deep clone of instance ensuring that nested Inane\Config\Options are cloned.
+     * Deep clone of instance ensuring that nested <strong>Inane\Stdlib\Options</strong> are cloned.
      *
      * @return void
      */
@@ -169,7 +168,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * Current
+     * current
+     *
+     * Return the current element
      *
      * @return mixed|Options
      */
@@ -180,6 +181,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * next
      *
+     * Advance the internal pointer
+     *
      * @return void
      */
     public function next(): void {
@@ -188,6 +191,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
 
     /**
      * key
+     *
+     * Fetch the key for current element
      *
      * @return string|float|int|bool|null key
      */
@@ -198,6 +203,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * valid
      *
+     * Checks if the current element is valid
+     *
      * @return bool valid
      */
     public function valid(): bool {
@@ -205,7 +212,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * rewind to first item
+     * rewind
+     *
+     * Rewind the internal pointer to the first element
      *
      * @return void
      */
@@ -215,6 +224,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
 
     /**
      * count
+     *
+     * Counts all elements
      *
      * @return int item count
      */
@@ -228,7 +239,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * @param string $offset key
      * @return bool exists
      */
-    public function offsetExists($offset): bool {
+    public function offsetExists(mixed $offset): bool {
         return $this->__isset($offset);
     }
 
@@ -239,17 +250,18 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
      * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @param mixed $id Identifier of the entry to look for.
      *
      * @return bool
      */
-    public function has(string $id): bool {
+    public function has(mixed $id): bool {
         return $this->__isset($id);
     }
 
     /**
      * get offset
-     * @param string $offset offset
+     * @param mixed $offset offset
+     *
      * @return mixed|Options value
      */
     public function offsetGet(mixed $offset): mixed {
@@ -263,14 +275,14 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      *
      * @return mixed|Options value
      */
-    public function get($key, $default = null) {
+    public function get(mixed $key, mixed $default = null) {
         return $this->offsetExists($key) ? $this->data[$key] : $default;
     }
 
     /**
      * set offset
      *
-     * @param string $offset offset
+     * @param mixed $offset offset
      * @param mixed $value value
      *
      * @return void
@@ -291,7 +303,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
      *
      * @throws RuntimeException
      */
-    public function set($key, $value): Options {
+    public function set(mixed $key, mixed $value): Options {
         $this->offsetSet($key, $value);
         return $this;
     }
@@ -309,28 +321,12 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * delete key
      *
-     * @param string $offset key
+     * @param mixed $offset key
      * @return Options
      */
-    public function unset($key): Options {
+    public function unset(mixed $key): Options {
         $this->offsetUnset($key);
         return $this;
-    }
-
-    /**
-     * Return an associative array of the stored data.
-     *
-     * @return array
-     */
-    public function toArray(): array {
-        $array = [];
-        $data = $this->data;
-
-        /** @var self $value */
-        foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
-        else $array[$key] = $value;
-
-        return $array;
     }
 
     /**
@@ -360,13 +356,13 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * Merge another Config with this one.
+     * Merge another Options object with this one.
      *
      * @since 0.10.2
      *  - takes array and \ArrayObject
      *
      * For duplicate keys, the following will be performed:
-     * - Nested Configs will be recursively merged.
+     * - Nested Options will be recursively merged.
      * - Items in $merge with INTEGER keys will be appended.
      * - Items in $merge with STRING keys will overwrite current values.
      *
@@ -396,7 +392,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     /**
      * Prevent any more modifications being made to this instance.
      *
-     * Useful after merge() has been used to merge multiple Config objects
+     * Useful after merge() has been used to merge multiple Options objects
      * into one object which should then not be modified again.
      *
      * @return Options
@@ -411,11 +407,99 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface {
     }
 
     /**
-     * Returns whether this Config object is locked or not.
+     * Returns whether this Options object is locked or not.
      *
      * @return bool
      */
     public function isLocked(): bool {
         return !$this->allowModifications;
+    }
+
+    /**
+     * Returns keys
+     *
+     * @since 0.10.3
+     *
+     * @return iterable keys
+     */
+    public function keys(): iterable {
+        return array_keys($this->toArray());
+    }
+
+    /**
+     * Returns values
+     *
+     * @since 0.10.3
+     *
+     * @return iterable values
+     */
+    public function values(): iterable {
+        $values = array_values($this->toArray());
+        return new static($values, $this->allowModifications);
+    }
+
+    /**
+     * Checks if a $value exists in an Option's values
+     *
+     * @since 0.10.3
+     *
+     * @see in_array
+     *
+     * @param mixed $value The searched value
+     * @param bool $strict If set to true then the type of the value is also checked
+     *
+     * @return bool Returns true if value is found, false otherwise
+     */
+    public function contains(mixed $value, bool $strict = false): bool {
+        return in_array($value, $this->toArray(), $strict);
+    }
+
+    /**
+     * Return an associative array of the stored data.
+     *
+     * @return array
+     */
+    public function toArray(): array {
+        $array = [];
+        $data = $this->data;
+
+        /** @var self $value */
+        foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
+        else $array[$key] = $value;
+
+        return $array;
+    }
+
+    /**
+     * Return data as an XML string
+     *
+     * @since 0.10.3
+     *
+     * @return string XML string
+     */
+    public function toXML(): string {
+        return static::arrayToXML($this->toArray())->asXML();
+    }
+
+    /**
+     * Return data as an JSON string
+     *
+     * Supports flags from <strong>json_encode</strong>.
+     *
+     * Flags set by default:<br />
+     * - JSON_NUMERIC_CHECK
+     * - JSON_UNESCAPED_SLASHES
+     *
+     * @since 0.10.4
+     *
+     * @see http://www.php.net/manual/en/json.constants.php JSON Constants
+     *
+     * @param int $flags Bitmask consisting of `JSON_FORCE_OBJECT`, `JSON_HEX_QUOT`, `JSON_HEX_TAG`, `JSON_HEX_AMP`, `JSON_HEX_APOS`, `JSON_INVALID_UTF8_IGNORE`, `JSON_INVALID_UTF8_SUBSTITUTE`, `JSON_NUMERIC_CHECK`, `JSON_PARTIAL_OUTPUT_ON_ERROR`, `JSON_PRESERVE_ZERO_FRACTION`, `JSON_PRETTY_PRINT`, `JSON_UNESCAPED_LINE_TERMINATORS`, `JSON_UNESCAPED_SLASHES`, `JSON_UNESCAPED_UNICODE`, `JSON_THROW_ON_ERROR`. The behaviour of these constants is described on the `JSON constants` page.
+     * @param int $depth Set the maximum depth. Must be greater than zero.
+     *
+     * @return string JSON string
+     */
+    public function toJSON(int $flags = 96, int $depth = 512): string {
+        return json_encode($this->toArray(), $flags, $depth);
     }
 }

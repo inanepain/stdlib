@@ -21,9 +21,13 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use function highlight_string;
 use function in_array;
 use function ini_get;
 use function ini_set;
+use function preg_replace;
+use function str_replace;
+use function trim;
 use const null;
 
 /**
@@ -33,7 +37,7 @@ use const null;
  *
  * @package Inane\Stdlib
  *
- * @version 0.3.0
+ * @version 0.4.0
  */
 enum Highlight {
     /**
@@ -165,5 +169,27 @@ enum Highlight {
      */
     public function stringHighlight(): string {
         return $this->settings('string');
+    }
+
+    /**
+     * Highlights $code
+     *
+     * @since 0.4.0
+     *
+     * @return string string
+     */
+    public function render($code): string {
+        $this->apply();
+
+        $text = highlight_string("<?php\n" . $code, true);
+        $text = str_replace("&lt;?php<br />", '', $text);
+
+        $text = trim($text);
+        $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix
+        $text = preg_replace("|\\</code\\>\$|", '', $text, 1);  // remove suffix 1
+        $text = trim($text);  // remove line breaks
+        $text = preg_replace("|\\</span\\>\$|", '', $text, 1);  // remove suffix 2
+        $text = trim($text);  // remove line breaks
+        return preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
     }
 }

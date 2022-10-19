@@ -28,9 +28,9 @@ namespace Inane\Stdlib\Exception;
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
-class ParseMethodException extends \LogicException implements ExceptionInterface {
+class ParseMethodException extends LogicException {
     protected $message = 'Method exception';   // exception message
-    protected $code = 100;                        // user defined exception code
+    protected $code = 350;                        // user defined exception code
     protected string $file;                            // source filename of exception
     protected int $line;                            // source line of exception
 
