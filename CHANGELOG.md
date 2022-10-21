@@ -6,6 +6,7 @@
 
 ### 0.3.0-dev @2022 Oct xx
 
+- new: `Options::empty` Test if empty
 - todo: `...able` more able interfaces
 - todo: `ArrayKit` test more functions and add @method tags for them
 - todo: `ArrayKit` move to lib base

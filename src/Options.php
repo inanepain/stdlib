@@ -58,7 +58,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.5
+ * @version 0.10.6
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -358,6 +358,17 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
             }
         }
         return $this;
+    }
+
+    /**
+     * Test if empty
+     *
+     * @since 0.10.6
+     *
+     * @return bool
+     */
+    public function empty(): bool {
+        return empty($this->data);
     }
 
     /**
