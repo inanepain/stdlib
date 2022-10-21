@@ -40,6 +40,11 @@ use function key;
 use function next;
 use function reset;
 
+use Inane\Stdlib\Converters\{
+    Arrayable,
+    JSONable,
+    XMLable
+};
 use Inane\Stdlib\Exception\{
     InvalidArgumentException,
     RuntimeException
@@ -53,7 +58,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.4
+ * @version 0.10.5
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
