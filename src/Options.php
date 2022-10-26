@@ -436,20 +436,25 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @since 0.10.3
      *
-     * @return iterable keys
+     * @return array keys
      */
-    public function keys(): iterable {
+    public function keys(): array {
         return array_keys($this->toArray());
     }
 
     /**
      * Returns values
      *
+     * If this object is locked,
+     *  the values are locked too.
+     *
+     * @todo: should values inherit lock status?
+     *
      * @since 0.10.3
      *
-     * @return iterable values
+     * @return iterable|static values
      */
-    public function values(): iterable {
+    public function values(): iterable|static {
         $values = array_values($this->toArray());
         return new static($values, $this->allowModifications);
     }
