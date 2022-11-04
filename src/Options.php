@@ -38,6 +38,7 @@ use function is_null;
 use function json_encode;
 use function key;
 use function next;
+use function prev;
 use function reset;
 
 use Inane\Stdlib\Converters\{
@@ -181,6 +182,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      */
     public function current(): mixed {
         return current($this->data);
+    }
+
+    /**
+     * previous
+     *
+     * Rewinds the internal pointer by 1
+     *
+     * @since 0.10.6
+     *
+     * @return void
+     */
+    public function prev(): void {
+        prev($this->data);
     }
 
     /**
@@ -507,9 +521,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * Supports flags from <strong>json_encode</strong>.
      *
-     * Flags set by default:<br />
-     * - JSON_NUMERIC_CHECK
-     * - JSON_UNESCAPED_SLASHES
+     * Pretty for the eyes (224):<br />
+     * - JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+     *
+     * Good for inserting SQL (46):<br />
+     * - JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
      *
      * @since 0.10.4
      *
@@ -520,7 +536,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @return string JSON string
      */
-    public function toJSON(int $flags = 96, int $depth = 512): string {
+    public function toJSON(int $flags = 0, int $depth = 512): string {
+        $encodeOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
+        $encodeOptions |= JSON_NUMERIC_CHECK;
+
         return json_encode($this->toArray(), $flags, $depth);
     }
 }
