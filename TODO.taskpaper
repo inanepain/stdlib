@@ -1,4 +1,4 @@
 Inane\Stdlib:
 	Options:
-		- modify: merges by only updating existing keys
-		- complete: merges by only adding missing keys
+		- modify: merges by only updating existing keys @done(2022-12-10)
+		- complete: merges by only adding missing keys @done(2022-12-10)

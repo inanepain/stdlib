@@ -26,6 +26,7 @@ use Countable;
 use Iterator;
 use Psr\Container\ContainerInterface;
 
+use function array_key_exists;
 use function array_keys;
 use function array_pop;
 use function array_values;
@@ -40,6 +41,9 @@ use function key;
 use function next;
 use function prev;
 use function reset;
+use const false;
+use const null;
+use const true;
 
 use Inane\Stdlib\Converters\{
     Arrayable,
@@ -59,7 +63,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.11.0
+ * @version 0.11.1
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -108,7 +112,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * @return boolean
      */
     public function __isset(mixed $key): bool {
-        return isset($this->data[$key]);
+        return isset($this->data[$key]) || array_key_exists($key, $this->data);
     }
 
     /**
