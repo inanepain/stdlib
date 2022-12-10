@@ -8,6 +8,8 @@
 
 - new: `Options::empty` Test if empty
 - new: `Options::prev` Rewinds the internal pointer by 1
+- new: `Options::modify` Merge an array but only updates existing keys, ignoring unmatched keys
+- new: `Options::complete` Merge an array but only adds missing keys, leaving existing keys unmodified
 - new: `Inflector::breakOnUppercase` Break on uppercase letters
 - new: `Str::pad` Pad to a certain length with character
 - todo: `...able` more able interfaces

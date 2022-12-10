@@ -59,7 +59,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.6
+ * @version 0.11.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -411,6 +411,59 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
                 if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
                 else $this->data[$key] = $value;
             }
+        } else {
+            if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Merge an array but only updates existing keys, ignoring unmatched keys
+     *
+     * @since 0.11.0
+     *
+     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     *
+     * @return \Inane\Stdlib\Options
+     */
+    public function modify(array|\ArrayObject|Options $merge): self {
+        if (!$merge instanceof self) $merge = new static($merge);
+
+        /** @var Options $value */
+        foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
+            if (is_int($key)) $this->data[] = $value;
+            elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->modify($value);
+            else {
+                if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+                else $this->data[$key] = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Merge an array but only adds missing keys, leaving existing keys unmodified
+     *
+     * @since 0.11.0
+     *
+     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     *
+     * @return \Inane\Stdlib\Options
+     */
+    public function complete(array|\ArrayObject|Options $merge): self {
+        if (!$merge instanceof self) $merge = new static($merge);
+
+        /** @var Options $value */
+        foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
+            // if (is_int($key)) $this->data[] = $value;
+            if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value);
+            // else {
+            //     if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            //     else $this->data[$key] = $value;
+            // }
         } else {
             if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
             else $this->data[$key] = $value;

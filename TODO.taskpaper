@@ -1,2 +1,4 @@
 Inane\Stdlib:
-	- todo
+	Options:
+		- modify: merges by only updating existing keys
+		- complete: merges by only adding missing keys
