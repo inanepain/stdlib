@@ -4,6 +4,19 @@
 
 ## History
 
+### 0.3.0 @2022 Dec 10
+
+- new: `Options::empty` Test if empty
+- new: `Options::prev` Rewinds the internal pointer by 1
+- new: `Options::modify` Merge an array but only updates existing keys, ignoring unmatched keys
+- new: `Options::complete` Merge an array but only adds missing keys, leaving existing keys unmodified
+- new: `Inflector::breakOnUppercase` Break on uppercase letters
+- new: `Str::pad` Pad to a certain length with character
+- todo: `...able` more able interfaces
+- todo: `ArrayKit` test more functions and add @method tags for them
+- todo: `ArrayKit` move to lib base
+- todo: `String` move to lib base
+
 ### 0.2.0 @2022 Oct 19
 
 - new: `ArrayPathAccessTrait` allows read/write array data using strings, read: "users/bob/age", write: "users/bob/age=30"

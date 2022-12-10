@@ -33,6 +33,7 @@ use function lcfirst;
 use function mt_rand;
 use function rand;
 use function str_contains;
+use function str_pad;
 use function str_replace;
 use function strlen;
 use function strrpos;
@@ -41,6 +42,10 @@ use function strtoupper;
 use function substr_replace;
 use function trim;
 use function ucwords;
+use const false;
+use const null;
+use const STR_PAD_RIGHT;
+use const true;
 
 use Inane\Stdlib\{
     Exception\InvalidPropertyException,
@@ -56,7 +61,7 @@ use Inane\Stdlib\{
  * @property-read public length
  * @property public string
  *
- * @version 0.6.0
+ * @version 0.7.0
  */
 class Str implements Stringable {
     use OptionMagicPropertyTrait;
@@ -87,9 +92,9 @@ class Str implements Stringable {
      */
     public function __construct(
         /**
-         * String
+         * Initial string value
          */
-        protected string $_str = ''
+        protected string $value = ''
     ) {
     }
 
@@ -181,7 +186,7 @@ class Str implements Stringable {
      * @return string
      */
     public function __toString(): string {
-        return $this->_str;
+        return $this->value;
     }
 
     /**
@@ -194,7 +199,7 @@ class Str implements Stringable {
      * @return \Inane\Stdlib\String\Str
      */
     public function baseName(string $suffix = ''): Str {
-        $this->_str = basename($this->_str, $suffix);
+        $this->value = basename($this->value, $suffix);
 
         return $this;
     }
@@ -211,7 +216,7 @@ class Str implements Stringable {
      * @return string
      */
     public function getBaseName(string $suffix = ''): string {
-        return basename($this->_str, $suffix);
+        return basename($this->value, $suffix);
     }
 
     /**
@@ -247,7 +252,7 @@ class Str implements Stringable {
      */
     public function bufferAndReplace(string $string): static {
         $this->buffer();
-        $this->_str = $string;
+        $this->value = $string;
 
         return $this;
     }
@@ -259,7 +264,7 @@ class Str implements Stringable {
      */
     public function buffer(): int {
         $id = count($this->storage());
-        $this->storage()[$id] = $this->_str;
+        $this->storage()[$id] = $this->value;
 
         return $id;
     }
@@ -272,7 +277,7 @@ class Str implements Stringable {
      * @return static
      */
     public function restore(?int $id = null): static {
-        $this->_str = $this->bufferAt($id);
+        $this->value = $this->bufferAt($id);
 
         return $this;
     }
@@ -285,7 +290,7 @@ class Str implements Stringable {
      * @return static
      */
     public function appendBuffer(?int $id = null): static {
-        $this->_str .= $this->bufferAt($id);
+        $this->value .= $this->bufferAt($id);
 
         return $this;
     }
@@ -298,7 +303,7 @@ class Str implements Stringable {
      * @return static
      */
     public function prependBuffer(?int $id = null): static {
-        $this->_str = $this->bufferAt($id) . $this->_str;
+        $this->value = $this->bufferAt($id) . $this->value;
 
         return $this;
     }
@@ -308,10 +313,10 @@ class Str implements Stringable {
      *
      * @param string $str
      *
-     * @return Str
+     * @return \Inane\Stdlib\String\Str
      */
     public function append(string $str): Str {
-        $this->_str .= $str;
+        $this->value .= $str;
 
         return $this;
     }
@@ -324,7 +329,7 @@ class Str implements Stringable {
      * @return bool
      */
     public function contains(string $needle): bool {
-        return self::str_contains($needle, $this->_str);
+        return self::str_contains($needle, $this->value);
     }
 
     /**
@@ -333,7 +338,7 @@ class Str implements Stringable {
      * @return string
      */
     public function getString(): string {
-        return $this->_str;
+        return $this->value;
     }
 
     /**
@@ -342,7 +347,7 @@ class Str implements Stringable {
      * @return int
      */
     public function length(): int {
-        return strlen($this->_str);
+        return strlen($this->value);
     }
 
     /**
@@ -353,7 +358,7 @@ class Str implements Stringable {
      * @return Str
      */
     public function prepend(string $str): Str {
-        $this->_str = "{$str}{$this->_str}";
+        $this->value = "{$str}{$this->value}";
 
         return $this;
     }
@@ -364,10 +369,10 @@ class Str implements Stringable {
      * @param string $search
      * @param string $replace
      *
-     * @return Str
+     * @return \Inane\Stdlib\String\Str
      */
     public function replaceLast(string $search, string $replace): Str {
-        $this->_str = self::str_replace_last($search, $replace, $this->_str);
+        $this->value = self::str_replace_last($search, $replace, $this->value);
 
         return $this;
     }
@@ -380,21 +385,40 @@ class Str implements Stringable {
      * @param string $replace
      * @param null|int $limit
      *
-     * @return Str
+     * @return \Inane\Stdlib\String\Str
      */
     public function replace(string $search, string $replace, ?int $limit = null): Str {
-        $this->_str = Str::str_replace($search, $replace, $this->_str, $limit);
+        $this->value = Str::str_replace($search, $replace, $this->value, $limit);
 
         return $this;
     }
 
     /**
+     * Set the string value
+     *
      * @param string $string
      *
-     * @return Str
+     * @return \Inane\Stdlib\String\Str
      */
     public function setString(string $string): Str {
-        $this->_str = $string;
+        $this->value = $string;
+
+        return $this;
+    }
+
+    /**
+     * Pad to a certain length with character
+     *
+     * @since 0.7.0
+     *
+     * @param int $length If the value of length is negative, less than, or equal to the length of the input string, no padding takes place.
+     * @param string $padString May be truncated if the required number of padding characters can't be evenly divided by the padString's length.
+     * @param int $type Optional argument type can be STR_PAD_RIGHT, STR_PAD_LEFT, or STR_PAD_BOTH. If type is not specified it is assumed to be STR_PAD_RIGHT.
+     *
+     * @return \Inane\Stdlib\String\Str
+     */
+    public function pad(int $length, string $padString = ' ', int $type = STR_PAD_RIGHT): Str {
+        $this->value = str_pad($this->value, $length, $padString, $type);
 
         return $this;
     }
@@ -530,7 +554,7 @@ class Str implements Stringable {
      * @return Str
      */
     public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
-        $this->_str = static::str_to_case($this->_str, $case, $removeSpaces);
+        $this->value = static::str_to_case($this->value, $case, $removeSpaces);
         $this->_case = $case;
 
         return $this;
@@ -543,7 +567,7 @@ class Str implements Stringable {
      * @return Str
      */
     public function trim(string $chars = ' ,:-./\\`";'): Str {
-        $this->_str = trim($this->_str, $chars);
+        $this->value = trim($this->value, $chars);
 
         return $this;
     }
@@ -561,7 +585,7 @@ class Str implements Stringable {
 
         $highlight->apply();
 
-        $text = trim($this->_str);
+        $text = trim($this->value);
         $text = highlight_string("<?php\n" . $text, true);
         if ($removeOpenTag) $text = str_replace("&lt;?php<br />", '', $text);
 
@@ -572,7 +596,7 @@ class Str implements Stringable {
         $text = trim($text);  // remove line breaks
         $text = preg_replace("|\\</span\\>\$|", '', $text, 1);  // remove suffix 2
         $text = trim($text);  // remove line breaks
-        $this->_str = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
+        $this->value = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
 
         return $this;
     }

@@ -7,8 +7,9 @@
  *
  * PHP version 8.1
  *
- * @package Inane\Stdlib
  * @author  Philip Michael Raab<peep@inane.co.za>
+ * @package Inane\Stdlib
+ * @category array
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
@@ -24,7 +25,12 @@ namespace Inane\Stdlib;
 use ArrayIterator;
 use ArrayObject as SystemArrayObject;
 
+use function count;
+use function current;
 use function is_array;
+use function key;
+use function next;
+use function random_int;
 
 /**
  * ArrayObject
@@ -47,9 +53,9 @@ class ArrayObject extends SystemArrayObject {
 
         foreach ($array as $key => $value) if (is_array($value)) $array[$key] = new static($value);
         parent::__construct(
-                $array,
-                static::ARRAY_AS_PROPS,
-                ArrayIterator::class
+            $array,
+            static::ARRAY_AS_PROPS,
+            ArrayIterator::class
         );
     }
 
@@ -105,5 +111,19 @@ class ArrayObject extends SystemArrayObject {
         if (is_array($value)) $value = new static($value);
 
         parent::offsetSet($key, $value);
+    }
+
+    /**
+     * Random Item
+     *
+     * @return array
+     */
+    public function randomItem(): array {
+        $data = $this->getArrayCopy();
+        $r = random_int(0, count($data) - 1);
+        for ($i = 0; $i < $r; $i++)
+            next($data);
+
+        return [key($data) => current($data)];
     }
 }

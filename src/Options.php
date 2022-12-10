@@ -38,8 +38,14 @@ use function is_null;
 use function json_encode;
 use function key;
 use function next;
+use function prev;
 use function reset;
 
+use Inane\Stdlib\Converters\{
+    Arrayable,
+    JSONable,
+    XMLable
+};
 use Inane\Stdlib\Exception\{
     InvalidArgumentException,
     RuntimeException
@@ -53,7 +59,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.10.4
+ * @version 0.11.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -176,6 +182,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      */
     public function current(): mixed {
         return current($this->data);
+    }
+
+    /**
+     * previous
+     *
+     * Rewinds the internal pointer by 1
+     *
+     * @since 0.10.6
+     *
+     * @return void
+     */
+    public function prev(): void {
+        prev($this->data);
     }
 
     /**
@@ -356,6 +375,17 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
     }
 
     /**
+     * Test if empty
+     *
+     * @since 0.10.6
+     *
+     * @return bool
+     */
+    public function empty(): bool {
+        return empty($this->data);
+    }
+
+    /**
      * Merge another Options object with this one.
      *
      * @since 0.10.2
@@ -381,6 +411,59 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
                 if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
                 else $this->data[$key] = $value;
             }
+        } else {
+            if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Merge an array but only updates existing keys, ignoring unmatched keys
+     *
+     * @since 0.11.0
+     *
+     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     *
+     * @return \Inane\Stdlib\Options
+     */
+    public function modify(array|\ArrayObject|Options $merge): self {
+        if (!$merge instanceof self) $merge = new static($merge);
+
+        /** @var Options $value */
+        foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
+            if (is_int($key)) $this->data[] = $value;
+            elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->modify($value);
+            else {
+                if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+                else $this->data[$key] = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Merge an array but only adds missing keys, leaving existing keys unmodified
+     *
+     * @since 0.11.0
+     *
+     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     *
+     * @return \Inane\Stdlib\Options
+     */
+    public function complete(array|\ArrayObject|Options $merge): self {
+        if (!$merge instanceof self) $merge = new static($merge);
+
+        /** @var Options $value */
+        foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
+            // if (is_int($key)) $this->data[] = $value;
+            if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value);
+            // else {
+            //     if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            //     else $this->data[$key] = $value;
+            // }
         } else {
             if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
             else $this->data[$key] = $value;
@@ -420,20 +503,25 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @since 0.10.3
      *
-     * @return iterable keys
+     * @return array keys
      */
-    public function keys(): iterable {
+    public function keys(): array {
         return array_keys($this->toArray());
     }
 
     /**
      * Returns values
      *
+     * If this object is locked,
+     *  the values are locked too.
+     *
+     * @todo: should values inherit lock status?
+     *
      * @since 0.10.3
      *
-     * @return iterable values
+     * @return iterable|static values
      */
-    public function values(): iterable {
+    public function values(): iterable|static {
         $values = array_values($this->toArray());
         return new static($values, $this->allowModifications);
     }
@@ -486,9 +574,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * Supports flags from <strong>json_encode</strong>.
      *
-     * Flags set by default:<br />
-     * - JSON_NUMERIC_CHECK
-     * - JSON_UNESCAPED_SLASHES
+     * Pretty for the eyes (224):<br />
+     * - JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+     *
+     * Good for inserting SQL (46):<br />
+     * - JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
      *
      * @since 0.10.4
      *
@@ -499,7 +589,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @return string JSON string
      */
-    public function toJSON(int $flags = 96, int $depth = 512): string {
+    public function toJSON(int $flags = 0, int $depth = 512): string {
+        $encodeOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
+        $encodeOptions |= JSON_NUMERIC_CHECK;
+
         return json_encode($this->toArray(), $flags, $depth);
     }
 }

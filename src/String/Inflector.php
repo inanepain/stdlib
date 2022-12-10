@@ -36,7 +36,7 @@ use function ucwords;
 /**
  * Inflector
  *
- * @version 1.1.0
+ * @version 1.2.0
  *
  * @package Inane\Stdlib
  */
@@ -285,6 +285,29 @@ class Inflector {
         $word = strtolower($word);
         $word = str_replace('_', ' ', $word);
         return ucwords($word);
+    }
+
+    /**
+     * Break on uppercase letters
+     *
+     * Examples:
+     *  - helloWorld => hello World
+     *  - firstName => firstName
+     *
+     * upperFirst:
+     *  - helloWorld => Hello World
+     *  - firstName => First Name
+     *
+     * @since 1.2.0
+     *
+     * @param string    $word       word
+     * @param bool      $upperFirst make first character of first word uppercase else unchanged
+     *
+     * @return string words
+     */
+    public static function breakOnUppercase(string $word, bool $upperFirst = false): string {
+        $words = implode(' ', preg_split('/(?=[A-Z])/',$word));
+        return $upperFirst ? ucfirst($words) : $words;
     }
 
     /**
