@@ -4,7 +4,7 @@
 
 ## History
 
-### 0.3.1-dev @2022 Dec 10
+### 0.3.1 @2022 Dec 10
 
  - fix: `Options::offsetExists` Returned false if value was null even though offset exists
 
