@@ -4,7 +4,7 @@
 
 ## History
 
-### 0.3.0-dev @2022 Dec xx
+### 0.3.0 @2022 Dec 10
 
 - new: `Options::empty` Test if empty
 - new: `Options::prev` Rewinds the internal pointer by 1
