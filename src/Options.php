@@ -36,7 +36,6 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function is_null;
-use function json_encode;
 use function key;
 use function next;
 use function prev;
@@ -63,7 +62,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.11.1
+ * @version 0.11.2
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -88,8 +87,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
     /**
      * Assigns a value to the specified data
      *
-     * @param mixed The data key to assign the value to
-     * @param mixed  The value to set
+     * @param mixed $key The data key to assign the value to
+     * @param mixed $value The value to set
      *
      * @return void
      *
@@ -105,9 +104,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
     }
 
     /**
-     * Whether or not an data exists by key
+     * Whether a data exists by key
      *
-     * @param mixed $key An data key to check for
+     * @param mixed $key A data key to check for
      *
      * @return boolean
      */
@@ -118,7 +117,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
     /**
      * Unset data by key
      *
-     * @param string The key to unset
+     * @param string $key The key to unset
+     *
+     * @throws \Inane\Stdlib\Exception\InvalidArgumentException
      */
     public function __unset($key) {
         if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
@@ -219,7 +220,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @return string|float|int|bool|null key
      */
-    public function key(): string|int|null {
+    public function key(): string|float|int|bool|null {
         return key($this->data);
     }
 
@@ -293,13 +294,14 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
     /**
      * get key
-     * @param string $key key
-     * @param mixed $default value
+     *
+     * @param string $id      key
+     * @param mixed  $default value
      *
      * @return mixed|Options value
      */
-    public function get(mixed $key, mixed $default = null) {
-        return $this->offsetExists($key) ? $this->data[$key] : $default;
+    public function get(mixed $id, mixed $default = null): mixed {
+        return $this->offsetExists($id) ? $this->data[$id] : $default;
     }
 
     /**
@@ -335,7 +337,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * delete key
      *
      * @param string $offset key
+     *
      * @return void
+     *
+     * @throws \Inane\Stdlib\Exception\InvalidArgumentException
      */
     public function offsetUnset(mixed $offset): void {
         $this->__unset($offset);
@@ -345,7 +350,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * delete key
      *
      * @param mixed $offset key
+     *
      * @return Options
+     *
+     * @throws \Inane\Stdlib\Exception\InvalidArgumentException
      */
     public function unset(mixed $key): Options {
         $this->offsetUnset($key);
@@ -361,8 +369,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @todo: check for allowModifications
      *
-     * @param Options ...$models
-     * @return Options
+     * @param \Inane\Stdlib\Options ...$models
+     *
+     * @return \Inane\Stdlib\Options
      */
     public function defaults(Options ...$models): self {
         // $replaceable = ['', null, false];
@@ -576,7 +585,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
     /**
      * Return data as an JSON string
      *
-     * Supports flags from <strong>json_encode</strong>.
+     * Support for flags from <strong>json_encode</strong>.
      *
      * Pretty for the eyes (224):<br />
      * - JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
@@ -594,9 +603,6 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * @return string JSON string
      */
     public function toJSON(int $flags = 0, int $depth = 512): string {
-        $encodeOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
-        $encodeOptions |= JSON_NUMERIC_CHECK;
-
-        return json_encode($this->toArray(), $flags, $depth);
+        return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
     }
 }
