@@ -5,6 +5,7 @@
 ## History
 
 ### 0.4.0 @2022 Dec 21
+
  - new: `Json` JSON en/decoder
  - update: `Options` switch to use `Json`
  - update: `Options` improvements to phpdoc
