@@ -4,6 +4,11 @@
 
 ## History
 
+### 0.4.1-dev @2023 Jn 24
+
+ - new: `Options:groupBy` return new Options group by a property
+ - new: `NumericalWords` switch between number and words. (Number => Words: still iffy)
+
 ### 0.4.0 @2022 Dec 21
 
  - new: `Json` JSON en/decoder

@@ -62,7 +62,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.11.2
+ * @version 0.12.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -604,5 +604,21 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      */
     public function toJSON(int $flags = 0, int $depth = 512): string {
         return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
+    }
+
+    /**
+     * Return new Options group by property $group
+     *
+     * @since 0.12.0
+     *
+     * @param string $group property to group entries by
+     *
+     * @return static grouped options
+     */
+    public function groupBy(string $group): static {
+        return new static(array_reduce($this->toArray(), function (array $accumulator, array $element) use ($group) {
+            $accumulator[$element[$group]][] = $element;
+            return $accumulator;
+        }, []));
     }
 }
