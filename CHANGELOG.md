@@ -4,10 +4,13 @@
 
 ## History
 
-### 0.4.1-dev @2023 Jn 24
+### 0.4.1-dev @2023 Jan 02
 
  - new: `Options:groupBy` return new Options group by a property
  - new: `NumericalWords` switch between number and words. (Number => Words: still iffy)
+ - update: `Json::encode` now takes `Options` object
+ - update: `Json::decode` new option `asOptions` returns `Options` object instead of array
+ - update: `Options` all methods that take `array` now also take `\Inane\Stdlib\ArrayObject` and `\ArrayObject`
 
 ### 0.4.0 @2022 Dec 21
 
