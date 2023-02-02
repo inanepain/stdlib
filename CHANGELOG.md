@@ -4,7 +4,7 @@
 
 ## History
 
-### 0.4.1-dev @2023 Jan 02
+### 0.4.1 @2023 Jan 02
 
  - new: `Options:groupBy` return new Options group by a property
  - new: `NumericalWords` switch between number and words. (Number => Words: still iffy)
