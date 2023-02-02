@@ -21,6 +21,7 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use function is_null;
 use function json_decode;
 use function json_encode;
 use const false;
@@ -31,6 +32,7 @@ use const JSON_HEX_TAG;
 use const JSON_NUMERIC_CHECK;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
+use const null;
 use const true;
 
 /**
@@ -38,7 +40,7 @@ use const true;
  *
  * @package Inane\Stdlib
  *
- * @version 0.1.0
+ * @version 0.1.1
  */
 class Json {
     /**
@@ -77,6 +79,8 @@ class Json {
         $flags |= $numeric ? JSON_NUMERIC_CHECK : 0;
         $flags |= $pretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
 
+        if ($data instanceof Options) $data = $data->toArray();
+
         return json_encode($data, $flags);
     }
 
@@ -87,6 +91,7 @@ class Json {
      *  - (bool) [assoc=true] When true, JSON objects will be returned as associative arrays; when false, JSON objects will be returned as objects. When null, JSON objects will be returned as associative arrays or objects depending on whether JSON_OBJECT_AS_ARRAY is set in the flags.
      *  - (int) [depth=512] Maximum nesting depth of the structure being decoded. The value must be greater than 0, and less than or equal to 2147483647.
      *  - (int) [flags=0] Bitmask of JSON_BIGINT_AS_STRING, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_OBJECT_AS_ARRAY, JSON_THROW_ON_ERROR. The behaviour of these constants is described on the JSON constants page.
+     *  - (bool) [asOptions=false] Return Options object instead of an array.
      *
      * @param string $json json string to decode
      * @param array $options decoding options
@@ -98,10 +103,13 @@ class Json {
             'assoc' => true,
             'depth' => 512,
             'flags' => 0,
+            'asOptions' => false,
         ];
 
-        ['assoc' => $assoc, 'depth' => $depth, 'flags' => $flags] = $options;
+        ['assoc' => $assoc, 'depth' => $depth, 'flags' => $flags, 'asOptions' => $asOptions] = $options;
 
-        return json_decode($json, $assoc, $depth, $flags);
+        $array = json_decode($json, $assoc, $depth, $flags);
+
+        return is_null($array) ? null : ($asOptions ? new Options($array) : $array);
     }
 }

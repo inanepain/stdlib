@@ -18,7 +18,12 @@
     },
     "keywords": [
         "inane",
-        "stdlib"
+        "stdlib",
+        "json",
+        "array",
+        "exception",
+        "notice",
+        "config"
     ],
     "autoload": {
         "psr-4": {

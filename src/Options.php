@@ -24,6 +24,7 @@ namespace Inane\Stdlib;
 use ArrayAccess;
 use Countable;
 use Iterator;
+use Laminas\Stdlib\ArrayObject;
 use Psr\Container\ContainerInterface;
 
 use function array_key_exists;
@@ -62,7 +63,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.11.2
+ * @version 0.12.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
     use Converters\ArrayToXML;
@@ -132,7 +133,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * @since 0.10.2
      *  - takes \ArrayObject
      *
-     * @param array|\ArrayObject $data values
+     * @param array|\ArrayObject|\Laminas\Stdlib\ArrayObject $data values
      * @param bool $allowModifications
      *
      * @return void
@@ -141,16 +142,17 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
         /**
          * Initial value store
          */
-        array|\ArrayObject $data = [],
+        array|\ArrayObject|ArrayObject $data = [],
         /**
          * Whether modifications to the data are allowed
          */
         private bool $allowModifications = true
     ) {
         if ($data instanceof \ArrayObject) $data = $data->getArrayCopy();
+        if ($data instanceof ArrayObject) $data = $data->getArrayCopy();
 
         foreach ($data as $key => $value)
-            if (is_array($value) || $value instanceof \ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
+            if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
             else $this->data[$key] = $value;
     }
 
@@ -409,11 +411,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      * - Items in $merge with INTEGER keys will be appended.
      * - Items in $merge with STRING keys will overwrite current values.
      *
-     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     * @param array|\ArrayObject|\Laminas\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
      *
      * @return \Inane\Stdlib\Options
      */
-    public function merge(array|\ArrayObject|Options $merge): self {
+    public function merge(array|\ArrayObject|ArrayObject|Options $merge): self {
         if (!$merge instanceof self) $merge = new static($merge);
 
         /** @var Options $value */
@@ -437,11 +439,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @since 0.11.0
      *
-     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     * @param array|\ArrayObject|\Laminas\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
      *
      * @return \Inane\Stdlib\Options
      */
-    public function modify(array|\ArrayObject|Options $merge): self {
+    public function modify(array|\ArrayObject|ArrayObject|Options $merge): self {
         if (!$merge instanceof self) $merge = new static($merge);
 
         /** @var Options $value */
@@ -462,11 +464,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      *
      * @since 0.11.0
      *
-     * @param array|\ArrayObject|\Inane\Stdlib\Options $merge
+     * @param array|\ArrayObject|\Laminas\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
      *
      * @return \Inane\Stdlib\Options
      */
-    public function complete(array|\ArrayObject|Options $merge): self {
+    public function complete(array|\ArrayObject|ArrayObject|Options $merge): self {
         if (!$merge instanceof self) $merge = new static($merge);
 
         /** @var Options $value */
@@ -604,5 +606,21 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
      */
     public function toJSON(int $flags = 0, int $depth = 512): string {
         return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
+    }
+
+    /**
+     * Return new Options group by property $group
+     *
+     * @since 0.12.0
+     *
+     * @param string $group property to group entries by
+     *
+     * @return static grouped options
+     */
+    public function groupBy(string $group): static {
+        return new static(array_reduce($this->toArray(), function (array $accumulator, array $element) use ($group) {
+            $accumulator[$element[$group]][] = $element;
+            return $accumulator;
+        }, []));
     }
 }
