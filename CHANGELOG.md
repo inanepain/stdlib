@@ -4,6 +4,10 @@
 
 ## History
 
+### 0.4.2-dev @2023 Jan 07
+
+ - new: `Options::__set_state` to handle code from `var_export`
+
 ### 0.4.1 @2023 Jan 02
 
  - new: `Options:groupBy` return new Options group by a property
