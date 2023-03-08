@@ -73,60 +73,6 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	private array $data = [];
 
 	/**
-	 * get value
-	 *
-	 * public function &__get($key) {
-	 *
-	 * @param mixed $key key
-	 * @return mixed|Options value
-	 */
-	public function __get(mixed $key) {
-		return $this->get($key);
-	}
-
-	/**
-	 * Assigns a value to the specified data
-	 *
-	 * @param mixed $key The data key to assign the value to
-	 * @param mixed $value The value to set
-	 *
-	 * @return void
-	 *
-	 * @throws RuntimeException
-	 */
-	public function __set(mixed $key, mixed $value) {
-		if ($this->allowModifications) {
-			if (is_array($value)) $value = new static($value);
-
-			if (is_null($key)) $this->data[] = $value;
-			else $this->data[$key] = $value;
-		} else throw new RuntimeException('Option is read only');
-	}
-
-	/**
-	 * Whether a data exists by key
-	 *
-	 * @param mixed $key A data key to check for
-	 *
-	 * @return boolean
-	 */
-	public function __isset(mixed $key): bool {
-		return isset($this->data[$key]) || array_key_exists($key, $this->data);
-	}
-
-	/**
-	 * Unset data by key
-	 *
-	 * @param string $key The key to unset
-	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
-	 */
-	public function __unset($key) {
-		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
-		elseif ($this->__isset($key)) unset($this->data[$key]);
-	}
-
-	/**
 	 * Options
 	 *
 	 * @since 0.10.2
@@ -195,93 +141,28 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		return $this->toArray();
 	}
 
-	/**
-	 * current
-	 *
-	 * Return the current element
-	 *
-	 * @return mixed|Options
-	 */
-	public function current(): mixed {
-		return current($this->data);
-	}
+	// ISSETTER
 
 	/**
-	 * previous
-	 *
-	 * Rewinds the internal pointer by 1
+	 * Test if empty
 	 *
 	 * @since 0.10.6
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function prev(): void {
-		prev($this->data);
+	public function empty(): bool {
+		return empty($this->data);
 	}
 
 	/**
-	 * next
+	 * Whether a data exists by key
 	 *
-	 * Advance the internal pointer
+	 * @param mixed $key A data key to check for
 	 *
-	 * @return void
+	 * @return boolean
 	 */
-	public function next(): void {
-		next($this->data);
-	}
-
-	/**
-	 * key
-	 *
-	 * Fetch the key for current element
-	 *
-	 * @return string|float|int|bool|null key
-	 */
-	public function key(): string|float|int|bool|null {
-		return key($this->data);
-	}
-
-	/**
-	 * valid
-	 *
-	 * Checks if the current element is valid
-	 *
-	 * @return bool valid
-	 */
-	public function valid(): bool {
-		return (!is_null($this->key()));
-	}
-
-	/**
-	 * rewind
-	 *
-	 * Rewind the internal pointer to the first element
-	 *
-	 * @return void
-	 */
-	public function rewind(): void {
-		reset($this->data);
-	}
-
-	/**
-	 * count
-	 *
-	 * Counts all elements
-	 *
-	 * @return int item count
-	 */
-	public function count(): int {
-		return count($this->data);
-	}
-
-	/**
-	 * Key exists
-	 *
-	 * @param string $offset key
-	 * @return bool exists
-	 */
-	public function offsetExists(mixed $offset): bool {
-		return $this->__isset($offset);
+	public function __isset(mixed $key): bool {
+		return isset($this->data[$key]) || array_key_exists($key, $this->data);
 	}
 
 	/**
@@ -300,13 +181,54 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	}
 
 	/**
-	 * get offset
-	 * @param mixed $offset offset
+	 * Key exists
 	 *
+	 * @param string $offset key
+	 * @return bool exists
+	 */
+	public function offsetExists(mixed $offset): bool {
+		return $this->__isset($offset);
+	}
+
+	/**
+	 * valid
+	 *
+	 * Checks if the current element is valid
+	 *
+	 * @return bool valid
+	 */
+	public function valid(): bool {
+		return (!is_null($this->key()));
+	}
+
+	/**
+	 * Checks if a $value exists in an Option's values
+	 *
+	 * @since 0.10.3
+	 *
+	 * @see in_array
+	 *
+	 * @param mixed $value The searched value
+	 * @param bool $strict If set to true then the type of the value is also checked
+	 *
+	 * @return bool Returns true if value is found, false otherwise
+	 */
+	public function contains(mixed $value, bool $strict = false): bool {
+		return in_array($value, $this->toArray(), $strict);
+	}
+
+	// GETTER
+
+	/**
+	 * get value
+	 *
+	 * public function &__get($key) {
+	 *
+	 * @param mixed $key key
 	 * @return mixed|Options value
 	 */
-	public function offsetGet(mixed $offset): mixed {
-		return $this->get($offset);
+	public function __get(mixed $key) {
+		return $this->get($key);
 	}
 
 	/**
@@ -322,17 +244,56 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	}
 
 	/**
-	 * set offset
-	 *
+	 * get offset
 	 * @param mixed $offset offset
-	 * @param mixed $value value
+	 *
+	 * @return mixed|Options value
+	 */
+	public function offsetGet(mixed $offset): mixed {
+		return $this->get($offset);
+	}
+
+	/**
+	 * key
+	 *
+	 * Fetch the key for current element
+	 *
+	 * @return string|float|int|bool|null key
+	 */
+	public function key(): string|float|int|bool|null {
+		return key($this->data);
+	}
+
+	/**
+	 * current
+	 *
+	 * Return the current element
+	 *
+	 * @return mixed|Options
+	 */
+	public function current(): mixed {
+		return current($this->data);
+	}
+
+	// SETTER
+
+	/**
+	 * Assigns a value to the specified data
+	 *
+	 * @param mixed $key The data key to assign the value to
+	 * @param mixed $value The value to set
 	 *
 	 * @return void
 	 *
 	 * @throws RuntimeException
 	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->__set($offset, $value);
+	public function __set(mixed $key, mixed $value) {
+		if ($this->allowModifications) {
+			if (is_array($value)) $value = new static($value);
+
+			if (is_null($key)) $this->data[] = $value;
+			else $this->data[$key] = $value;
+		} else throw new RuntimeException('Option is read only');
 	}
 
 	/**
@@ -351,16 +312,31 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	}
 
 	/**
-	 * delete key
+	 * set offset
 	 *
-	 * @param string $offset key
+	 * @param mixed $offset offset
+	 * @param mixed $value value
 	 *
 	 * @return void
 	 *
+	 * @throws RuntimeException
+	 */
+	public function offsetSet(mixed $offset, mixed $value): void {
+		$this->__set($offset, $value);
+	}
+
+	// UNSETTER
+
+	/**
+	 * Unset data by key
+	 *
+	 * @param string $key The key to unset
+	 *
 	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
 	 */
-	public function offsetUnset(mixed $offset): void {
-		$this->__unset($offset);
+	public function __unset($key) {
+		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
+		elseif ($this->__isset($key)) unset($this->data[$key]);
 	}
 
 	/**
@@ -378,42 +354,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	}
 
 	/**
-	 * updates properties 2+ into first array with decreasing importance
-	 * so only unset keys are assigned values
+	 * delete key
 	 *
-	 * 1 array in = same array out
-	 * 0 array in = empty array out
+	 * @param string $offset key
 	 *
-	 * @todo: check for allowModifications
+	 * @return void
 	 *
-	 * @param \Inane\Stdlib\Options ...$models
-	 *
-	 * @return \Inane\Stdlib\Options
+	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
 	 */
-	public function defaults(Options ...$models): self {
-		// $replaceable = ['', null, false];
-		$replaceable = ['', null];
-
-		while ($model = array_pop($models)) foreach ($model as $key => $value) {
-			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
-			else {
-				if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
-					$this[$key] = $value;
-			}
-		}
-		return $this;
+	public function offsetUnset(mixed $offset): void {
+		$this->__unset($offset);
 	}
 
-	/**
-	 * Test if empty
-	 *
-	 * @since 0.10.6
-	 *
-	 * @return bool
-	 */
-	public function empty(): bool {
-		return empty($this->data);
-	}
+	// MERGING
 
 	/**
 	 * Merge another Options object with this one.
@@ -446,6 +399,33 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 			else $this->data[$key] = $value;
 		}
 
+		return $this;
+	}
+
+	/**
+	 * updates properties 2+ into first array with decreasing importance
+	 * so only unset keys are assigned values
+	 *
+	 * 1 array in = same array out
+	 * 0 array in = empty array out
+	 *
+	 * @todo: check for allowModifications
+	 *
+	 * @param \Inane\Stdlib\Options ...$models
+	 *
+	 * @return \Inane\Stdlib\Options
+	 */
+	public function defaults(Options ...$models): self {
+		// $replaceable = ['', null, false];
+		$replaceable = ['', null];
+
+		while ($model = array_pop($models)) foreach ($model as $key => $value) {
+			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
+			else {
+				if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
+					$this[$key] = $value;
+			}
+		}
 		return $this;
 	}
 
@@ -502,6 +482,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		return $this;
 	}
 
+	// LOCKING
+
 	/**
 	 * Prevent any more modifications being made to this instance.
 	 *
@@ -527,6 +509,58 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function isLocked(): bool {
 		return !$this->allowModifications;
 	}
+
+	// NAVIGATION
+
+	/**
+	 * previous
+	 *
+	 * Rewinds the internal pointer by 1
+	 *
+	 * @since 0.10.6
+	 *
+	 * @return void
+	 */
+	public function prev(): void {
+		prev($this->data);
+	}
+
+	/**
+	 * next
+	 *
+	 * Advance the internal pointer
+	 *
+	 * @return void
+	 */
+	public function next(): void {
+		next($this->data);
+	}
+
+	/**
+	 * rewind
+	 *
+	 * Rewind the internal pointer to the first element
+	 *
+	 * @return void
+	 */
+	public function rewind(): void {
+		reset($this->data);
+	}
+
+	// OTHER
+
+	/**
+	 * count
+	 *
+	 * Counts all elements
+	 *
+	 * @return int item count
+	 */
+	public function count(): int {
+		return count($this->data);
+	}
+
+	// EXPORTING
 
 	/**
 	 * Returns keys
@@ -554,22 +588,6 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function values(): iterable|static {
 		$values = array_values($this->toArray());
 		return new static($values, $this->allowModifications);
-	}
-
-	/**
-	 * Checks if a $value exists in an Option's values
-	 *
-	 * @since 0.10.3
-	 *
-	 * @see in_array
-	 *
-	 * @param mixed $value The searched value
-	 * @param bool $strict If set to true then the type of the value is also checked
-	 *
-	 * @return bool Returns true if value is found, false otherwise
-	 */
-	public function contains(mixed $value, bool $strict = false): bool {
-		return in_array($value, $this->toArray(), $strict);
 	}
 
 	/**
