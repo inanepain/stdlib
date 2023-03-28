@@ -7,8 +7,11 @@
 ### 0.4.2-dev @2023 Jan 07
 
  - new: `Options::__set_state` to handle code from `var_export`
- - new: `ClassIdTrait` generate classId based on class name
- - update: `Options` reorganise code into sections
+ - new: `ClassIdTrait` generate classId based on class name and a few options
+ - update: `Options` reorganised code into sections for easier reading
+ - update: `Options` now can also take a json encoded string as initial value
+ - update: `ArrayKit` new tested methods: count, implode, slice, splice
+ - update: `ArrayKit` implements `ArrayAccess`
 
 ### 0.4.1 @2023 Jan 02
 

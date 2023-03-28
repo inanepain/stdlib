@@ -23,7 +23,6 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Array;
 
 use ArrayAccess;
-use Inane\Stdlib\Converters\Arrayable;
 
 use function array_key_exists;
 use function array_push;
@@ -35,32 +34,44 @@ use function is_null;
 use function random_int;
 use const null;
 
+use Inane\Stdlib\{
+	Converters\Arrayable,
+	Options
+};
+
 /**
- * Array Function Toolkit
+ * Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
+ * 
+ * AFT attempts to create a OO array with the `array_*` functions as methods.
+ * The various functions differ and AFT uses rule groups to handle these differences. 
  * 
  * This is more for shits and giggles, like many of my classes, than any real use case.
  * But it does allow for easy chaining of array functions an can neaten code in various situations.
  * Of course those or more side effects then planned features but it does not make them any less nifty.
+ * 
+ * @todo convert individual rule properties to a single rules array property
+ * @todo enable adding custom rules by setting allowModifications to true
  *
  * plain method listed bellow have been tested, but only their simplest use case.
- * @method int       count()															Counts all elements in the array
- * @method string    implode(string $separator, array $array)							Join array elements with a string
+ * @method int       count()																Counts all elements in the array
+ * @method string    implode(string $separator, array $array)								Join array elements with a string
  * 
  * `array_` methods listed bellow have been tested, but only their simplest use case.
- * @method array     column(int|string|null $key, int|string|null $index = null))   	Return the values from a single column in the input array
- * @method ArrayKit  fill(int $start_index, int $count, mixed $value)               	Fill an array with values
- * @method array     filter(callable $func)                                         	Filters elements this array using a callback function
- * @method ArrayKit  flip()                                                         	Exchanges all keys with their associated values in an array
- * @method bool      keyExists(string|int $key)                                     	Checks if the given key or index exists in the array
- * @method array     map(callable $func)                                            	Applies the callback to the elements of this array
- * @method ArrayKit  merge(array $array)                                            	Merges an array into this array
- * @method mixed     pop()                                                          	Pop the element off the end of array
- * @method int       push(mixed $values)                                            	Push one or more elements onto the end of array
- * @method mixed     shift()                                                        	Shift an element off the beginning of array
- * @method array     splice(int $offset, ?int $length = null, mixed $replacement = [])	Shift an element off the beginning of array
- * @method int|float sum()                                                          	Calculate the sum of values in an array
- * @method int       unshift(mixed $values)                                         	Prepend one or more elements to the beginning of an array
- * @method array     walk(callable $func)                                           	Apply a user supplied function to every member of this array
+ * @method array     column(int|string|null $key, int|string|null $index = null))   		Return the values from a single column in the input array
+ * @method ArrayKit  fill(int $start_index, int $count, mixed $value)               		Fill an array with values
+ * @method array     filter(callable $func)                                         		Filters elements this array using a callback function
+ * @method ArrayKit  flip()                                                         		Exchanges all keys with their associated values in an array
+ * @method bool      keyExists(string|int $key)                                     		Checks if the given key or index exists in the array
+ * @method array     map(callable $func)                                            		Applies the callback to the elements of this array
+ * @method ArrayKit  merge(array $array)                                            		Merges an array into this array
+ * @method mixed     pop()                                                          		Pop the element off the end of array
+ * @method int       push(mixed $values)                                            		Push one or more elements onto the end of array
+ * @method mixed     shift()                                                        		Shift an element off the beginning of array
+ * @method array     slice(int $offset, ?int $length = null, bool $preserve_keys = false)	Extract a slice of the array
+ * @method array     splice(int $offset, ?int $length = null, mixed $replacement = [])		Remove a portion of the array and replace it with something else
+ * @method int|float sum()                                                          		Calculate the sum of values in an array
+ * @method int       unshift(mixed $values)                                         		Prepend one or more elements to the beginning of an array
+ * @method array     walk(callable $func)                                           		Apply a user supplied function to every member of this array
  *
  * @package Inane\Stdlib\Array
  *
@@ -68,7 +79,20 @@ use const null;
  */
 class ArrayKit implements Arrayable, ArrayAccess {
 	/**
-	 * List of array functions that have the array before the callback
+	 * Allow Modifications
+	 * 
+	 * Setting this to true allows adding custom array methods to the object.
+	 * 
+	 * Use this to enable `ArrayKit` to handle more functions without throwing an error.
+	 * 
+	 * NOTE: consider emailing me the details of the function so I can add it to the defaults.
+	 * 
+	 * @var bool
+	 */
+	public static bool $allowModifications = false;
+
+	/**
+	 * List of array functions that have the array before the arguments
 	 *
 	 * @var array
 	 */
@@ -76,6 +100,7 @@ class ArrayKit implements Arrayable, ArrayAccess {
 		'array_column',
 		'array_filter',
 		'array_push',
+		'array_slice',
 		'array_splice',
 		'array_unshift',
 		'array_walk',
@@ -151,6 +176,7 @@ class ArrayKit implements Arrayable, ArrayAccess {
 		'array_pop',
 		'array_push',
 		'array_shift',
+		'array_slice',
 		'array_splice',
 		'array_sum',
 		'array_unshift',

@@ -1,0 +1,31 @@
+= README: Inanepain/Stdlib
+:author: Philip Michael Raab
+:email: <peep@inane.co.za>
+:homepage: https://vaieen.local
+:revnumber: 0.1.0
+:revdate: 2023-03-24
+:revremark: initial
+:experimental:
+:hide-uri-scheme:
+:table-stripes: even
+:icons: font
+:source-highlighter: highlight.js
+:sectnums: |,all|
+:toclevels: 5
+:toc: auto
+
+== Overview
+
+An assortment of commonly used classes by inane packages.
+
+== Install
+
+.install: using composer
+[source,shell]
+----
+composer require inanepain/stdlib
+----
+
+== Revision
+
+> version: $Id$ ($Date$)

@@ -36,6 +36,7 @@ use function in_array;
 use function is_array;
 use function is_int;
 use function is_null;
+use function is_string;
 use function key;
 use function next;
 use function prev;
@@ -74,11 +75,15 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Options
+	 * 
+	 * Create a new options object. Any invalid initial values are ignore resulting in a clean Options object being created.
 	 *
 	 * @since 0.10.2
 	 *  - takes \ArrayObject
+	 * @since 0.13.0
+	 *  - takes string - json encoded string
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject $data values
+	 * @param array|string|\ArrayObject|\Inane\Stdlib\ArrayObject $data initial data in a variety of formates
 	 * @param bool $allowModifications
 	 *
 	 * @return void
@@ -87,13 +92,16 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		/**
 		 * Initial value store
 		 */
-		array|\ArrayObject|ArrayObject $data = [],
+		array|string|\ArrayObject|ArrayObject $data = [],
 		/**
 		 * Whether modifications to the data are allowed
 		 */
 		private bool $allowModifications = true
 	) {
+		if (is_string($data)) $data = Json::decode($data);
 		if ($data instanceof \ArrayObject || $data instanceof ArrayObject) $data = $data->getArrayCopy();
+
+		if (!is_array($data)) $data = [];
 
 		foreach ($data as $key => $value)
 			if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);

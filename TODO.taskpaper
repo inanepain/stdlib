@@ -7,3 +7,6 @@ Inane\Stdlib:
 		- Custom JSON Class @done(2022-12-21)
 		- Encode: @method(JSON) @done(2022-12-21)
 		- Decode: @method(JSON) @done(2022-12-21)
+	Array\ArrayKit:
+		Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
+		- convert individual rule properties to a single rules array property
