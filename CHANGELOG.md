@@ -4,7 +4,7 @@
 
 ## History
 
-### 0.4.2-dev @2023 Jan 07
+### 0.4.2 @2023 Mar 28
 
  - new: `Options::__set_state` to handle code from `var_export`
  - new: `ClassIdTrait` generate classId based on class name and a few options
