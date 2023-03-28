@@ -23,11 +23,13 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Converters;
 
 /**
- * Array Export Interface
+ * Arrayable
+ * 
+ * Array Export Interface. Methods to export object as a standard array type.
  *
  * @package Inane\Stdlib
  *
- * @version 0.1.0
+ * @version 0.1.1
  */
 interface Arrayable {
     /**

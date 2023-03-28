@@ -4,6 +4,15 @@
 
 ## History
 
+### 0.4.2 @2023 Mar 28
+
+ - new: `Options::__set_state` to handle code from `var_export`
+ - new: `ClassIdTrait` generate classId based on class name and a few options
+ - update: `Options` reorganised code into sections for easier reading
+ - update: `Options` now can also take a json encoded string as initial value
+ - update: `ArrayKit` new tested methods: count, implode, slice, splice
+ - update: `ArrayKit` implements `ArrayAccess`
+
 ### 0.4.1 @2023 Jan 02
 
  - new: `Options:groupBy` return new Options group by a property
