@@ -4,6 +4,11 @@
 
 ## History
 
+### 0.4.3 @2023 May 03
+
+ - new: `Options::unique` Filters unique items
+ - update: `Str::from` now also takes numeric values
+
 ### 0.4.2 @2023 Mar 28
 
  - new: `Options::__set_state` to handle code from `var_export`

@@ -29,6 +29,7 @@ use Psr\Container\ContainerInterface;
 use function array_key_exists;
 use function array_keys;
 use function array_pop;
+use function array_unique;
 use function array_values;
 use function count;
 use function current;
@@ -63,7 +64,7 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.13.0
+ * @version 0.14.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
 	use Converters\ArrayToXML;
@@ -149,7 +150,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		return $this->toArray();
 	}
 
-	// ISSETTER
+	// IS_SET
 
 	/**
 	 * Test if empty
@@ -566,6 +567,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 */
 	public function count(): int {
 		return count($this->data);
+	}
+
+	/**
+	 * UNIQUE
+	 *
+	 * Filters unique items
+	 * 
+	 * @since 0.14.0
+	 *
+	 * @return \Inane\Stdlib\Options unique items
+	 */
+	public function unique(): static {
+		return new static(array_unique($this->toArray()));
 	}
 
 	// EXPORTING
