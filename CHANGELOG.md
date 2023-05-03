@@ -4,7 +4,7 @@
 
 ## History
 
-### current: 0.4.4-dev @2023 May 03
+### 0.4.4 @2023 May 03
 
  - new: `CoreEnumInterface::tryFromName(string $name, bool $ignoreCase = false)` Enum interface for tryFromName
 
