@@ -61,7 +61,7 @@ use Inane\Stdlib\{
  * @property-read public length
  * @property public string
  *
- * @version 0.7.0
+ * @version 0.7.1
  */
 class Str implements Stringable {
     use OptionMagicPropertyTrait;
@@ -110,12 +110,12 @@ class Str implements Stringable {
      *
      * @since 0.5.0
      *
-     * @param string $string string
+     * @param string|int|float $string string
      *
      * @return static
      */
-    public static function from(string $string): static {
-        return new static($string);
+    public static function from(string|int|float $string): static {
+        return new static("$string");
     }
 
     /**
