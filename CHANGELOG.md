@@ -4,7 +4,7 @@
 
 ## History
 
-### current: 0.4.3-dev @2023 May 03
+### 0.4.3 @2023 May 03
 
  - new: `Options::unique` Filters unique items
  - update: `Str::from` now also takes numeric values
