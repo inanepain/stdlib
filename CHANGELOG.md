@@ -4,6 +4,10 @@
 
 ## History
 
+### 0.4.4 @2023 May 03
+
+ - new: `CoreEnumInterface::tryFromName(string $name, bool $ignoreCase = false)` Enum interface for tryFromName
+
 ### 0.4.3 @2023 May 03
 
  - new: `Options::unique` Filters unique items
