@@ -4,6 +4,14 @@
 
 ## History
 
+### current: 0.4.5-dev @2023 May xx
+
+ - new: `HashType` Enum of common hash types that is able to test hash values
+ - new: `MagicPropertyTrait` Trait to add Magic Properties
+ - new: register constants using composer `autoload`
+ - new: implements `Arrayable` and `JSONable` 
+ - fix: minor fixes and updates
+
 ### 0.4.4 @2023 May 03
 
  - new: `CoreEnumInterface::tryFromName(string $name, bool $ignoreCase = false)` Enum interface for tryFromName

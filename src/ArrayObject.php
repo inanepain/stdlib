@@ -32,6 +32,11 @@ use function key;
 use function next;
 use function random_int;
 
+use Inane\Stdlib\Converters\{
+    Arrayable,
+    JSONable
+};
+
 /**
  * ArrayObject
  *
@@ -39,10 +44,10 @@ use function random_int;
  *  - ARRAY_AS_PROPS set
  *  - Arrays converted to ArrayObject
  *
- * @version 0.2.1
+ * @version 0.2.2
  * @package Inane\Stdlib
  */
-class ArrayObject extends SystemArrayObject {
+class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
     /**
      * ArrayObject constructor
      *
@@ -126,4 +131,26 @@ class ArrayObject extends SystemArrayObject {
 
         return [key($data) => current($data)];
     }
+
+	/**
+	 * Get copy as array
+	 *
+	 * @since 0.2.2
+	 *
+	 * @return array
+	 */
+	public function toArray(): array {
+		return $this->getArrayCopy();
+	}
+
+	/**
+	 * Get as JSON string
+	 *
+	 * @since 0.2.2
+	 *
+	 * @return string
+	 */
+	public function toJSON(): string {
+		return Json::encode($this->toArray());
+	}
 }

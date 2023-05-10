@@ -21,7 +21,6 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\String;
 
-use Inane\Option\MagicPropertyTrait as OptionMagicPropertyTrait;
 use Stringable;
 
 use function array_merge;
@@ -49,6 +48,7 @@ use const true;
 
 use Inane\Stdlib\{
     Exception\InvalidPropertyException,
+    Object\MagicPropertyTrait,
     ArrayObject,
     Highlight
 };
@@ -64,7 +64,7 @@ use Inane\Stdlib\{
  * @version 0.7.1
  */
 class Str implements Stringable {
-    use OptionMagicPropertyTrait;
+    use MagicPropertyTrait;
 
     /**
      * Capitalisation

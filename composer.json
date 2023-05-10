@@ -28,7 +28,10 @@
     "autoload": {
         "psr-4": {
             "Inane\\Stdlib\\": "src/"
-        }
+        },
+        "files": [
+            "src/bootstrap.php"
+        ]
     },
     "config": {
         "preferred-install": "dist",
