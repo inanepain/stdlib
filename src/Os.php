@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use Inane\Stdlib\Enum\CoreEnumInterface;
+
 use function is_null;
 use function preg_match;
 
@@ -31,24 +33,38 @@ use function preg_match;
  * 
  * @package Inane\Stdlib
  */
-enum Os {
-	case MacOS;
-	case Linux;
-	case Windows;
-	case UNKNOWN;
+enum Os: string implements CoreEnumInterface {
+	case BSD = 'bsd';
+	case Darwin = 'darwin';
+	case Linux = 'linux';
+	case Solaris = 'solaris';
+	case Windows = 'windows';
+	case Unknown = 'unknown';
 
 	/**
-	 * Identify Operating System
+     * Example implementation: Try get enum from name
+     *
+     * @param string $name
+     * @param bool   $ignoreCase case insensitive option
+     *
+     * @return null|static
+     */
+    public static function tryFromName(string $name, bool $ignoreCase = false): ?static {
+        foreach (static::cases() as $case)
+            if (($ignoreCase && strcasecmp($case->name, $name) == 0) || $case->name === $name)
+                return $case;
+
+        return null;
+    }
+
+	/**
+	 * Try to identify current Operating System
 	 * 
-	 * @param null|string $uname result of `php_uname`
+	 * @param null|string $phpOsFamily contents of `PHP_OS_FAMILY` constant
 	 * 
 	 * @return static operating system
 	 */
-	public static function Identify(?string $uname = null): static {
-		if (is_null($uname)) $uname = php_uname();
-
-		if (preg_match('/darwin/i', $uname)) return Os::MacOS;
-		else if (preg_match('/windows/i', $uname)) return Os::Windows;
-		else return Os::Linux;
+	public static function Identify(?string $phpOsFamily = null): static {
+		return static::tryFromName($phpOsFamily ?? PHP_OS_FAMILY, true) ?? static::Unknown;
 	}
 }

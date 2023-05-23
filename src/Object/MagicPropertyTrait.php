@@ -23,10 +23,12 @@ namespace Inane\Stdlib\Object;
 
 use function get_class_methods;
 use function in_array;
+use function is_null;
 use function lcfirst;
 use function property_exists;
 use function str_replace;
 use function ucwords;
+use const null;
 
 use Inane\Stdlib\Exception\{
 	InvalidPropertyException,
@@ -48,41 +50,35 @@ trait MagicPropertyTrait {
 	 *
 	 * @var string
 	 */
-	protected static $MAGIC_PROPERTY_GET = 'get';
-
-	//     protected static string $MAGIC_PROPERTY_GET = 'get';
+	protected static string $MAGIC_PROPERTY_GET = 'get';
 
 	/**
 	 * Setter method identifier
 	 *
 	 * @var string
 	 */
-	protected static $MAGIC_PROPERTY_SET = 'set';
-
-	//     protected static string $MAGIC_PROPERTY_SET = 'set';
+	protected static string $MAGIC_PROPERTY_SET = 'set';
 
 	/**
-	 * If property does not exist an exception is thrown
+	 * Only allow properties found in `magic_property_properties` else throw exception
 	 *
 	 * @var bool
 	 */
-	protected static $verify = true;
-
-	//     protected static bool $verify = true;
+	protected static bool $verify = true;
 
 	/**
 	 * Gets the method name based on the property name
 	 *
 	 * @param string $property - property name
-	 * @param string $prepend - string identifying method (get/set/store/fetch/put/...)
+	 * @param null|string $prepend - string identifying method (get/set/store/fetch/put/...)
 	 *
 	 * @return string - the method name
 	 *
-	 * @throws MethodException
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
 	 */
-	protected function parseMethodName(string $property, string $prepend = ''): string {
+	protected function parseMethodName(string $property, ?string $prepend = null): string {
 		$methodName = $prepend . str_replace(' ', '', ucwords(str_replace('_', ' ', $property)));
-		if (!$prepend) $methodName = lcfirst($methodName);
+		if (is_null($prepend)) $methodName = lcfirst($methodName);
 
 		if (!in_array($methodName, get_class_methods(__CLASS__))) throw new ParseMethodException($methodName);
 
@@ -96,13 +92,15 @@ trait MagicPropertyTrait {
 	 *
 	 * @return mixed the value of $property
 	 *
-	 * @throws PropertyException
-	 * @throws MethodException
+	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException 
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
 	 */
-	public function __get(string $property) {
-		if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-			if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("Property not in array: {$property}", 13);
-		} else if (static::$verify && !property_exists(__CLASS__, $property)) throw new InvalidPropertyException($property, 11);
+	public function __get(string $property): mixed {
+		if (static::$verify)
+			if (property_exists(__CLASS__, 'magic_property_properties')) {
+				if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("$property: not allowed in `magic_property_properties`", 13);
+			} else if (!property_exists(__CLASS__, $property))
+				throw new InvalidPropertyException("Property Invalid: $property", 13);
 
 		$method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_GET);
 		return $this->$method();
@@ -114,17 +112,19 @@ trait MagicPropertyTrait {
 	 * @param string $property - property name
 	 * @param mixed $value - new property value
 	 *
-	 * @return mixed usually $this to support chaining
+	 * @return void
 	 *
-	 * @throws PropertyException
-	 * @throws MethodException
+	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException 
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
 	 */
-	public function __set(string $property, $value) {
-		if (static::$verify && property_exists(__CLASS__, 'magic_property_properties')) {
-			if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("Property not in array: {$property}", 14, new PropertyException());
-		} else if (static::$verify && !property_exists(__CLASS__, $property)) throw new InvalidPropertyException($property, 12);
+	public function __set(string $property, mixed $value): void {
+		if (static::$verify)
+			if (property_exists(__CLASS__, 'magic_property_properties')) {
+				if (!in_array($property, $this->magic_property_properties)) throw new InvalidPropertyException("$property: not allowed in `magic_property_properties`", 13);
+			} else if (!property_exists(__CLASS__, $property))
+				throw new InvalidPropertyException("Property Invalid: $property", 13);
 
 		$method = $this->parseMethodName($property, static::$MAGIC_PROPERTY_SET);
-		return $this->$method($value);
+		$this->$method($value);
 	}
 }

@@ -4,7 +4,7 @@
 
 ## History
 
-### current: 0.4.5-dev @2023 May xx
+### 0.4.5 @2023 May 23
 
  - new: `HashType` Enum of common hash types that is able to test hash values
  - new: `MagicPropertyTrait` Trait to add Magic Properties
