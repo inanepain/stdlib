@@ -42,14 +42,14 @@ interface CoreEnumInterface extends BackedEnum {
 	 */
     public static function tryFromName(string $name, bool $ignoreCase = false): ?static;
 
-	/**
-     * Example implementation: Try get enum from name
-     *
-     * @param string $name
-     * @param bool   $ignoreCase case insensitive option
-     *
-     * @return null|static
-     */
+	// /**
+    //  * Example implementation: Try get enum from name
+    //  *
+    //  * @param string $name
+    //  * @param bool   $ignoreCase case insensitive option
+    //  *
+    //  * @return null|static
+    //  */
     // public static function tryFromName(string $name, bool $ignoreCase = false): ?static {
     //     foreach (static::cases() as $case)
     //         if (($ignoreCase && strcasecmp($case->name, $name) == 0) || $case->name === $name)
