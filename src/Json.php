@@ -81,7 +81,7 @@ class Json {
 
         if ($data instanceof Options) $data = $data->toArray();
 
-		return Json::encode($data, $flags);
+		return json_encode($data, $flags);
     }
 
     /**
