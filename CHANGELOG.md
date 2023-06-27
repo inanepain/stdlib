@@ -4,7 +4,7 @@
 
 ## History
 
-### current: 0.4.6-dev @2023 Jun 27
+### 0.4.6 @2023 Jun 27
 
  - update: `Inane\Stdlib\Json::encode` property supports `Inane\Stdlib\ArrayObject`
  - new: Migrate `LogTrait` from the deprecated *Inane\Inane* package to the *Inane\Stdlib* library
