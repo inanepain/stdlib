@@ -21,10 +21,21 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use function is_array;
 use function is_null;
 use function json_decode;
 use function json_encode;
+use function json_last_error;
 use const false;
+use const JSON_ERROR_CTRL_CHAR;
+use const JSON_ERROR_DEPTH;
+use const JSON_ERROR_INF_OR_NAN;
+use const JSON_ERROR_NONE;
+use const JSON_ERROR_RECURSION;
+use const JSON_ERROR_STATE_MISMATCH;
+use const JSON_ERROR_SYNTAX;
+use const JSON_ERROR_UNSUPPORTED_TYPE;
+use const JSON_ERROR_UTF8;
 use const JSON_HEX_AMP;
 use const JSON_HEX_APOS;
 use const JSON_HEX_QUOT;
@@ -40,7 +51,7 @@ use const true;
  *
  * @package Inane\Stdlib
  *
- * @version 0.1.1
+ * @version 0.2.0
  */
 class Json {
     /**
@@ -52,14 +63,52 @@ class Json {
     }
 
     /**
+	 * Test if jsonStr is a valid json string
+	 * 
+	 * info:
+	 *  - code		: response code `JSON_ERROR_NONE` for no error
+	 *  - message	: response message, empty string for no error
+	 * 
+	 * @since 0.2.0
+	 * 
+	 * @param string		$jsonStr	string to test if valid json format
+	 * @param null|array	$info		optional array to story the test message
+	 * 
+	 * @return bool **true** if valid json formatted string
+	 */
+    public static function isJsonString(string $jsonStr, ?array &$info = null): bool {
+        json_decode($jsonStr);
+
+		if (is_array($info)) {
+			$info['code'] = json_last_error();
+			$info['message'] = match(json_last_error()) {
+				JSON_ERROR_NONE => '',
+				JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded.',
+				JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON.',
+				JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded.',
+				JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON.',
+				JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded.',
+				JSON_ERROR_RECURSION => 'One or more recursive references in the value to be encoded.',
+				JSON_ERROR_INF_OR_NAN => 'One or more NAN or INF values in the value to be encoded.',
+				JSON_ERROR_UNSUPPORTED_TYPE => 'A value of a type that cannot be encoded was given.',
+				default => 'Unknown JSON error occurred.',
+			};
+		}
+
+		return json_last_error() === JSON_ERROR_NONE;
+    }
+
+    /**
      * Encode a value to a json string
      *
      * OPTIONS:
      *  - (bool) [pretty=false] format result
      *  - (bool) [numeric=true] check for numeric values
-     *  - (bool) [hex=true] encode ',<,>,",& are encoded to \u00*
+     *  - (bool) [hex=false] encode ',<,>,",& are encoded to \u00*
      *  - (int) [flags=0] Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT, JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE, JSON_THROW_ON_ERROR. The behaviour of these constants is described on the JSON constants page.
      *
+	 * @version 0.1.3 - [options->hex=false]
+	 * 
      * @param mixed $data The value being encoded. Can be any type except a resource.
      * @param array $options encoding options
      *
@@ -69,7 +118,7 @@ class Json {
         $options += [
             'pretty' => false,
             'numeric' => true,
-            'hex' => true,
+            'hex' => false,
             'flags' => 0,
         ];
 
@@ -79,7 +128,7 @@ class Json {
         $flags |= $numeric ? JSON_NUMERIC_CHECK : 0;
         $flags |= $pretty ? JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES : 0;
 
-        if ($data instanceof Options) $data = $data->toArray();
+        if ($data instanceof Options || $data instanceof ArrayObject) $data = $data->toArray();
 
 		return json_encode($data, $flags);
     }

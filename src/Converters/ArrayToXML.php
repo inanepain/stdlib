@@ -33,9 +33,9 @@ use const null;
 /**
  * Array To XML
  *
- * @package Inane\Stdlib
- *
  * @version 0.1.0
+ *
+ * @package Inane\Stdlib
  */
 trait ArrayToXML {
     /**

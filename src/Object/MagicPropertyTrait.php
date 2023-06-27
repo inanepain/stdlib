@@ -39,10 +39,12 @@ use Inane\Stdlib\Exception\{
  * MagicPropertyTrait
  *
  * Adds Getters / Setters via magic get / get methods
- *
- * @package Inane\Stdlib\Property
  * 
+ * @since 0.4.5
+ *
  * @version 0.1.0
+ * 
+ * @package Inane\Stdlib\Object
  */
 trait MagicPropertyTrait {
 	/**

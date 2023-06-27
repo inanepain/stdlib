@@ -4,6 +4,17 @@
 
 ## History
 
+### current: 0.4.6-dev @2023 Jun 27
+
+ - update: `Inane\Stdlib\Json::encode` property supports `Inane\Stdlib\ArrayObject`
+ - new: Migrate `LogTrait` from the deprecated *Inane\Inane* package to the *Inane\Stdlib* library
+ - new: Migrate `IpTrait` from the deprecated *Inane\Inane* package to the *Inane\Stdlib* library
+ - new: `Json::isJsonString` Test string for valid json format
+ - new: `CoreEnumTrait` with methods for related interface
+ - new: `Options::pull` Get value and delete key
+ - fix: `CoreEnumInterface` removed extends `BackedEnum`
+ - fix: `Str::stringWithRandomCharacters` strict mode variable type error
+
 ### 0.4.5 @2023 May 23
 
  - new: `HashType` Enum of common hash types that is able to test hash values
