@@ -1,9 +1,9 @@
 = README: Inanepain/Stdlib
 :author: Philip Michael Raab
 :email: <peep@inane.co.za>
-:homepage: https://vaieen.local
-:revnumber: 0.1.0
-:revdate: 2023-03-24
+:homepage: https://vaieen.local:3000/inane/stdlib
+:revnumber: 0.1.1
+:revdate: 2023-05-26
 :revremark: initial
 :experimental:
 :hide-uri-scheme:
@@ -16,7 +16,7 @@
 
 == Overview
 
-An assortment of commonly used classes by inane packages.
+Common classes, tools and utilities used throughout the inanepain libraries.
 
 == Install
 
@@ -25,6 +25,18 @@ An assortment of commonly used classes by inane packages.
 ----
 composer require inanepain/stdlib
 ----
+
+== Classes
+
+A quick breakdown of the classes available in the Standard Library.
+
+* link:doc/options.adoc[options]
+
+***
+
+include::./doc/options.adoc[leveloffset=+2]
+
+***
 
 == Revision
 

@@ -57,14 +57,14 @@ use Inane\Stdlib\Exception\{
 };
 
 /**
- * Options: key, value store
+ * Options: recursive key, value store
  *
  * Provides a property based interface to an array.
- * The data can be made read-only by setting $allowModifications to false with the `lock` method,
+ * The data can be made read-only by setting $allowModifications to false with the `lock` method.
  *
  * @package Inane\Stdlib
  *
- * @version 0.14.0
+ * @version 0.15.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
 	use Converters\ArrayToXML;
@@ -375,6 +375,22 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		$this->__unset($offset);
 	}
 
+	/**
+	 * Get value and delete key
+	 * 
+	 * @since 0.15.0
+	 *
+	 * @param string $id      key
+	 * @param mixed  $default value
+	 *
+	 * @return mixed|Options value
+	 */
+	public function pull(mixed $id, mixed $default = null): mixed {
+		$result = $this->get($id, $default);
+		$this->unset($id);
+		return $result;
+	}
+
 	// MERGING
 
 	/**
@@ -659,7 +675,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @return string JSON string
 	 */
-	public function toJSON(int $flags = 0, int $depth = 512): string {
+	public function toJSON(array|int $flags = 0, int $depth = 512): string {
+		if (is_array($flags)) return Json::encode($this->toArray(), $flags);
+		
 		return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
 	}
 

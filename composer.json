@@ -1,9 +1,9 @@
 {
     "name": "inanepain/stdlib",
-    "description": "An assortment of commonly used classes by inane packages.",
+    "description": "Common classes, tools and utilities used throughout the inanepain libraries.",
     "type": "library",
     "license": "UNLICENSE",
-    "homepage": "http://vaieen.local:3000/inane/stdlib",
+    "homepage": "https://vaieen.local:3000/inane/stdlib",
     "readme": "README.adoc",
     "authors": [
         {
@@ -14,7 +14,7 @@
     ],
     "support": {
         "email": "peep@inane.co.za",
-        "issues": "http://vaieen.local:3000/iane"
+        "issues": "https://vaieen.local:3000/inane/stdlib/issues"
     },
     "keywords": [
         "inane",

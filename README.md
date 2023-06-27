@@ -2,7 +2,7 @@
 
 > version: $Id$ ($Date$)
 
-An assortment of commonly used classes by inane packages.
+Common classes, tools and utilities used throughout the inanepain libraries.
 
 **Contents:**
 

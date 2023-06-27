@@ -1,6 +1,6 @@
 <?php
 
-/** Inane: Stdlib
+/**
  * Inane: Stdlib
  *
  * Inane Standard Library
@@ -22,16 +22,16 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Enum;
 
-use BackedEnum;
-
 /**
  * Core Enum Interface
+ * 
+ * @since 0.4.4
+ *
+ * @version 0.1.1
  *
  * @package Inane\Stdlib
- *
- * @version 0.1.0
  */
-interface CoreEnumInterface extends BackedEnum {
+interface CoreEnumInterface {
 	/**
 	 * Try parse enum from name
 	 * 
@@ -40,21 +40,5 @@ interface CoreEnumInterface extends BackedEnum {
 	 * 
 	 * @return null|static enum
 	 */
-    public static function tryFromName(string $name, bool $ignoreCase = false): ?static;
-
-	// /**
-    //  * Example implementation: Try get enum from name
-    //  *
-    //  * @param string $name
-    //  * @param bool   $ignoreCase case insensitive option
-    //  *
-    //  * @return null|static
-    //  */
-    // public static function tryFromName(string $name, bool $ignoreCase = false): ?static {
-    //     foreach (static::cases() as $case)
-    //         if (($ignoreCase && strcasecmp($case->name, $name) == 0) || $case->name === $name)
-    //             return $case;
-
-    //     return null;
-    // }
+	public static function tryFromName(string $name, bool $ignoreCase = false): ?static;
 }

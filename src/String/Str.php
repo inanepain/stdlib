@@ -38,6 +38,7 @@ use function strlen;
 use function strrpos;
 use function strtolower;
 use function strtoupper;
+use function strval;
 use function substr_replace;
 use function trim;
 use function ucwords;
@@ -61,7 +62,7 @@ use Inane\Stdlib\{
  * @property-read public length
  * @property public string
  *
- * @version 0.7.1
+ * @version 0.7.2
  */
 class Str implements Stringable {
     use MagicPropertyTrait;
@@ -539,7 +540,7 @@ class Str implements Stringable {
         $str = new self();
         while ($str->length < $length) {
             $rand = mt_rand(0, $max);
-            $str->append($characters[$rand]);
+            $str->append(strval($characters[$rand]));
         }
 
         return $str;
