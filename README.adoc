@@ -1,7 +1,7 @@
 = README: Inanepain/Stdlib
 :author: Philip Michael Raab
 :email: <peep@inane.co.za>
-:homepage: https://vaieen.local:3000/inane/stdlib
+:homepage: https://github.com/inanepain/stdlib
 :revnumber: 0.1.1
 :revdate: 2023-05-26
 :revremark: initial

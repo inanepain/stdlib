@@ -76,7 +76,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Options
-	 * 
+	 *
 	 * Create a new options object. Any invalid initial values are ignore resulting in a clean Options object being created.
 	 *
 	 * @since 0.10.2
@@ -126,11 +126,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Recreate Options from `var_export` code
-	 * 
+	 *
 	 * @since 0.13.0
-	 * 
+	 *
 	 * @param array $properties result from `var_export`
-	 * 
+	 *
 	 * @return static Options
 	 */
 	public static function __set_state(array $properties): static {
@@ -377,7 +377,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Get value and delete key
-	 * 
+	 *
 	 * @since 0.15.0
 	 *
 	 * @param string $id      key
@@ -589,7 +589,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * UNIQUE
 	 *
 	 * Filters unique items
-	 * 
+	 *
 	 * @since 0.14.0
 	 *
 	 * @return \Inane\Stdlib\Options unique items
@@ -677,7 +677,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 */
 	public function toJSON(array|int $flags = 0, int $depth = 512): string {
 		if (is_array($flags)) return Json::encode($this->toArray(), $flags);
-		
+
 		return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
 	}
 
