@@ -8,7 +8,7 @@
  * PHP version 8.1
  *
  * @package Inane\Stdlib
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  *
  * @license UNLICENSE
  * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
@@ -29,19 +29,19 @@ use const true;
 
 /**
  * Class Id Trait
- * 
+ *
  * @version 0.1.0
  */
 trait ClassIdTrait {
 	/**
 	 * Build a class id based on class name.
-	 * 
+	 *
 	 * Some customisation is available.
-	 * 
+	 *
 	 * @param int $size number of parts used, namespace and class
 	 * @param string $separator used when combining parts
 	 * @param bool $lower convert to lowercase
-	 * 
+	 *
 	 * @return string class id
 	 */
 	public static function classId(int $size = 1, string $separator = '/', bool $lower = true): string {

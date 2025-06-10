@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -39,11 +39,11 @@ use Inane\Stdlib\Exception\{
  * MagicPropertyTrait
  *
  * Adds Getters / Setters via magic get / get methods
- * 
+ *
  * @since 0.4.5
  *
  * @version 0.1.0
- * 
+ *
  * @package Inane\Stdlib\Object
  */
 trait MagicPropertyTrait {
@@ -76,7 +76,7 @@ trait MagicPropertyTrait {
 	 *
 	 * @return string - the method name
 	 *
-	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException
 	 */
 	protected function parseMethodName(string $property, ?string $prepend = null): string {
 		$methodName = $prepend . str_replace(' ', '', ucwords(str_replace('_', ' ', $property)));
@@ -94,8 +94,8 @@ trait MagicPropertyTrait {
 	 *
 	 * @return mixed the value of $property
 	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException 
-	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
+	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException
 	 */
 	public function __get(string $property): mixed {
 		if (static::$verify)
@@ -116,8 +116,8 @@ trait MagicPropertyTrait {
 	 *
 	 * @return void
 	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException 
-	 * @throws \Inane\Stdlib\Exception\ParseMethodException 
+	 * @throws \Inane\Stdlib\Exception\InvalidPropertyException
+	 * @throws \Inane\Stdlib\Exception\ParseMethodException
 	 */
 	public function __set(string $property, mixed $value): void {
 		if (static::$verify)

@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -25,11 +25,11 @@ namespace Inane\Stdlib\Object;
  * LogTrait - getLog()
  *
  * Easy log access
- * 
+ *
  * @since 0.4.6
  *
  * @version 1.0.1
- * 
+ *
  * @package Inane\Stdlib\Object
  */
 trait LogTrait {

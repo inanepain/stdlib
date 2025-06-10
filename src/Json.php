@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -64,16 +64,16 @@ class Json {
 
     /**
 	 * Test if jsonStr is a valid json string
-	 * 
+	 *
 	 * info:
 	 *  - code		: response code `JSON_ERROR_NONE` for no error
 	 *  - message	: response message, empty string for no error
-	 * 
+	 *
 	 * @since 0.2.0
-	 * 
+	 *
 	 * @param string		$jsonStr	string to test if valid json format
 	 * @param null|array	$info		optional array to story the test message
-	 * 
+	 *
 	 * @return bool **true** if valid json formatted string
 	 */
     public static function isJsonString(string $jsonStr, ?array &$info = null): bool {
@@ -108,7 +108,7 @@ class Json {
      *  - (int) [flags=0] Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT, JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE, JSON_THROW_ON_ERROR. The behaviour of these constants is described on the JSON constants page.
      *
 	 * @version 0.1.3 - [options->hex=false]
-	 * 
+	 *
      * @param mixed $data The value being encoded. Can be any type except a resource.
      * @param array $options encoding options
      *
