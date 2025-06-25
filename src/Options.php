@@ -83,8 +83,10 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *  - takes \ArrayObject
 	 * @since 0.13.0
 	 *  - takes string - json encoded string
+	 * @since 0.15.0
+	 *  - now also excepts an instance of itself and a null
 	 *
-	 * @param array|string|\ArrayObject|\Inane\Stdlib\ArrayObject $data initial data in a variety of formates
+	 * @param null|array|string|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $data initial data in a variety of formates
 	 * @param bool $allowModifications
 	 *
 	 * @return void
@@ -93,7 +95,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		/**
 		 * Initial value store
 		 */
-		array|string|\ArrayObject|ArrayObject $data = [],
+		null|array|string|\ArrayObject|ArrayObject|Options $data = [],
 		/**
 		 * Whether modifications to the data are allowed
 		 */
@@ -102,7 +104,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		if (is_string($data)) $data = Json::decode($data);
 		if ($data instanceof \ArrayObject || $data instanceof ArrayObject) $data = $data->getArrayCopy();
 
-		if (!is_array($data)) $data = [];
+		if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
 
 		foreach ($data as $key => $value)
 			if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
