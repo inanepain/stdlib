@@ -4,6 +4,10 @@
 
 ## History
 
+### 0.5.0 @2025 Jul 21
+
+- new: `Options` getset methods
+
 ### 0.4.6 @2023 Jun 27
 
  - update: `Inane\Stdlib\Json::encode` property supports `Inane\Stdlib\ArrayObject`
