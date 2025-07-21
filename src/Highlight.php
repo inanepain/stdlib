@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -182,7 +182,7 @@ enum Highlight {
         $this->apply();
 
         $text = highlight_string("<?php\n" . $code, true);
-        $text = str_replace("&lt;?php<br />", '', $text);
+        $text = str_replace("&lt;?php\n", '', $text);
 
         $text = trim($text);
         $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", '', $text, 1);  // remove prefix

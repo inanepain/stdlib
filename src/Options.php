@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -25,10 +25,20 @@ use ArrayAccess;
 use Countable;
 use Iterator;
 use Psr\Container\ContainerInterface;
+use Inane\Stdlib\Converters\{
+	Arrayable,
+	JSONable,
+	XMLable
+};
+use Inane\Stdlib\Exception\{
+	InvalidArgumentException,
+	RuntimeException
+};
 
 use function array_key_exists;
 use function array_keys;
 use function array_pop;
+use function array_reduce;
 use function array_unique;
 use function array_values;
 use function count;
@@ -42,19 +52,8 @@ use function key;
 use function next;
 use function prev;
 use function reset;
-use const false;
-use const null;
-use const true;
 
-use Inane\Stdlib\Converters\{
-	Arrayable,
-	JSONable,
-	XMLable
-};
-use Inane\Stdlib\Exception\{
-	InvalidArgumentException,
-	RuntimeException
-};
+use const null;
 
 /**
  * Options: recursive key, value store
@@ -64,27 +63,32 @@ use Inane\Stdlib\Exception\{
  *
  * @package Inane\Stdlib
  *
- * @version 0.15.0
+ * @version 0.16.0
  */
 class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
+	#region PROPERTIES
 	use Converters\ArrayToXML;
 
 	/**
 	 * Value store
 	 */
 	private array $data = [];
+	#endregion PROPERTIES
 
+	#region CREATE
 	/**
 	 * Options
-	 * 
+	 *
 	 * Create a new options object. Any invalid initial values are ignore resulting in a clean Options object being created.
 	 *
 	 * @since 0.10.2
 	 *  - takes \ArrayObject
 	 * @since 0.13.0
 	 *  - takes string - json encoded string
+	 * @since 0.15.0
+	 *  - now also excepts an instance of itself and a null
 	 *
-	 * @param array|string|\ArrayObject|\Inane\Stdlib\ArrayObject $data initial data in a variety of formates
+	 * @param null|array|string|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $data initial data in a variety of formates
 	 * @param bool $allowModifications
 	 *
 	 * @return void
@@ -93,7 +97,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		/**
 		 * Initial value store
 		 */
-		array|string|\ArrayObject|ArrayObject $data = [],
+		null|array|string|\ArrayObject|ArrayObject|Options $data = [],
 		/**
 		 * Whether modifications to the data are allowed
 		 */
@@ -102,7 +106,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		if (is_string($data)) $data = Json::decode($data);
 		if ($data instanceof \ArrayObject || $data instanceof ArrayObject) $data = $data->getArrayCopy();
 
-		if (!is_array($data)) $data = [];
+		if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
 
 		foreach ($data as $key => $value)
 			if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
@@ -126,11 +130,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Recreate Options from `var_export` code
-	 * 
+	 *
 	 * @since 0.13.0
-	 * 
+	 *
 	 * @param array $properties result from `var_export`
-	 * 
+	 *
 	 * @return static Options
 	 */
 	public static function __set_state(array $properties): static {
@@ -140,18 +144,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 		return $obj;
 	}
+	#endregion CREATE
 
-	/**
-	 * Make Options play nicely with var_dump
-	 *
-	 * @return array
-	 */
-	public function __debugInfo(): array {
-		return $this->toArray();
-	}
-
-	// IS_SET
-
+	#region IS_SET
 	/**
 	 * Test if empty
 	 *
@@ -225,15 +220,16 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function contains(mixed $value, bool $strict = false): bool {
 		return in_array($value, $this->toArray(), $strict);
 	}
+	#endregion IS_SET
 
-	// GETTER
-
+	#region GETTER
 	/**
 	 * get value
 	 *
 	 * public function &__get($key) {
 	 *
 	 * @param mixed $key key
+	 * 
 	 * @return mixed|Options value
 	 */
 	public function __get(mixed $key) {
@@ -283,14 +279,14 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function current(): mixed {
 		return current($this->data);
 	}
-
-	// SETTER
-
+	#endregion GETTER
+	
+	#region SETTER
 	/**
-	 * Assigns a value to the specified data
+	 * Assigns a value to the specified key
 	 *
-	 * @param mixed $key The data key to assign the value to
-	 * @param mixed $value The value to set
+	 * @param mixed $key The key to which the value will be assigned
+	 * @param mixed $value The value to assign
 	 *
 	 * @return void
 	 *
@@ -333,9 +329,46 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function offsetSet(mixed $offset, mixed $value): void {
 		$this->__set($offset, $value);
 	}
+	#endregion SETTER
+	
+	#region GETTER_SETTER
+	/**
+	 * Gets the previous value of the key being assigned a new value
+	 * 
+	 * @since 0.16.0
+	 * 
+	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+	 * @param mixed $value The value to assign
+	 * 
+	 * @return mixed the key's previous value
+	 * 
+	 * @throws \Inane\Stdlib\Exception\RuntimeException 
+	 */
+	public function getSet(mixed $key, mixed $value): mixed {
+		$previous = $this->get($key);
+		$this->set($key, $value);
 
-	// UNSETTER
+		return $previous;
+	}
 
+	/**
+	 * SGets the previous value of the key being assigned a new value
+	 * 
+	 * @since 0.16.0
+	 * 
+	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+	 * @param mixed $value The value to assign
+	 * 
+	 * @return mixed the key's previous value
+	 * 
+	 * @throws \Inane\Stdlib\Exception\RuntimeException 
+	 */
+	public function offsetGetSet(mixed $key, mixed $value): mixed {
+		return $this->getSet($key, $value);
+	}
+	#endregion GETTER_SETTER
+
+	#region UNSETTER
 	/**
 	 * Unset data by key
 	 *
@@ -377,7 +410,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 	/**
 	 * Get value and delete key
-	 * 
+	 *
 	 * @since 0.15.0
 	 *
 	 * @param string $id      key
@@ -390,9 +423,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		$this->unset($id);
 		return $result;
 	}
-
-	// MERGING
-
+	#endregion UNSETTER
+	
+	#region MERGING
 	/**
 	 * Merge another Options object with this one.
 	 *
@@ -506,9 +539,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 
 		return $this;
 	}
-
-	// LOCKING
-
+	#endregion MERGING
+	
+	#region LOCKING
 	/**
 	 * Prevent any more modifications being made to this instance.
 	 *
@@ -534,9 +567,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function isLocked(): bool {
 		return !$this->allowModifications;
 	}
-
-	// NAVIGATION
-
+	#endregion LOCKING
+	
+	#region NAVIGATION
 	/**
 	 * previous
 	 *
@@ -571,9 +604,9 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function rewind(): void {
 		reset($this->data);
 	}
-
-	// OTHER
-
+	#endregion NAVIGATION
+	
+	#region OTHER
 	/**
 	 * count
 	 *
@@ -589,7 +622,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * UNIQUE
 	 *
 	 * Filters unique items
-	 * 
+	 *
 	 * @since 0.14.0
 	 *
 	 * @return \Inane\Stdlib\Options unique items
@@ -597,9 +630,18 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	public function unique(): static {
 		return new static(array_unique($this->toArray()));
 	}
-
-	// EXPORTING
-
+	#endregion OTHER
+	
+	#region EXPORTING
+	/**
+	 * Make Options play nicely with var_dump
+	 *
+	 * @return array
+	 */
+	public function __debugInfo(): array {
+		return $this->toArray();
+	}
+	
 	/**
 	 * Returns keys
 	 *
@@ -677,7 +719,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 */
 	public function toJSON(array|int $flags = 0, int $depth = 512): string {
 		if (is_array($flags)) return Json::encode($this->toArray(), $flags);
-		
+
 		return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
 	}
 
@@ -696,4 +738,5 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 			return $accumulator;
 		}, []));
 	}
+	#endregion EXPORTING
 }

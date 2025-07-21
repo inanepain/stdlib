@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -23,14 +23,18 @@ namespace Inane\Stdlib;
 
 use Inane\Stdlib\Enum\CoreEnumInterface;
 
-use function is_null;
-use function preg_match;
+use function strcasecmp;
+
+use const false;
+use const null;
+use const PHP_OS_FAMILY;
+use const true;
 
 /**
  * Enum: Operating Systems
- * 
+ *
  * @version 0.1.0
- * 
+ *
  * @package Inane\Stdlib
  */
 enum Os: string implements CoreEnumInterface {
@@ -59,9 +63,9 @@ enum Os: string implements CoreEnumInterface {
 
 	/**
 	 * Try to identify current Operating System
-	 * 
+	 *
 	 * @param null|string $phpOsFamily contents of `PHP_OS_FAMILY` constant
-	 * 
+	 *
 	 * @return static operating system
 	 */
 	public static function Identify(?string $phpOsFamily = null): static {

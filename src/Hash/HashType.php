@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  * @category cache
  *
@@ -38,7 +38,7 @@ use const null;
 
 /**
  * Enum: Hash
- * 
+ *
  * This enum contains only a few common hash types, since many create similar strings.
  *
  * Testing Method:
@@ -49,9 +49,9 @@ use const null;
  *
  * Example:
  * define('HASH_TEST_METHOD', HASH_TEST_METHOD_CTYPE);
- * 
+ *
  * @package Inane\Stdlib
- * 
+ *
  * @version 0.1.0
  */
 enum HashType: int implements CoreEnumInterface {
@@ -74,17 +74,17 @@ enum HashType: int implements CoreEnumInterface {
 	 * Hash Type: SHA224
 	 */
 	case SHA224	= 56;
-	
+
 	/**
 	 * Hash Type: SHA256
 	 */
 	case SHA256	= 64;
-	
+
 	/**
 	 * Hash Type: SHA384
 	 */
 	case SHA384	= 96;
-	
+
 	/**
 	 * Hash Type: SHA512
 	 */
@@ -92,7 +92,7 @@ enum HashType: int implements CoreEnumInterface {
 
 	/**
 	 * Get method used for hash testing
-	 * 
+	 *
 	 * @return int hash test method id
 	 */
 	public static function method(): int {
@@ -101,7 +101,7 @@ enum HashType: int implements CoreEnumInterface {
 
 	/**
 	 * Get method used for hash testing
-	 * 
+	 *
 	 * @return string hash test method name
 	 */
 	public static function methodName(): string {
@@ -118,10 +118,10 @@ enum HashType: int implements CoreEnumInterface {
 
 	/**
 	 * Test if $hash is valid for Hash::case
-	 * 
+	 *
 	 * @param string $hash string to test
 	 * @param int $method specify alternative test method (HASH_TEST_METHOD_REGEX, HASH_TEST_METHOD_CTYPE)
-	 * 
+	 *
 	 * @return bool is valid hash of type Hash
 	 */
 	public function isHash(string $hash, ?int $method = null): bool {
@@ -133,9 +133,9 @@ enum HashType: int implements CoreEnumInterface {
 
 	/**
 	 * Hashes $value
-	 * 
+	 *
 	 * @param string $hash string to test
-	 * 
+	 *
 	 * @return string hash of $data
 	 */
 	public function hash(string $data): string {
@@ -146,7 +146,7 @@ enum HashType: int implements CoreEnumInterface {
 	 * Try get enum by name
 	 *
 	 * @param string $name enum name
-	 * 
+	 *
 	 * @param bool   $ignoreCase case insensitive option
 	 *
 	 * @return null|static

@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  *
  * @license UNLICENSE
@@ -30,7 +30,7 @@ use Throwable;
  *
  * @package Inane\Exception
  *
- * @version 0.3.1
+ * @version 0.3.2
  */
 class Exception extends SystemException implements ExceptionInterface, Stringable {
     /**
@@ -42,7 +42,7 @@ class Exception extends SystemException implements ExceptionInterface, Stringabl
      *
      * @return void
      */
-    public function __construct($message = '', $code = 0, Throwable $previous = null) {
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null) {
         // modifications
         $code = $this->code + $code;
 

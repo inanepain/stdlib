@@ -7,7 +7,7 @@
  *
  * PHP version 8.1
  *
- * @author Philip Michael Raab<peep@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package Inane\Stdlib
  * @category array
  *
@@ -41,21 +41,21 @@ use Inane\Stdlib\{
 
 /**
  * Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
- * 
+ *
  * AFT attempts to create a OO array with the `array_*` functions as methods.
- * The various functions differ and AFT uses rule groups to handle these differences. 
- * 
+ * The various functions differ and AFT uses rule groups to handle these differences.
+ *
  * This is more for shits and giggles, like many of my classes, than any real use case.
  * But it does allow for easy chaining of array functions an can neaten code in various situations.
  * Of course those or more side effects then planned features but it does not make them any less nifty.
- * 
+ *
  * @todo convert individual rule properties to a single rules array property
  * @todo enable adding custom rules by setting allowModifications to true
  *
  * plain method listed bellow have been tested, but only their simplest use case.
  * @method int       count()																Counts all elements in the array
  * @method string    implode(string $separator, array $array)								Join array elements with a string
- * 
+ *
  * `array_` methods listed bellow have been tested, but only their simplest use case.
  * @method array     column(int|string|null $key, int|string|null $index = null))   		Return the values from a single column in the input array
  * @method ArrayKit  fill(int $start_index, int $count, mixed $value)               		Fill an array with values
@@ -80,13 +80,13 @@ use Inane\Stdlib\{
 class ArrayKit implements Arrayable, ArrayAccess {
 	/**
 	 * Allow Modifications
-	 * 
+	 *
 	 * Setting this to true allows adding custom array methods to the object.
-	 * 
+	 *
 	 * Use this to enable `ArrayKit` to handle more functions without throwing an error.
-	 * 
+	 *
 	 * NOTE: consider emailing me the details of the function so I can add it to the defaults.
-	 * 
+	 *
 	 * @var bool
 	 */
 	public static bool $allowModifications = false;
@@ -159,7 +159,7 @@ class ArrayKit implements Arrayable, ArrayAccess {
 
 	/**
 	 * List of array functions to allow calling on the array.
-	 * 
+	 *
 	 * These functions have generally gone through some rudimentary testing.
 	 * And should work at least when using the simplest options.
 	 *
@@ -195,9 +195,9 @@ class ArrayKit implements Arrayable, ArrayAccess {
 
 	/**
 	 * Whether an offset exists
-	 * 
+	 *
 	 * @param mixed $offset An offset to check for.
-	 * 
+	 *
 	 * @return bool Returns true on success or false on failure.
 	 */
 	public function offsetExists(mixed $offset): bool {
@@ -206,9 +206,9 @@ class ArrayKit implements Arrayable, ArrayAccess {
 
 	/**
 	 * Offset to retrieve
-	 * 
+	 *
 	 * @param mixed $offset The offset to retrieve.
-	 * 
+	 *
 	 * @return mixed Can return all value types.
 	 */
 	public function offsetGet(mixed $offset): mixed {
@@ -217,10 +217,10 @@ class ArrayKit implements Arrayable, ArrayAccess {
 
 	/**
 	 * Assign a value to the specified offset
-	 * 
+	 *
 	 * @param mixed $offset The offset to assign the value to.
 	 * @param mixed $value The value to set.
-	 * 
+	 *
 	 * @return void No value is returned.
 	 */
 	public function offsetSet(mixed $offset, mixed $value): void {
@@ -230,9 +230,9 @@ class ArrayKit implements Arrayable, ArrayAccess {
 
 	/**
 	 * Unset an offset
-	 * 
+	 *
 	 * @param mixed $offset The offset to unset.
-	 * 
+	 *
 	 * @return void No value is returned.
 	 */
 	public function offsetUnset(mixed $offset): void {
