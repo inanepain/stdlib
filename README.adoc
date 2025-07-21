@@ -1,43 +1,37 @@
-= README: Inanepain/Stdlib
+= README: Inanepain/stdlib
 :author: Philip Michael Raab
-:email: <peep@inane.co.za>
-:homepage: https://github.com/inanepain/stdlib
-:revnumber: 0.1.1
-:revdate: 2023-05-26
-:revremark: initial
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:copyright: Unlicense
+:homepage: https://git.cathedral.co.za:3000/inanepain/stdlib
+:revnumber: 0.5.0
+:revdate: 2025-07-21
 :experimental:
+:doctype: book
 :hide-uri-scheme:
-:table-stripes: even
 :icons: font
 :source-highlighter: highlight.js
-:sectnums: |,all|
-:toclevels: 5
-:toc: auto
+:toc: left
+:sectanchors:
+:idprefix: topic-
+:idseparator: -
+:pkg-vendor: inanepain
+:pkg-name: stdlib
+:pkg-id: {pkg-vendor}/{pkg-name}
 
-== Overview
+== image:./icon.png[title={pkg-id},25] {pkg-id}
 
-Common classes, tools and utilities used throughout the inanepain libraries.
+{description}
 
 == Install
 
-.install: using composer
+.composer
 [source,shell]
 ----
 composer require inanepain/stdlib
 ----
 
-== Classes
-
-A quick breakdown of the classes available in the Standard Library.
-
-* link:doc/options.adoc[options]
-
-***
-
-include::./doc/options.adoc[leveloffset=+2]
-
-***
-
 == Revision
 
-> version: $Id$ ($Date$)
+ version: $Id$ ($Date$)

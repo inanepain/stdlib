@@ -1,23 +1,14 @@
-# Readme: Stdlib
+# ![icon](./icon.png) inanepain/stdlib
 
-> version: $Id$ ($Date$)
+Common classes, tools and utilities used throughout the inanepain
+libraries.
 
-Common classes, tools and utilities used throughout the inanepain libraries.
+# Install
 
-**Contents:**
+composer
 
- - Parser\ObjectParser
- - ArrayUtil
- - Highlight
- - Icons
- - Options
+    composer require inanepain/stdlib
 
-## Install
+# Revision
 
-`composer require inanepain/stdlib`
-
-## Usage
-
-```php
-
-```
+    version: $Id$ ($Date$)
