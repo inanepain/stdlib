@@ -19,10 +19,10 @@ php-doc clear="all":
 		echo "\tCleaning: cache..."
 		rm -fr .phpdoc
 	fi
-	if [ -d doc/code ] && [[ "{{clear}}" = "all" || "{{clear}}" = "html" ]]; then
+	if [ -d documentation/code ] && [[ "{{clear}}" = "all" || "{{clear}}" = "html" ]]; then
 		echo "\tCleaning: html..."
-		rm -fr doc/code
+		rm -fr documentation/code
 	fi
 
-	mkdir -p doc/code
-	phpdoc -d src -t doc/code --title="{{project}}" --defaultpackagename="Inane"
+	mkdir -p documentation/code
+	phpdoc -d src -t documentation/code --title="{{project}}" --defaultpackagename="Inane"
