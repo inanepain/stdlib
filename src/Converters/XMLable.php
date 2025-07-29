@@ -3,19 +3,21 @@
 /**
  * Inane: Stdlib
  *
- * Inane Standard Library
+ * Common classes, tools and utilities used throughout the inanepain libraries.
  *
- * PHP version 8.1
+ * $Id$
+ * $Date$
+ *
+ * PHP version 8.4
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package Inane\Stdlib
- * @category converter
+ * @package inanepain\stdlib
+ * @category stdlib
  *
  * @license UNLICENSE
- * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $Id$
- * $Date$
+ * @version $version
  */
 
 declare(strict_types=1);

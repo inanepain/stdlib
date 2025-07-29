@@ -20,16 +20,22 @@
  * @version $version
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Inane\Stdlib\Exception;
+namespace Inane\Stdlib\Array;
+
+use ArrayAccess;
+use Countable;
+use Iterator;
+use Psr\Container\ContainerInterface;
+use Inane\Stdlib\Converters\{
+    Arrayable,
+    JSONable,
+    XMLable
+};
 
 /**
- * ConfigurationException
- *
- * @package Inane\Stdlib
- *
- * @version 0.1.0
+ * Interface: Options
  */
-class ConfigurationException extends Exception {
+interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
 }
