@@ -512,22 +512,19 @@ class Options implements OptionsInterface {
 	 * Merge an array but only adds missing keys, leaving existing keys unmodified
 	 *
 	 * @since 0.11.0
+	 * @since 2025-07-31 array $exclude A list of keys to ignore.
 	 *
 	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
+	 * @param array																				  $exclude A list of keys to ignore.
 	 *
 	 * @return OptionsInterface
 	 */
-	public function complete(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
-		if (!$merge instanceof self) $merge = new static($merge);
+	public function complete(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge, array $exclude = []): self {
+		if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
 		/** @var OptionsInterface $value */
-		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
-			// if (is_int($key)) $this->data[] = $value;
-			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value);
-			// else {
-			//     if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-			//     else $this->data[$key] = $value;
-			// }
+		foreach ($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
+			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value, $exclude);
 		} else {
 			if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
 			else $this->data[$key] = $value;
