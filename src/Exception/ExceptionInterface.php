@@ -1,18 +1,23 @@
 <?php
 
 /**
- * This file is part of the InaneTools package.
+ * Inane: Stdlib
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Common classes, tools and utilities used throughout the inanepain libraries.
  *
- * @author Philip Michael Raab <philip@inane.co.za>
- * @package Inane\Exception
+ * $Id$
+ * $Date$
  *
- * @license MIT
- * @license https://inane.co.za/license/MIT
+ * PHP version 8.4
  *
- * @copyright 2015-2019 Philip Michael Raab <philip@inane.co.za>
+ * @author Philip Michael Raab<philip@cathedral.co.za>
+ * @package inanepain\stdlib
+ * @category stdlib
+ *
+ * @license UNLICENSE
+ * @license https://unlicense.org/UNLICENSE UNLICENSE
+ *
+ * @version $version
  */
 
 /**

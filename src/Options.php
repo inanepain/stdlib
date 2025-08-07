@@ -3,33 +3,28 @@
 /**
  * Inane: Stdlib
  *
- * Inane Standard Library
+ * Common classes, tools and utilities used throughout the inanepain libraries.
  *
- * PHP version 8.1
+ * $Id$
+ * $Date$
+ *
+ * PHP version 8.4
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package Inane\Stdlib
+ * @package inanepain\stdlib
+ * @category stdlib
  *
  * @license UNLICENSE
- * @license https://github.com/inanepain/stdlib/raw/develop/UNLICENSE UNLICENSE
+ * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $Id$
- * $Date$
+ * @version $version
  */
 
 declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
-use ArrayAccess;
-use Countable;
-use Iterator;
-use Psr\Container\ContainerInterface;
-use Inane\Stdlib\Converters\{
-	Arrayable,
-	JSONable,
-	XMLable
-};
+use Inane\Stdlib\Array\OptionsInterface;
 use Inane\Stdlib\Exception\{
 	InvalidArgumentException,
 	RuntimeException
@@ -65,7 +60,7 @@ use const null;
  *
  * @version 0.16.0
  */
-class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
+class Options implements OptionsInterface {
 	#region PROPERTIES
 	use Converters\ArrayToXML;
 
@@ -88,7 +83,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * @since 0.15.0
 	 *  - now also excepts an instance of itself and a null
 	 *
-	 * @param null|array|string|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $data initial data in a variety of formates
+	 * @param null|array|string|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $data initial data in a variety of formates
 	 * @param bool $allowModifications
 	 *
 	 * @return void
@@ -97,7 +92,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		/**
 		 * Initial value store
 		 */
-		null|array|string|\ArrayObject|ArrayObject|Options $data = [],
+		null|array|string|\ArrayObject|ArrayObject|Options|OptionsInterface $data = [],
 		/**
 		 * Whether modifications to the data are allowed
 		 */
@@ -106,7 +101,8 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		if (is_string($data)) $data = Json::decode($data);
 		if ($data instanceof \ArrayObject || $data instanceof ArrayObject) $data = $data->getArrayCopy();
 
-		if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
+		// if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
+		if ((!is_array($data) && !($data instanceof OptionsInterface)) || $data === null) $data = [];
 
 		foreach ($data as $key => $value)
 			if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications);
@@ -122,7 +118,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 		$array = [];
 
 		foreach ($this->data as $key => $value)
-			if ($value instanceof self) $array[$key] = clone $value;
+			if ($value instanceof OptionsInterface) $array[$key] = clone $value;
 			else $array[$key] = $value;
 
 		$this->data = $array;
@@ -135,7 +131,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @param array $properties result from `var_export`
 	 *
-	 * @return static Options
+	 * @return static Options|OptionsInterface
 	 */
 	public static function __set_state(array $properties): static {
 		$obj = new static();
@@ -230,7 +226,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @param mixed $key key
 	 * 
-	 * @return mixed|Options value
+	 * @return mixed|Options|OptionsInterface value
 	 */
 	public function __get(mixed $key) {
 		return $this->get($key);
@@ -242,7 +238,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * @param string $id      key
 	 * @param mixed  $default value
 	 *
-	 * @return mixed|Options value
+	 * @return mixed|Options|OptionsInterface value
 	 */
 	public function get(mixed $id, mixed $default = null): mixed {
 		return $this->offsetExists($id) ? $this->data[$id] : $default;
@@ -252,7 +248,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * get offset
 	 * @param mixed $offset offset
 	 *
-	 * @return mixed|Options value
+	 * @return mixed|Options|OptionsInterface value
 	 */
 	public function offsetGet(mixed $offset): mixed {
 		return $this->get($offset);
@@ -274,7 +270,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * Return the current element
 	 *
-	 * @return mixed|Options
+	 * @return mixed|OptionsInterface
 	 */
 	public function current(): mixed {
 		return current($this->data);
@@ -307,11 +303,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * @param mixed $key key
 	 * @param mixed $value value
 	 *
-	 * @return Options
+	 * @return OptionsInterface
 	 *
 	 * @throws RuntimeException
 	 */
-	public function set(mixed $key, mixed $value): Options {
+	public function set(mixed $key, mixed $value): OptionsInterface {
 		$this->offsetSet($key, $value);
 		return $this;
 	}
@@ -386,11 +382,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @param mixed $offset key
 	 *
-	 * @return Options
+	 * @return OptionsInterface
 	 *
 	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
 	 */
-	public function unset(mixed $key): Options {
+	public function unset(mixed $key): OptionsInterface {
 		$this->offsetUnset($key);
 		return $this;
 	}
@@ -416,7 +412,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * @param string $id      key
 	 * @param mixed  $default value
 	 *
-	 * @return mixed|Options value
+	 * @return mixed|OptionsInterface value
 	 */
 	public function pull(mixed $id, mixed $default = null): mixed {
 		$result = $this->get($id, $default);
@@ -437,14 +433,14 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * - Items in $merge with INTEGER keys will be appended.
 	 * - Items in $merge with STRING keys will overwrite current values.
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
+	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
 	 *
-	 * @return \Inane\Stdlib\Options
+	 * @return OptionsInterface
 	 */
-	public function merge(array|\ArrayObject|ArrayObject|Options $merge): self {
+	public function merge(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
 		if (!$merge instanceof self) $merge = new static($merge);
 
-		/** @var Options $value */
+		/** @var OptionsInterface $value */
 		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
 			if (is_int($key)) $this->data[] = $value;
 			elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->merge($value);
@@ -469,11 +465,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @todo: check for allowModifications
 	 *
-	 * @param \Inane\Stdlib\Options ...$models
+	 * @param Options|OptionsInterface ...$models
 	 *
-	 * @return \Inane\Stdlib\Options
+	 * @return OptionsInterface
 	 */
-	public function defaults(Options ...$models): self {
+	public function defaults(Options|OptionsInterface ...$models): self {
 		// $replaceable = ['', null, false];
 		$replaceable = ['', null];
 
@@ -492,11 +488,11 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @since 0.11.0
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
+	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
 	 *
-	 * @return \Inane\Stdlib\Options
+	 * @return OptionsInterface
 	 */
-	public function modify(array|\ArrayObject|ArrayObject|Options $merge): self {
+	public function modify(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
 		if (!$merge instanceof self) $merge = new static($merge);
 
 		/** @var Options $value */
@@ -516,22 +512,19 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 * Merge an array but only adds missing keys, leaving existing keys unmodified
 	 *
 	 * @since 0.11.0
+	 * @since 2025-07-31 array $exclude A list of keys to ignore.
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options $merge
+	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
+	 * @param array																				  $exclude A list of keys to ignore.
 	 *
-	 * @return \Inane\Stdlib\Options
+	 * @return OptionsInterface
 	 */
-	public function complete(array|\ArrayObject|ArrayObject|Options $merge): self {
-		if (!$merge instanceof self) $merge = new static($merge);
+	public function complete(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge, array $exclude = []): self {
+		if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
-		/** @var Options $value */
-		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
-			// if (is_int($key)) $this->data[] = $value;
-			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value);
-			// else {
-			//     if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-			//     else $this->data[$key] = $value;
-			// }
+		/** @var OptionsInterface $value */
+		foreach ($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
+			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value, $exclude);
 		} else {
 			if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
 			else $this->data[$key] = $value;
@@ -545,15 +538,15 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	/**
 	 * Prevent any more modifications being made to this instance.
 	 *
-	 * Useful after merge() has been used to merge multiple Options objects
+	 * Useful after merge() has been used to merge multiple OptionsInterface objects
 	 * into one object which should then not be modified again.
 	 *
-	 * @return Options
+	 * @return OptionsInterface
 	 */
 	public function lock(): self {
 		$this->allowModifications = false;
 
-		/** @var Options $value */
+		/** @var OptionsInterface $value */
 		foreach ($this->data as $value) if ($value instanceof self) $value->lock();
 
 		return $this;
@@ -625,7 +618,7 @@ class Options implements ArrayAccess, Iterator, Countable, ContainerInterface, A
 	 *
 	 * @since 0.14.0
 	 *
-	 * @return \Inane\Stdlib\Options unique items
+	 * @return Options|OptionsInterface unique items
 	 */
 	public function unique(): static {
 		return new static(array_unique($this->toArray()));
