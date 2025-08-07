@@ -5,8 +5,8 @@
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
 :homepage: https://git.cathedral.co.za:3000/inanepain/stdlib
-:revnumber: 0.5.0
-:revdate: 2025-07-21
+:revnumber: 0.6.0
+:revdate: 2025-08-07
 :experimental:
 :doctype: book
 :hide-uri-scheme:

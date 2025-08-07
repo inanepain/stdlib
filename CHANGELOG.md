@@ -2,6 +2,14 @@ Version: $Id$ ($Date$)
 
 # History
 
+## 0.6.0 (2025 Aug 07)
+
+- `OptionsInterface` - To facilitate creating interchangable Objects
+  based on `Options`.
+
+- `Options::getSet` - method to `set` and `get` previouse value for a
+  **key**.
+
 ## 0.5.0 @2025 Jul 21
 
 - new: `Options` getset methods
