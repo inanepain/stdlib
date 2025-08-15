@@ -59,6 +59,8 @@ use const null;
  * @package Inane\Stdlib
  *
  * @version 0.16.0
+ * 
+ * // TODO: version bump
  */
 class Options implements OptionsInterface {
 	#region TRAITS
@@ -68,7 +70,9 @@ class Options implements OptionsInterface {
 	
 	#region PROPERTIES
 	/**
-	 * Value store
+	 * Stores the option values as key-value pairs.
+	 * 
+	 * @var array<string, mixed> $data
 	 */
 	private array $data = [];
 	#endregion PROPERTIES

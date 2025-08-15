@@ -8,7 +8,6 @@
 :revnumber: 0.6.0
 :revdate: 2025-08-07
 :experimental:
-:doctype: book
 :hide-uri-scheme:
 :icons: font
 :source-highlighter: highlight.js
@@ -24,13 +23,21 @@
 
 {description}
 
-== Install
+<<<
+
+:leveloffset: +1
+
+= Install
 
 .composer
 [source,shell]
-----
-composer require inanepain/stdlib
-----
+====
+composer require {pkg-id}
+====
+
+:leveloffset!:
+
+<<<
 
 == Revision
 
