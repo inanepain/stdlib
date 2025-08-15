@@ -61,9 +61,12 @@ use const null;
  * @version 0.16.0
  */
 class Options implements OptionsInterface {
-	#region PROPERTIES
+	#region TRAITS
 	use Converters\ArrayToXML;
-
+	use Converters\TraversableToArray;
+	#endregion TRAITS
+	
+	#region PROPERTIES
 	/**
 	 * Value store
 	 */
@@ -669,14 +672,7 @@ class Options implements OptionsInterface {
 	 * @return array
 	 */
 	public function toArray(): array {
-		$array = [];
-		$data = $this->data;
-
-		/** @var self $value */
-		foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
-		else $array[$key] = $value;
-
-		return $array;
+		return static::iteratorToArrayDeep($this);
 	}
 
 	/**

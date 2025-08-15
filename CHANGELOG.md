@@ -2,6 +2,14 @@ Version: $Id$ ($Date$)
 
 # History
 
+## 0.7.0-dev (2025 Xxx xx)
+
+- new: `TraversableToArray` **trait** with `iteratorToArrayDeep`
+  **method** that converts a `Traversable` into an `Array`.
+
+- update: `Options` implements `TraversableToArray` for its array
+  conversion.
+
 ## 0.6.0 (2025 Aug 07)
 
 - `OptionsInterface` - To facilitate creating interchangable Objects
@@ -10,11 +18,11 @@ Version: $Id$ ($Date$)
 - `Options::getSet` - method to `set` and `get` previouse value for a
   **key**.
 
-## 0.5.0 @2025 Jul 21
+## 0.5.0 (2025 Jul 21)
 
 - new: `Options` getset methods
 
-## 0.4.6 @2023 Jun 27
+## 0.4.6 (2023 Jun 27)
 
 - update: `Inane\Stdlib\Json::encode` property supports
   `Inane\Stdlib\ArrayObject`
@@ -35,7 +43,7 @@ Version: $Id$ ($Date$)
 
 - fix: `Str::stringWithRandomCharacters` strict mode variable type error
 
-## 0.4.5 @2023 May 23
+## 0.4.5 (2023 May 23)
 
 - new: `HashType` Enum of common hash types that is able to test hash
   values
@@ -50,19 +58,19 @@ Version: $Id$ ($Date$)
 
 - fix: minor fixes and updates
 
-## 0.4.4 @2023 May 03
+## 0.4.4 (2023 May 03)
 
 - new:
   `CoreEnumInterface::tryFromName(string $name, bool $ignoreCase = false)`
   Enum interface for tryFromName
 
-## 0.4.3 @2023 May 03
+## 0.4.3 (2023 May 03)
 
 - new: `Options::unique` Filters unique items
 
 - update: `Str::from` now also takes numeric values
 
-## 0.4.2 @2023 Mar 28
+## 0.4.2 (2023 Mar 28)
 
 - new: `Options::__set_state` to handle code from `var_export`
 
@@ -78,7 +86,7 @@ Version: $Id$ ($Date$)
 
 - update: `ArrayKit` implements `ArrayAccess`
 
-## 0.4.1 @2023 Jan 02
+## 0.4.1 (2023 Jan 02)
 
 - new: `Options:groupBy` return new Options group by a property
 
@@ -93,7 +101,7 @@ Version: $Id$ ($Date$)
 - update: `Options` all methods that take `array` now also take
   `\Inane\Stdlib\ArrayObject` and `\ArrayObject`
 
-## 0.4.0 @2022 Dec 21
+## 0.4.0 (2022 Dec 21)
 
 - new: `Json` JSON en/decoder
 
@@ -101,12 +109,12 @@ Version: $Id$ ($Date$)
 
 - update: `Options` improvements to phpdoc
 
-## 0.3.1 @2022 Dec 10
+## 0.3.1 (2022 Dec 10)
 
 - fix: `Options::offsetExists` Returned false if value was null even
   though offset exists
 
-## 0.3.0 @2022 Dec 10
+## 0.3.0 (2022 Dec 10)
 
 - new: `Options::empty` Test if empty
 
@@ -130,7 +138,7 @@ Version: $Id$ ($Date$)
 
 - todo: `String` move to lib base
 
-## 0.2.0 @2022 Oct 19
+## 0.2.0 (2022 Oct 19)
 
 - new: `ArrayPathAccessTrait` allows read/write array data using
   strings, read: "users/bob/age", write: "users/bob/age=30"
@@ -163,7 +171,7 @@ Version: $Id$ ($Date$)
 
 - update: `Exceptions` changed inheritance and some error codes
 
-## 0.1.5 @2022 Aug 04
+## 0.1.5 (2022 Aug 04)
 
 - Str: added method basename
 

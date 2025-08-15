@@ -29,6 +29,7 @@ use SimpleXMLElement;
 use function is_array;
 use function is_null;
 use function is_numeric;
+
 use const false;
 use const null;
 
@@ -54,11 +55,11 @@ trait ArrayToXML {
      * Convert $array to an XML string
      *
      * @param array $array source data
-     * @param null|\SimpleXMLElement $xmlObj XML object to use as root
+     * @param null|SimpleXMLElement $xmlObj XML object to use as root
      * @param bool $unique appends the array index to tag names for plain arrays
      * @param null|string $tagName to use when converting plain arrays, mainly for internally use
      *
-     * @return \SimpleXMLElement XML string of $array
+     * @return SimpleXMLElement XML string of $array
      */
     protected static function arrayToXML(array $array, ?SimpleXMLElement $xmlObj = null, bool $unique = false, ?string $tagName = null): SimpleXMLElement {
         if (is_null($xmlObj)) $xmlObj = new SimpleXMLElement('<?xml version="1.0"?><data></data>');
