@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -37,8 +37,6 @@ use const true;
  * Enum: Operating Systems
  *
  * @version 0.1.0
- *
- * @package Inane\Stdlib
  */
 enum Os: string implements CoreEnumInterface {
 	case BSD = 'bsd';

@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -32,8 +32,6 @@ use const false;
  * @since 0.4.4
  *
  * @version 0.1.1
- *
- * @package Inane\Stdlib
  */
 interface CoreEnumInterface {
 	/**

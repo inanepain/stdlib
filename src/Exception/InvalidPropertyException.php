@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -35,7 +35,6 @@ use const null;
 /**
  * Magic GET/SET reject property
  *
- * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.3.0
  */

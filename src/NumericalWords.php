@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -58,8 +58,6 @@ use const true;
  * Number and word converter
  *
  * Converts spelt numbers to digits and digits to spelt words.
- *
- * @package Inane\Stdlib
  *
  * @version 0.1.0
  */

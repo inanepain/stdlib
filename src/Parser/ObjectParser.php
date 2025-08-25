@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -38,8 +38,6 @@ use const PHP_EOL;
  * ObjectParser
  *
  * Recursive object/variable parser
- *
- * @package Inane\Stdlib
  *
  * @version 1.0.1
  */

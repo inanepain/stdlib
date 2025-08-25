@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -55,8 +55,6 @@ use const null;
  *
  * Provides a property based interface to an array.
  * The data can be made read-only by setting $allowModifications to false with the `lock` method.
- *
- * @package Inane\Stdlib
  *
  * @version 0.16.0
  * 

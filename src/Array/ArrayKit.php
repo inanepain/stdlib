@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -74,8 +74,6 @@ use Inane\Stdlib\{
  * @method int|float sum()                                                          		Calculate the sum of values in an array
  * @method int       unshift(mixed $values)                                         		Prepend one or more elements to the beginning of an array
  * @method array     walk(callable $func)                                           		Apply a user supplied function to every member of this array
- *
- * @package Inane\Stdlib\Array
  *
  * @version 0.2.1
  */

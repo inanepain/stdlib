@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -29,7 +29,6 @@ use Inane\Stdlib\Exception\Exception;
 /**
  * Exception that represents error in the program logic. This kind of exception should lead directly to a fix in your code.
  *
- * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */
