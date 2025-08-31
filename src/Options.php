@@ -36,6 +36,7 @@ use function array_pop;
 use function array_reduce;
 use function array_unique;
 use function array_values;
+use function asort;
 use function count;
 use function current;
 use function in_array;
@@ -47,6 +48,7 @@ use function key;
 use function next;
 use function prev;
 use function reset;
+use function sort;
 
 use const null;
 
@@ -605,6 +607,30 @@ class Options implements OptionsInterface {
 	#endregion NAVIGATION
 	
 	#region OTHER
+	/**
+	 * Sorts the options.
+	 * 
+	 * @since version
+	 *
+	 * @param bool $preserveIndex Whether to preserve the array keys during sorting. Defaults to true.
+	 * @param bool $createCopy If true, returns a sorted copy of the options; if false, sorts in place.
+	 * 
+	 * @return static Returns the sorted options instance.
+	 */
+	public function sort(bool $preserveIndex = true, bool $createCopy = false): static {
+		$sorted = $this->toArray();
+
+		if ($preserveIndex) asort($sorted);
+		else sort($sorted);
+		
+		$sorted = new static($sorted);
+		if ($createCopy) return $sorted;
+
+		$this->data = [];
+		$this->merge($sorted);
+		return $this;
+	}
+
 	/**
 	 * count
 	 *

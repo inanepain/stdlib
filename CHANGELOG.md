@@ -15,7 +15,10 @@ Version: $Id$ ($Date$)
   original.
 
 - update: `ObjectParser` creates a private instance which can use custom
-  properties for that perse.
+  properties for that parse.
+
+- new: `Options::sort` sort with option to **create copy** and
+  **preserve index**.
 
 ## 0.6.0 (2025 Aug 07)
 
