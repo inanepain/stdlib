@@ -1,0 +1,20 @@
+= 0.7.0-dev (2025 Xxx xx)
+:author: Philip Michael Raab
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.7.0
+:revdate: 2025-XX-XX
+:copyright: Unlicense
+:experimental:
+:hide-uri-scheme:
+:icons: font
+:source-highlighter: highlight.js
+:sectnums!:
+:toc: auto
+:sectanchors:
+
+* new: `TraversableToArray` *trait* with `iteratorToArrayDeep` *method* that converts a `Traversable` into an `Array`.
+* update: `Options` implements `TraversableToArray` for its array conversion.
+* update: `Options::unique` add argument `$createCopy` - *true* => return unique copy not modifying original, *false* => modify original.
+* update: `ObjectParser` creates a private instance which can use custom properties for that parse.

@@ -438,11 +438,11 @@ class Options implements OptionsInterface {
 	 * - Items in $merge with INTEGER keys will be appended.
 	 * - Items in $merge with STRING keys will overwrite current values.
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
+	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|OptionsInterface|Options $merge
 	 *
-	 * @return OptionsInterface
+	 * @return OptionsInterface|Options
 	 */
-	public function merge(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
+	public function merge(array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge): OptionsInterface {
 		if (!$merge instanceof self) $merge = new static($merge);
 
 		/** @var OptionsInterface $value */
@@ -622,11 +622,19 @@ class Options implements OptionsInterface {
 	 * Filters unique items
 	 *
 	 * @since 0.14.0
+	 * @since version $createCopy param added
+	 * 
+	 * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
 	 *
 	 * @return Options|OptionsInterface unique items
 	 */
-	public function unique(): static {
-		return new static(array_unique($this->toArray()));
+	public function unique(bool $createCopy = false): static {
+		$unique = new static(array_unique($this->toArray()));
+		if ($createCopy) return $unique;
+
+		$this->data = [];
+		$this->merge($unique);
+		return $this;
 	}
 	#endregion OTHER
 	

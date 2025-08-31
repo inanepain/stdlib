@@ -1,0 +1,22 @@
+= 0.4.2 (2023 Mar 28)
+:author: Philip Michael Raab
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.4.2
+:revdate: 2023-03-28
+:copyright: Unlicense
+:experimental:
+:hide-uri-scheme:
+:icons: font
+:source-highlighter: highlight.js
+:sectnums!:
+:toc: auto
+:sectanchors:
+
+* new: `Options::__set_state` to handle code from `var_export`
+* new: `ClassIdTrait` generate classId based on class name and a few options
+* update: `Options` reorganised code into sections for easier reading
+* update: `Options` now can also take a json encoded string as initial value
+* update: `ArrayKit` new tested methods: count, implode, slice, splice
+* update: `ArrayKit` implements `ArrayAccess`

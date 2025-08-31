@@ -1,0 +1,24 @@
+= 0.4.6 (2023 Jun 27)
+:author: Philip Michael Raab
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.4.6
+:revdate: 2023-06-27
+:copyright: Unlicense
+:experimental:
+:hide-uri-scheme:
+:icons: font
+:source-highlighter: highlight.js
+:sectnums!:
+:toc: auto
+:sectanchors:
+
+* update: `Inane\Stdlib\Json::encode` property supports `Inane\Stdlib\ArrayObject`
+* new: Migrate `LogTrait` from the deprecated _Inane\Inane_ package to the _Inane\Stdlib_ library
+* new: Migrate `IpTrait` from the deprecated _Inane\Inane_ package to the _Inane\Stdlib_ library
+* new: `Json::isJsonString` Test string for valid json format
+* new: `CoreEnumTrait` with methods for related interface
+* new: `Options::pull` Get value and delete key
+* fix: `CoreEnumInterface` removed extends `BackedEnum`
+* fix: `Str::stringWithRandomCharacters` strict mode variable type error

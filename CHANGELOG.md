@@ -10,6 +10,13 @@ Version: $Id$ ($Date$)
 - update: `Options` implements `TraversableToArray` for its array
   conversion.
 
+- update: `Options::unique` add argument `$createCopy` - **true** ⇒
+  return unique copy not modifying original, **false** ⇒ modify
+  original.
+
+- update: `ObjectParser` creates a private instance which can use custom
+  properties for that perse.
+
 ## 0.6.0 (2025 Aug 07)
 
 - `OptionsInterface` - To facilitate creating interchangable Objects
