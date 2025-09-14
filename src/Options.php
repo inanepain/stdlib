@@ -251,12 +251,13 @@ class Options implements OptionsInterface {
 	public function get(mixed $id, mixed $default = null): mixed {
 		if ($this->offsetExists($id)) return $this->data[$id];
 
-		$kebab = StringCaseConverter::camelToKebab($id);
-		if ($this->offsetExists($kebab)) return $this->data[$kebab];
+		if (is_string($id)) {
+			$kebab = StringCaseConverter::camelToKebab($id);
+			if ($this->offsetExists($kebab)) return $this->data[$kebab];
 
-		$camel = StringCaseConverter::kebabToCamel($id);
-		if ($this->offsetExists($camel)) return $this->data[$camel];
-
+			$camel = StringCaseConverter::kebabToCamel($id);
+			if ($this->offsetExists($camel)) return $this->data[$camel];
+		}
 		return $default;
 	}
 
@@ -306,7 +307,7 @@ class Options implements OptionsInterface {
 	 */
 	public function __set(mixed $key, mixed $value) {
 		if ($this->allowModifications) {
-			$kebab = $key === null ? null : StringCaseConverter::camelToKebab($key);
+			$kebab = $key === null ? null : (is_string($key) ? StringCaseConverter::camelToKebab($key) : $key);
 			if (is_array($value)) $value = new static($value);
 
 			if (is_null($kebab)) $this->data[] = $value;
