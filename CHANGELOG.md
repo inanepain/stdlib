@@ -7,6 +7,12 @@ Version: $Id$ ($Date$)
 - new: `TraversableToArray` **trait** with `iteratorToArrayDeep`
   **method** that converts a `Traversable` into an `Array`.
 
+- new: `StringCaseConverter` a converter with specified in/out cases to
+  make it more reliable.
+
+- new: `Options::sort` sort with option to **create copy** and
+  **preserve index**.
+
 - update: `Options` implements `TraversableToArray` for its array
   conversion.
 
@@ -16,9 +22,6 @@ Version: $Id$ ($Date$)
 
 - update: `ObjectParser` creates a private instance which can use custom
   properties for that parse.
-
-- new: `Options::sort` sort with option to **create copy** and
-  **preserve index**.
 
 ## 0.6.0 (2025 Aug 07)
 

@@ -507,8 +507,8 @@ class Str implements Stringable {
                 $string = lcfirst(ucwords(strtolower($string)));
                 break;
 
-            case Capitalisation::StudlyCaps:
-                $string = ucwords(strtolower($string));
+            case Capitalisation::PascalCase:
+                $string = StringCaseConverter::kebabToPascal(StringCaseConverter::snakeToPascal($string));
                 break;
 
             case Capitalisation::RaNDom:

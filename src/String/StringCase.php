@@ -33,10 +33,8 @@ enum Capitalisation: string {
 	case Ignore     = 'Ignore';
 	case UPPERCASE  = 'UPPERCASE';
 	case lowercase  = 'lowercase';
-	case PascalCase = 'PascalCase';
+	case StudlyCaps = 'StudlyCaps';
 	case camelCase  = 'camelCase';
-	case snake_case = 'snake_case';
-	case KebabCase  = 'kebab-case';
 	case RaNDom     = 'RaNDom';
 
 	/**
@@ -49,10 +47,8 @@ enum Capitalisation: string {
 			static::Ignore => 'Don\'t change case of string.',
 			static::UPPERCASE => 'CHANGE STRING TO UPPERCASE',
 			static::lowercase => 'change string to lowercase',
-			static::PascalCase => 'Change String To PascalCase',
-			static::camelCase => 'Change String To camelCase',
-			static::snake_case => 'Change String To snake_case',
-			static::KebabCase => 'Change String To kebab-case',
+			static::StudlyCaps => 'Change String To Studlycaps',
+			static::camelCase => 'change String To Camelcase',
 			static::RaNDom => 'chANGe StRInG to rAnDOm CApITaliSAtIOn',
 		};
 	}

@@ -29,6 +29,7 @@ use Inane\Stdlib\Exception\{
 	InvalidArgumentException,
 	RuntimeException
 };
+use Inane\Stdlib\String\StringCaseConverter;
 
 use function array_key_exists;
 use function array_keys;
@@ -67,7 +68,7 @@ class Options implements OptionsInterface {
 	use Converters\ArrayToXML;
 	use Converters\TraversableToArray;
 	#endregion TRAITS
-	
+
 	#region PROPERTIES
 	/**
 	 * Stores the option values as key-value pairs.
@@ -248,7 +249,15 @@ class Options implements OptionsInterface {
 	 * @return mixed|Options|OptionsInterface value
 	 */
 	public function get(mixed $id, mixed $default = null): mixed {
-		return $this->offsetExists($id) ? $this->data[$id] : $default;
+		if ($this->offsetExists($id)) return $this->data[$id];
+
+		$kebab = StringCaseConverter::camelToKebab($id);
+		if ($this->offsetExists($kebab)) return $this->data[$kebab];
+
+		$camel = StringCaseConverter::kebabToCamel($id);
+		if ($this->offsetExists($camel)) return $this->data[$camel];
+
+		return $default;
 	}
 
 	/**
@@ -283,7 +292,7 @@ class Options implements OptionsInterface {
 		return current($this->data);
 	}
 	#endregion GETTER
-	
+
 	#region SETTER
 	/**
 	 * Assigns a value to the specified key
@@ -297,10 +306,11 @@ class Options implements OptionsInterface {
 	 */
 	public function __set(mixed $key, mixed $value) {
 		if ($this->allowModifications) {
+			$kebab = $key === null ? null : StringCaseConverter::camelToKebab($key);
 			if (is_array($value)) $value = new static($value);
 
-			if (is_null($key)) $this->data[] = $value;
-			else $this->data[$key] = $value;
+			if (is_null($kebab)) $this->data[] = $value;
+			else $this->data[$kebab] = $value;
 		} else throw new RuntimeException('Option is read only');
 	}
 
@@ -333,7 +343,7 @@ class Options implements OptionsInterface {
 		$this->__set($offset, $value);
 	}
 	#endregion SETTER
-	
+
 	#region GETTER_SETTER
 	/**
 	 * Gets the previous value of the key being assigned a new value
@@ -427,7 +437,7 @@ class Options implements OptionsInterface {
 		return $result;
 	}
 	#endregion UNSETTER
-	
+
 	#region MERGING
 	/**
 	 * Merge another Options object with this one.
@@ -540,7 +550,7 @@ class Options implements OptionsInterface {
 		return $this;
 	}
 	#endregion MERGING
-	
+
 	#region LOCKING
 	/**
 	 * Prevent any more modifications being made to this instance.
@@ -568,7 +578,7 @@ class Options implements OptionsInterface {
 		return !$this->allowModifications;
 	}
 	#endregion LOCKING
-	
+
 	#region NAVIGATION
 	/**
 	 * previous
@@ -605,7 +615,7 @@ class Options implements OptionsInterface {
 		reset($this->data);
 	}
 	#endregion NAVIGATION
-	
+
 	#region OTHER
 	/**
 	 * Sorts the options.
@@ -622,7 +632,7 @@ class Options implements OptionsInterface {
 
 		if ($preserveIndex) asort($sorted);
 		else sort($sorted);
-		
+
 		$sorted = new static($sorted);
 		if ($createCopy) return $sorted;
 
@@ -663,7 +673,7 @@ class Options implements OptionsInterface {
 		return $this;
 	}
 	#endregion OTHER
-	
+
 	#region EXPORTING
 	/**
 	 * Make Options play nicely with var_dump
@@ -673,7 +683,7 @@ class Options implements OptionsInterface {
 	public function __debugInfo(): array {
 		return $this->toArray();
 	}
-	
+
 	/**
 	 * Returns keys
 	 *
