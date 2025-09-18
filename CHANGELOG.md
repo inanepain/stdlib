@@ -13,6 +13,9 @@ Version: $Id$ ($Date$)
 - new: `Options::sort` sort with option to **create copy** and
   **preserve index**.
 
+- update: `Options` key check now tries to find kebab case key if key is
+  camel or pascal case.
+
 - update: `Options` implements `TraversableToArray` for its array
   conversion.
 
@@ -22,6 +25,8 @@ Version: $Id$ ($Date$)
 
 - update: `ObjectParser` creates a private instance which can use custom
   properties for that parse.
+
+- fix: `Options::defaults` overwrites false which it should not do.
 
 ## 0.6.0 (2025 Aug 07)
 

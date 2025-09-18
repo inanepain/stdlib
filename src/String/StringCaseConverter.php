@@ -183,4 +183,15 @@ class StringCaseConverter {
 
         throw new InvalidArgumentException("Unsupported conversion: {$from} -> {$to}");
     }
+
+    /**
+     * Detects the capitalisation style of the given string.
+     *
+     * @param string $string The input string whose capitalisation is to be detected.
+     * 
+     * @return Capitalisation The detected capitalisation style as a Capitalisation enum or object.
+     */
+    public static function caseFromString(string $string): Capitalisation {
+        return Capitalisation::fromString($string);
+    }
 }

@@ -29,6 +29,7 @@ use Inane\Stdlib\Exception\{
 	InvalidArgumentException,
 	RuntimeException
 };
+use Inane\Stdlib\String\Capitalisation;
 use Inane\Stdlib\String\StringCaseConverter;
 
 use function array_key_exists;
@@ -170,6 +171,18 @@ class Options implements OptionsInterface {
 	 * @return boolean
 	 */
 	public function __isset(mixed $key): bool {
+		// if (!array_key_exists($key, $this->data) && is_string($key)) {
+		// 	$case = StringCaseConverter::caseFromString($key);
+
+		// 	$kebab = false;
+		// 	if ($case == Capitalisation::camelCase) {
+		// 		$kebab = StringCaseConverter::camelToKebab($key);
+		// 	} elseif ($case == Capitalisation::PascalCase) {
+		// 		$kebab = StringCaseConverter::pascalToKebab($key);
+		// 	}
+		// 	if (is_string($kebab) && array_key_exists($kebab, $this->data)) $key = $kebab;
+		// }
+
 		return isset($this->data[$key]) || array_key_exists($key, $this->data);
 	}
 
@@ -252,11 +265,15 @@ class Options implements OptionsInterface {
 		if ($this->offsetExists($id)) return $this->data[$id];
 
 		if (is_string($id)) {
-			$kebab = StringCaseConverter::camelToKebab($id);
-			if ($this->offsetExists($kebab)) return $this->data[$kebab];
+			$case = StringCaseConverter::caseFromString($id);
 
-			$camel = StringCaseConverter::kebabToCamel($id);
-			if ($this->offsetExists($camel)) return $this->data[$camel];
+			$kebab = false;
+			if ($case == Capitalisation::camelCase) {
+				$kebab = StringCaseConverter::camelToKebab($id);
+			} elseif ($case == Capitalisation::PascalCase) {
+				$kebab = StringCaseConverter::pascalToKebab($id);
+			}
+			if (is_string($kebab) && $this->offsetExists($kebab)) return $this->data[$kebab];
 		}
 		return $default;
 	}
@@ -307,12 +324,21 @@ class Options implements OptionsInterface {
 	 */
 	public function __set(mixed $key, mixed $value) {
 		if ($this->allowModifications) {
-			$kebab = $key === null ? null : (is_string($key) ? StringCaseConverter::camelToKebab($key) : $key);
+			if (!$this->offsetExists($key) && is_string($key)) {
+				$case = StringCaseConverter::caseFromString($key);
+				
+				$kebab = false;
+				if ($case == Capitalisation::camelCase) $kebab = StringCaseConverter::camelToKebab($key);
+				elseif ($case == Capitalisation::PascalCase) $kebab = StringCaseConverter::pascalToKebab($key);
+				
+				if (is_string($kebab) && $this->offsetExists($kebab)) $key = $kebab;
+			}
+
 			if (is_array($value)) $value = new static($value);
 
-			if (is_null($kebab)) $this->data[] = $value;
-			else $this->data[$kebab] = $value;
-		} else throw new RuntimeException('Option is read only');
+			if (is_null($key)) $this->data[] = $value;
+			else $this->data[$key] = $value;
+		} else throw new RuntimeException("Option is read only, key: $key");
 	}
 
 	/**
@@ -480,6 +506,9 @@ class Options implements OptionsInterface {
 	 *
 	 * 1 array in = same array out
 	 * 0 array in = empty array out
+	 * 
+	 * Apply defaults to $args:
+	 * $args->defaults($defaults);
 	 *
 	 * @todo: check for allowModifications
 	 *
@@ -488,15 +517,11 @@ class Options implements OptionsInterface {
 	 * @return OptionsInterface
 	 */
 	public function defaults(Options|OptionsInterface ...$models): self {
-		// $replaceable = ['', null, false];
 		$replaceable = ['', null];
 
 		while ($model = array_pop($models)) foreach ($model as $key => $value) {
 			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
-			else {
-				if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
-					$this[$key] = $value;
-			}
+			elseif ((!$this->offsetExists($key) || in_array($this[$key], $replaceable)) && $this[$key] !== false) $this[$key] = $value;
 		}
 		return $this;
 	}
@@ -564,8 +589,8 @@ class Options implements OptionsInterface {
 	public function lock(): self {
 		$this->allowModifications = false;
 
-		/** @var OptionsInterface $value */
-		foreach ($this->data as $value) if ($value instanceof self) $value->lock();
+		/** @var OptionsInterface|Options|Config $value */
+		foreach ($this->data as $value) if ($value instanceof OptionsInterface) $value->lock();
 
 		return $this;
 	}
