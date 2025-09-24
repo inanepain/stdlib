@@ -1,0 +1,17 @@
+= 0.5.0 (2025 Jul 21)
+:author: Philip Michael Raab
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.5.0
+:revdate: 2025-07-21
+:copyright: Unlicense
+:experimental:
+:hide-uri-scheme:
+:icons: font
+:source-highlighter: highlight.js
+:sectnums!:
+:toc: auto
+:sectanchors:
+
+* new: `Options` getset methods

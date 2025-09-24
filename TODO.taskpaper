@@ -1,12 +1,2 @@
-Inane\Stdlib:
-	Options:
-		- modify: merges by only updating existing keys @done(2022-12-10)
-		- complete: merges by only adding missing keys @done(2022-12-10)
-	Converter\JSON:
-		Custom JSON converter. Wraps json_* functions with sane defaults. Friendly Arguments.
-		- Custom JSON Class @done(2022-12-21)
-		- Encode: @method(JSON) @done(2022-12-21)
-		- Decode: @method(JSON) @done(2022-12-21)
-	Array\ArrayKit:
-		Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
-		- convert individual rule properties to a single rules array property
+inanepain/stdlib:
+  Common classes, tools and utilities used throughout the inanepain libraries.

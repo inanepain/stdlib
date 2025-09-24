@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -28,8 +28,6 @@ namespace Inane\Stdlib\Exception;
  * StubException
  *
  * Code only a stub and needs completing.
- *
- * @package Inane\Exception
  *
  * @version 1.0.0
  */

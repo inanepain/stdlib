@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -47,7 +47,6 @@ use Inane\Stdlib\Converters\{
  *  - Arrays converted to ArrayObject
  *
  * @version 0.2.2
- * @package Inane\Stdlib
  */
 class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
     /**

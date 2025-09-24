@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -59,8 +59,6 @@ use const true;
  *
  * Converts spelt numbers to digits and digits to spelt words.
  *
- * @package Inane\Stdlib
- *
  * @version 0.1.0
  */
 class NumericalWords {
@@ -101,7 +99,7 @@ class NumericalWords {
         'twenty' => 20,
         'thirty' => 30,
         'forty' => 40,
-        'fourty' => 40,
+        'forty' => 40,
         'fifty' => 50,
         'sixty' => 60,
         'seventy' => 70,

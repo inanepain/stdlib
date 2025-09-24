@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -39,9 +39,7 @@ use const PHP_EOL;
  *
  * Recursive object/variable parser
  *
- * @package Inane\Stdlib
- *
- * @version 1.0.1
+ * @version 1.1.0
  */
 class ObjectParser {
     /**
@@ -53,10 +51,25 @@ class ObjectParser {
     public static int $depth = 4;
 
     /**
+     * Max dump depth
+     *
+     * N.B.: does not effect `var_dump`
+     * @see \Inane\Dumper\Dumper::$useVarExport
+     */
+    public int $parseDepth {
+        get => isset($this->parseDepth) ? $this->parseDepth : static::$depth;
+        set(int $value) {
+            $this->parseDepth = $value;
+        }
+    }
+
+    /**
      * Object Parser: private constructor
      *  So instantiation can only be done internally.
      */
-    private function __construct() {
+    private function __construct(?int $parseDepth = null) {
+        if ($parseDepth !== null)
+            $this->parseDepth = $parseDepth;
     }
 
     /**
@@ -67,16 +80,16 @@ class ObjectParser {
      *
      * @return string array as string
      */
-    private static function parseArray(array $array, int $level): string {
+    private function parseArray(array $array, int $level): string {
         $output = '';
 
-        if (static::$depth <= $level) $output .= '[...]';
+        if ($this->parseDepth <= $level) $output .= '[...]';
         else if (empty($array)) $output .= '[]';
         else {
             $keys = array_keys($array);
             $spaces = str_repeat(' ', $level * 4);
             $output .= '[';
-            foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . self::parseVariable($array[$key], $level + 1). ',';
+            foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . $this->parseVariable($array[$key], $level + 1). ',';
             $output .= PHP_EOL . "{$spaces}]";
         }
 
@@ -92,12 +105,12 @@ class ObjectParser {
      *
      * @return string object as string
      */
-    private static function parseObject(mixed $object, int $level, array &$cache): string {
+    private function parseObject(mixed $object, int $level, array &$cache): string {
         $output = '';
         $className = get_class($object);
 
         if (($id = array_search($object, $cache, true)) !== false) $output .= "{$className}#" . (++$id) . '(...)';
-        else if (static::$depth <= $level) $output .= "{$className}(...)";
+        else if ($this->parseDepth <= $level) $output .= "{$className}(...)";
         else {
             $id = array_push($cache, $object);
             $members = (array)$object;
@@ -107,7 +120,7 @@ class ObjectParser {
 
             foreach ($keys as $key) {
                 $keyDisplay = strtr(trim("$key"), ["\0" => ':']);
-                $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . self::parseVariable($members[$key], $level + 1, $cache);
+                $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . $this->parseVariable($members[$key], $level + 1, $cache);
             }
             $output .= PHP_EOL . "{$spaces}}";
         }
@@ -124,7 +137,7 @@ class ObjectParser {
      *
      * @return string dump string
      */
-    private static function parseVariable(mixed $var, int $level = 0, array &$cache = []): string {
+    private function parseVariable(mixed $var, int $level = 0, array &$cache = []): string {
         return match (gettype($var)) {
             'boolean' => $var ? 'true' : 'false',
             'integer', 'double' => "$var",
@@ -132,10 +145,22 @@ class ObjectParser {
             'resource' => '{resource}',
             'NULL' => 'null',
             'unknown type' => '{unknown}',
-            'array' => static::parseArray($var, $level),
-            'object' => static::parseObject($var, $level, $cache),
+            'array' => $this->parseArray($var, $level),
+            'object' => $this->parseObject($var, $level, $cache),
             default => '{unhandled}',
         };
+    }
+
+    /**
+     * Parses the given object and returns its string representation.
+     *
+     * @param mixed $object The object to be parsed.
+     * @param int|null $parseDepth Optional. The maximum depth to parse nested objects. If null, uses default depth.
+     * 
+     * @return string The string representation of the parsed object.
+     */
+    public static function parse(mixed $object, ?int $parseDepth = null): string {
+        return new self($parseDepth)->dump($object);
     }
 
     /**
@@ -145,7 +170,7 @@ class ObjectParser {
      *
      * @return string $object as string
      */
-    public static function parse(mixed $object): string {
-        return static::parseVariable($object);
+    public function dump(mixed $object): string {
+        return $this->parseVariable($object);
     }
 }

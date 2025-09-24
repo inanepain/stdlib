@@ -1,0 +1,34 @@
+= README: inanepain/stdlib
+:author: Philip Michael Raab
+:email: <philip@cathedral.co.za>
+:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
+:copyright: Unlicense
+:homepage: https://git.cathedral.co.za:3000/inanepain/stdlib
+:revnumber: 0.7.0
+:revdate: 2025-09-25
+:experimental:
+:hide-uri-scheme:
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:sectanchors:
+:idprefix: topic-
+:idseparator: -
+:pkg-vendor: inanepain
+:pkg-name: stdlib
+:pkg-id: {pkg-vendor}/{pkg-name}
+
+== image:./icon.png[title={pkg-id},25] {pkg-id}
+
+{description}
+
+<<<
+
+include::part/install.adoc[leveloffset=+1]
+
+<<<
+
+== Revision
+
+ version: $Id$ ($Date$)

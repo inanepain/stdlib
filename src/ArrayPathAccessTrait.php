@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -42,8 +42,6 @@ use const null;
  * Set `pathArrayProperty` to property to use as pathObject
  * else
  * pathObject is set to `data`
- *
- * @package Inane\Stdlib
  *
  * @version 0.1.0
  */

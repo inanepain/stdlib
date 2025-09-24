@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -37,8 +37,6 @@ use const null;
  * Highlight
  *
  * PHP highlight values
- *
- * @package Inane\Stdlib
  *
  * @version 0.4.0
  */

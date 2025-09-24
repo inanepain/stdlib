@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -27,7 +27,6 @@ namespace Inane\Stdlib\Exception;
 /**
  * Exception thrown if a value does not adhere to a defined valid data domain.
  *
- * @package Inane\Exception
  * @implements \Inane\Stdlib\Exception\ExceptionInterface
  * @version 0.2.0
  */

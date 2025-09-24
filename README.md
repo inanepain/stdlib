@@ -7,7 +7,7 @@ libraries.
 
 composer
 
-    composer require inanepain/stdlib
+composer require inanepain/stdlib
 
 # Revision
 

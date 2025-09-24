@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -29,6 +29,8 @@ use Inane\Stdlib\Exception\{
 	InvalidArgumentException,
 	RuntimeException
 };
+use Inane\Stdlib\String\Capitalisation;
+use Inane\Stdlib\String\StringCaseConverter;
 
 use function array_key_exists;
 use function array_keys;
@@ -36,6 +38,7 @@ use function array_pop;
 use function array_reduce;
 use function array_unique;
 use function array_values;
+use function asort;
 use function count;
 use function current;
 use function in_array;
@@ -47,6 +50,7 @@ use function key;
 use function next;
 use function prev;
 use function reset;
+use function sort;
 
 use const null;
 
@@ -56,18 +60,29 @@ use const null;
  * Provides a property based interface to an array.
  * The data can be made read-only by setting $allowModifications to false with the `lock` method.
  *
- * @package Inane\Stdlib
- *
- * @version 0.16.0
+ * @version 0.17.0
  */
 class Options implements OptionsInterface {
-	#region PROPERTIES
+	#region TRAITS
 	use Converters\ArrayToXML;
+	use Converters\TraversableToArray;
+	#endregion TRAITS
 
+	#region PROPERTIES
 	/**
-	 * Value store
+	 * Stores the option values as key-value pairs.
+	 * 
+	 * @var array<string, mixed> $data
 	 */
 	private array $data = [];
+
+	/**
+     * Used when unsetting values during iteration to ensure we do not skip
+     * the next element.
+     *
+     * @var bool
+     */
+    protected bool $skipNextIteration;
 	#endregion PROPERTIES
 
 	#region CREATE
@@ -162,7 +177,19 @@ class Options implements OptionsInterface {
 	 * @return boolean
 	 */
 	public function __isset(mixed $key): bool {
-		return isset($this->data[$key]) || array_key_exists($key, $this->data);
+		// if (!array_key_exists($key, $this->data) && is_string($key)) {
+		// 	$case = StringCaseConverter::caseFromString($key);
+
+		// 	$kebab = false;
+		// 	if ($case == Capitalisation::camelCase) {
+		// 		$kebab = StringCaseConverter::camelToKebab($key);
+		// 	} elseif ($case == Capitalisation::PascalCase) {
+		// 		$kebab = StringCaseConverter::pascalToKebab($key);
+		// 	}
+		// 	if (is_string($kebab) && array_key_exists($kebab, $this->data)) $key = $kebab;
+		// }
+
+		return array_key_exists($key, $this->data);
 	}
 
 	/**
@@ -198,7 +225,7 @@ class Options implements OptionsInterface {
 	 * @return bool valid
 	 */
 	public function valid(): bool {
-		return (!is_null($this->key()));
+		return $this->key() !== null;
 	}
 
 	/**
@@ -214,7 +241,7 @@ class Options implements OptionsInterface {
 	 * @return bool Returns true if value is found, false otherwise
 	 */
 	public function contains(mixed $value, bool $strict = false): bool {
-		return in_array($value, $this->toArray(), $strict);
+		return in_array($value, $this->data, $strict);
 	}
 	#endregion IS_SET
 
@@ -241,7 +268,20 @@ class Options implements OptionsInterface {
 	 * @return mixed|Options|OptionsInterface value
 	 */
 	public function get(mixed $id, mixed $default = null): mixed {
-		return $this->offsetExists($id) ? $this->data[$id] : $default;
+		if ($this->offsetExists($id)) return $this->data[$id];
+
+		if (is_string($id)) {
+			$case = StringCaseConverter::caseFromString($id);
+
+			$kebab = false;
+			if ($case == Capitalisation::camelCase) {
+				$kebab = StringCaseConverter::camelToKebab($id);
+			} elseif ($case == Capitalisation::PascalCase) {
+				$kebab = StringCaseConverter::pascalToKebab($id);
+			}
+			if (is_string($kebab) && $this->offsetExists($kebab)) return $this->data[$kebab];
+		}
+		return $default;
 	}
 
 	/**
@@ -273,10 +313,11 @@ class Options implements OptionsInterface {
 	 * @return mixed|OptionsInterface
 	 */
 	public function current(): mixed {
+		$this->skipNextIteration = false;
 		return current($this->data);
 	}
 	#endregion GETTER
-	
+
 	#region SETTER
 	/**
 	 * Assigns a value to the specified key
@@ -290,11 +331,21 @@ class Options implements OptionsInterface {
 	 */
 	public function __set(mixed $key, mixed $value) {
 		if ($this->allowModifications) {
+			if (!$this->offsetExists($key) && is_string($key)) {
+				$case = StringCaseConverter::caseFromString($key);
+				
+				$kebab = false;
+				if ($case == Capitalisation::camelCase) $kebab = StringCaseConverter::camelToKebab($key);
+				elseif ($case == Capitalisation::PascalCase) $kebab = StringCaseConverter::pascalToKebab($key);
+				
+				if (is_string($kebab) && $this->offsetExists($kebab)) $key = $kebab;
+			}
+
 			if (is_array($value)) $value = new static($value);
 
-			if (is_null($key)) $this->data[] = $value;
+			if ($key === null) $this->data[] = $value;
 			else $this->data[$key] = $value;
-		} else throw new RuntimeException('Option is read only');
+		} else throw new RuntimeException("Option is read only, key: $key");
 	}
 
 	/**
@@ -326,7 +377,7 @@ class Options implements OptionsInterface {
 		$this->__set($offset, $value);
 	}
 	#endregion SETTER
-	
+
 	#region GETTER_SETTER
 	/**
 	 * Gets the previous value of the key being assigned a new value
@@ -348,7 +399,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * SGets the previous value of the key being assigned a new value
+	 * Gets the previous value of the key being assigned a new value
 	 * 
 	 * @since 0.16.0
 	 * 
@@ -374,7 +425,10 @@ class Options implements OptionsInterface {
 	 */
 	public function __unset($key) {
 		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
-		elseif ($this->__isset($key)) unset($this->data[$key]);
+		elseif ($this->__isset($key)) {
+			unset($this->data[$key]);
+			$this->skipNextIteration = true;
+		}
 	}
 
 	/**
@@ -420,7 +474,7 @@ class Options implements OptionsInterface {
 		return $result;
 	}
 	#endregion UNSETTER
-	
+
 	#region MERGING
 	/**
 	 * Merge another Options object with this one.
@@ -433,11 +487,11 @@ class Options implements OptionsInterface {
 	 * - Items in $merge with INTEGER keys will be appended.
 	 * - Items in $merge with STRING keys will overwrite current values.
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
+	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|OptionsInterface|Options $merge
 	 *
-	 * @return OptionsInterface
+	 * @return OptionsInterface|Options
 	 */
-	public function merge(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
+	public function merge(array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge): OptionsInterface {
 		if (!$merge instanceof self) $merge = new static($merge);
 
 		/** @var OptionsInterface $value */
@@ -462,6 +516,9 @@ class Options implements OptionsInterface {
 	 *
 	 * 1 array in = same array out
 	 * 0 array in = empty array out
+	 * 
+	 * Apply defaults to $args:
+	 * $args->defaults($defaults);
 	 *
 	 * @todo: check for allowModifications
 	 *
@@ -470,15 +527,11 @@ class Options implements OptionsInterface {
 	 * @return OptionsInterface
 	 */
 	public function defaults(Options|OptionsInterface ...$models): self {
-		// $replaceable = ['', null, false];
 		$replaceable = ['', null];
 
 		while ($model = array_pop($models)) foreach ($model as $key => $value) {
 			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
-			else {
-				if (!$this->offsetExists($key) || in_array($this[$key], $replaceable))
-					$this[$key] = $value;
-			}
+			elseif ((!$this->offsetExists($key) || in_array($this[$key], $replaceable)) && $this[$key] !== false) $this[$key] = $value;
 		}
 		return $this;
 	}
@@ -533,7 +586,7 @@ class Options implements OptionsInterface {
 		return $this;
 	}
 	#endregion MERGING
-	
+
 	#region LOCKING
 	/**
 	 * Prevent any more modifications being made to this instance.
@@ -541,13 +594,13 @@ class Options implements OptionsInterface {
 	 * Useful after merge() has been used to merge multiple OptionsInterface objects
 	 * into one object which should then not be modified again.
 	 *
-	 * @return OptionsInterface
+	 * @return self
 	 */
 	public function lock(): self {
 		$this->allowModifications = false;
 
-		/** @var OptionsInterface $value */
-		foreach ($this->data as $value) if ($value instanceof self) $value->lock();
+		/** @var OptionsInterface|Options|Config $value */
+		foreach ($this->data as $value) if ($value instanceof OptionsInterface) $value->lock();
 
 		return $this;
 	}
@@ -561,7 +614,7 @@ class Options implements OptionsInterface {
 		return !$this->allowModifications;
 	}
 	#endregion LOCKING
-	
+
 	#region NAVIGATION
 	/**
 	 * previous
@@ -584,6 +637,11 @@ class Options implements OptionsInterface {
 	 * @return void
 	 */
 	public function next(): void {
+		if ($this->skipNextIteration) {
+            $this->skipNextIteration = false;
+            return;
+        }
+
 		next($this->data);
 	}
 
@@ -595,11 +653,36 @@ class Options implements OptionsInterface {
 	 * @return void
 	 */
 	public function rewind(): void {
+		$this->skipNextIteration = false;
 		reset($this->data);
 	}
 	#endregion NAVIGATION
-	
+
 	#region OTHER
+	/**
+	 * Sorts the options.
+	 * 
+	 * @since version
+	 *
+	 * @param bool $preserveIndex Whether to preserve the array keys during sorting. Defaults to true.
+	 * @param bool $createCopy If true, returns a sorted copy of the options; if false, sorts in place.
+	 * 
+	 * @return static Returns the sorted options instance.
+	 */
+	public function sort(bool $preserveIndex = true, bool $createCopy = false): static {
+		$sorted = $this->toArray();
+
+		if ($preserveIndex) asort($sorted);
+		else sort($sorted);
+
+		$sorted = new static($sorted);
+		if ($createCopy) return $sorted;
+
+		$this->data = [];
+		$this->merge($sorted);
+		return $this;
+	}
+
 	/**
 	 * count
 	 *
@@ -617,14 +700,22 @@ class Options implements OptionsInterface {
 	 * Filters unique items
 	 *
 	 * @since 0.14.0
+	 * @since version $createCopy param added
+	 * 
+	 * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
 	 *
 	 * @return Options|OptionsInterface unique items
 	 */
-	public function unique(): static {
-		return new static(array_unique($this->toArray()));
+	public function unique(bool $createCopy = false): static {
+		$unique = new static(array_unique($this->toArray()));
+		if ($createCopy) return $unique;
+
+		$this->data = [];
+		$this->merge($unique);
+		return $this;
 	}
 	#endregion OTHER
-	
+
 	#region EXPORTING
 	/**
 	 * Make Options play nicely with var_dump
@@ -634,7 +725,7 @@ class Options implements OptionsInterface {
 	public function __debugInfo(): array {
 		return $this->toArray();
 	}
-	
+
 	/**
 	 * Returns keys
 	 *
@@ -669,14 +760,7 @@ class Options implements OptionsInterface {
 	 * @return array
 	 */
 	public function toArray(): array {
-		$array = [];
-		$data = $this->data;
-
-		/** @var self $value */
-		foreach ($data as $key => $value) if ($value instanceof self) $array[$key] = $value->toArray();
-		else $array[$key] = $value;
-
-		return $array;
+		return static::iteratorToArrayDeep($this);
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -40,8 +40,6 @@ use function ucwords;
  * Inflector
  *
  * @version 1.2.0
- *
- * @package Inane\Stdlib
  */
 class Inflector {
     /**

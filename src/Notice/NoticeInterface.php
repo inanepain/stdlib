@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 /**
@@ -39,8 +39,6 @@ namespace Inane\Stdlib\Notice;
  * NoticeInterface
  *
  *  - 0  : Notice
- *
- * @package Inane\Notice
  *
  * @version 0.1.0
  */

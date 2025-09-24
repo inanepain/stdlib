@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 declare(strict_types=1);
@@ -31,8 +31,6 @@ use Throwable;
  * Notice
  *
  * Generates a user-level error/warning/notice message
- *
- * @package Inane\Notice
  *
  * @version 0.1.0
  */

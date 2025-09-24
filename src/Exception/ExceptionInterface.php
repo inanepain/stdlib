@@ -17,7 +17,7 @@
  * @license UNLICENSE
  * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
- * @version $version
+ * _version_ $version
  */
 
 /**
@@ -77,8 +77,6 @@ namespace Inane\Stdlib\Exception;
  *  - 355: InvalidArgumentException
  *  - 360: InvalidPropertyException
  *  - 780: FileException
- *
- * @package Inane\Exception
  *
  * @version 1.0.0
  */
