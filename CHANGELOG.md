@@ -26,6 +26,9 @@ Version: $Id$ ($Date$)
 - update: `ObjectParser` creates a private instance which can use custom
   properties for that parse.
 
+- fix: `Iterator` missing items when making changes to object during
+  loop.
+
 - fix: `Options::defaults` overwrites false which it should not do.
 
 ## 0.6.0 (2025 Aug 07)
