@@ -77,6 +77,14 @@ class Options implements OptionsInterface {
 	 * @var array<string, mixed> $data
 	 */
 	private array $data = [];
+
+	/**
+     * Used when unsetting values during iteration to ensure we do not skip
+     * the next element.
+     *
+     * @var bool
+     */
+    protected bool $skipNextIteration;
 	#endregion PROPERTIES
 
 	#region CREATE
@@ -183,7 +191,7 @@ class Options implements OptionsInterface {
 		// 	if (is_string($kebab) && array_key_exists($kebab, $this->data)) $key = $kebab;
 		// }
 
-		return isset($this->data[$key]) || array_key_exists($key, $this->data);
+		return array_key_exists($key, $this->data);
 	}
 
 	/**
@@ -219,7 +227,7 @@ class Options implements OptionsInterface {
 	 * @return bool valid
 	 */
 	public function valid(): bool {
-		return (!is_null($this->key()));
+		return $this->key() !== null;
 	}
 
 	/**
@@ -235,7 +243,7 @@ class Options implements OptionsInterface {
 	 * @return bool Returns true if value is found, false otherwise
 	 */
 	public function contains(mixed $value, bool $strict = false): bool {
-		return in_array($value, $this->toArray(), $strict);
+		return in_array($value, $this->data, $strict);
 	}
 	#endregion IS_SET
 
@@ -307,6 +315,7 @@ class Options implements OptionsInterface {
 	 * @return mixed|OptionsInterface
 	 */
 	public function current(): mixed {
+		$this->skipNextIteration = false;
 		return current($this->data);
 	}
 	#endregion GETTER
@@ -336,7 +345,7 @@ class Options implements OptionsInterface {
 
 			if (is_array($value)) $value = new static($value);
 
-			if (is_null($key)) $this->data[] = $value;
+			if ($key === null) $this->data[] = $value;
 			else $this->data[$key] = $value;
 		} else throw new RuntimeException("Option is read only, key: $key");
 	}
@@ -418,7 +427,10 @@ class Options implements OptionsInterface {
 	 */
 	public function __unset($key) {
 		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
-		elseif ($this->__isset($key)) unset($this->data[$key]);
+		elseif ($this->__isset($key)) {
+			unset($this->data[$key]);
+			$this->skipNextIteration = true;
+		}
 	}
 
 	/**
@@ -627,6 +639,11 @@ class Options implements OptionsInterface {
 	 * @return void
 	 */
 	public function next(): void {
+		if ($this->skipNextIteration) {
+            $this->skipNextIteration = false;
+            return;
+        }
+
 		next($this->data);
 	}
 
@@ -638,6 +655,7 @@ class Options implements OptionsInterface {
 	 * @return void
 	 */
 	public function rewind(): void {
+		$this->skipNextIteration = false;
 		reset($this->data);
 	}
 	#endregion NAVIGATION
