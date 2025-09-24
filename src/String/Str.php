@@ -25,6 +25,12 @@ declare(strict_types=1);
 namespace Inane\Stdlib\String;
 
 use Stringable;
+use Inane\Stdlib\{
+    Exception\InvalidPropertyException,
+    Object\MagicPropertyTrait,
+    ArrayObject,
+    Highlight
+};
 
 use function array_merge;
 use function basename;
@@ -45,17 +51,9 @@ use function strval;
 use function substr_replace;
 use function trim;
 use function ucwords;
-use const false;
+
 use const null;
 use const STR_PAD_RIGHT;
-use const true;
-
-use Inane\Stdlib\{
-    Exception\InvalidPropertyException,
-    Object\MagicPropertyTrait,
-    ArrayObject,
-    Highlight
-};
 
 /**
  * Str
@@ -71,7 +69,7 @@ class Str implements Stringable {
     /**
      * Capitalisation
      */
-    protected Capitalisation $_case = Capitalisation::Ignore;
+    protected Capitalisation $case = Capitalisation::Ignore;
 
     /**
      * Storage buffer
@@ -129,7 +127,7 @@ class Str implements Stringable {
      */
     public static function __set_state(array $data): static {
         $obj = new static($data['_str']);
-        $obj->_case = Capitalisation::tryFrom($data['_case']);
+        $obj->case = Capitalisation::tryFrom($data['_case']);
 
         return $obj;
     }
@@ -240,7 +238,7 @@ class Str implements Stringable {
      *
      * @param int|null $id buffer to use for string or latest if null
      *
-     * @return static
+     * @return string
      */
     public function bufferAt(?int $id = null): string {
         if (is_null($id)) $id = count($this->storage()) - 1;
@@ -557,7 +555,7 @@ class Str implements Stringable {
      */
     public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
         $this->value = static::str_to_case($this->value, $case, $removeSpaces);
-        $this->_case = $case;
+        $this->case = $case;
 
         return $this;
     }
@@ -577,13 +575,13 @@ class Str implements Stringable {
     /**
      * highlight str
      *
-     * @param \Inane\Stdlib\Highlight $highlight (default, php2, html)
+     * @param null|\Inane\Stdlib\Highlight $highlight (default, php2, html)
      * @param bool $removeOpenTag remove the <?php that is added
      *
      * @return Str
      */
-    public function highlight(Highlight $highlight = null, bool $removeOpenTag = true): Str {
-        if (is_null($highlight)) $highlight = Highlight::DEFAULT;
+    public function highlight(?Highlight $highlight = null, bool $removeOpenTag = true): Str {
+        if ($highlight === null) $highlight = Highlight::DEFAULT;
 
         $highlight->apply();
 

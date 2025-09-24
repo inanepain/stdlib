@@ -60,9 +60,7 @@ use const null;
  * Provides a property based interface to an array.
  * The data can be made read-only by setting $allowModifications to false with the `lock` method.
  *
- * @version 0.16.0
- * 
- * // TODO: version bump
+ * @version 0.17.0
  */
 class Options implements OptionsInterface {
 	#region TRAITS
@@ -401,7 +399,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * SGets the previous value of the key being assigned a new value
+	 * Gets the previous value of the key being assigned a new value
 	 * 
 	 * @since 0.16.0
 	 * 
@@ -596,7 +594,7 @@ class Options implements OptionsInterface {
 	 * Useful after merge() has been used to merge multiple OptionsInterface objects
 	 * into one object which should then not be modified again.
 	 *
-	 * @return OptionsInterface
+	 * @return self
 	 */
 	public function lock(): self {
 		$this->allowModifications = false;

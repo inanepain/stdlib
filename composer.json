@@ -3,7 +3,7 @@
     "description": "Common classes, tools and utilities used throughout the inanepain libraries.",
     "type": "library",
     "license": "Unlicense",
-    "homepage": "https://github.com/inanepain/stdlib",
+    "homepage": "https://git.cathedral.co.za:3000/inanepain/stdlib",
     "readme": "README.adoc",
     "authors": [
         {
@@ -14,7 +14,7 @@
     ],
     "support": {
         "email": "philip@cathedral.co.za",
-        "issues": "https://github.com/inanepain/stdlib/issues"
+        "issues": "https://git.cathedral.co.za:3000/inanepain/stdlib/issues"
     },
     "keywords": [
         "inane",
@@ -41,7 +41,7 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.4",
         "psr/container": "*"
     },
     "require-dev": {},

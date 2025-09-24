@@ -1,8 +1,6 @@
-Version: $Id$ ($Date$)
-
 # History
 
-## 0.7.0-dev (2025 Xxx xx)
+## 0.7.0 (2025 Sep 24)
 
 - new: `TraversableToArray` **trait** with `iteratorToArrayDeep`
   **method** that converts a `Traversable` into an `Array`.
