@@ -1,10 +1,12 @@
-= 0.7.0-dev (2025 Xxx xx)
+= 0.8.0-dev (2025 Xxx xx)
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities used throughout the inanepain libraries.
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.7.0
+:revnumber: 0.8.0-dev
 :revdate: 2025-XX-XX
+:revremark: -dev
+:version-label: Unconfirmed
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -14,12 +16,3 @@
 :toc: auto
 :sectanchors:
 
-* new: `TraversableToArray` *trait* with `iteratorToArrayDeep` *method* that converts a `Traversable` into an `Array`.
-* new: `StringCaseConverter` a converter with specified in/out cases to make it more reliable.
-* new: `Options::sort` sort with option to *create copy* and *preserve index*.
-* update: `Options` key check now tries to find kebab case key if key is camel or pascal case.
-* update: `Options` implements `TraversableToArray` for its array conversion.
-* update: `Options::unique` add argument `$createCopy` - *true* => return unique copy not modifying original, *false* => modify original.
-* update: `ObjectParser` creates a private instance which can use custom properties for that parse.
-* fix: `Iterator` missing items when making changes to object during loop.
-* fix: `Options::defaults` overwrites false which it should not do.

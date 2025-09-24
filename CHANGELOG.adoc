@@ -4,9 +4,7 @@
 :description: Common classes, tools and utilities used throughout the inanepain libraries.
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :revnumber: 0.7.0
-:revdate: 2025-xx-xx
-:revremark: -dev
-:version-label: Unconfirmed
+:revdate: 2025-09-24
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -16,19 +14,19 @@
 :toc: left
 :sectanchors:
 
-Version: $Id$ ($Date$)
-
 == History
+
+// include::./release/0.0.0.adoc[leveloffset=+2]
 
 :leveloffset: +2
 
-= 0.7.0-dev (2025 Xxx xx)
+= 0.7.0 (2025 Sep 24)
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities used throughout the inanepain libraries.
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :revnumber: 0.7.0
-:revdate: 2025-XX-XX
+:revdate: 2025-09-24
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -49,7 +47,6 @@ Version: $Id$ ($Date$)
 * fix: `Options::defaults` overwrites false which it should not do.
 
 :leveloffset!:
-
 :leveloffset: +2
 
 = 0.6.0 (2025 Aug 07)

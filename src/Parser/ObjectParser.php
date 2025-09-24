@@ -38,10 +38,8 @@ use const PHP_EOL;
  * ObjectParser
  *
  * Recursive object/variable parser
- * 
- * TODO: version bump
  *
- * @version 1.0.1
+ * @version 1.1.0
  */
 class ObjectParser {
     /**
