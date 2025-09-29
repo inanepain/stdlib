@@ -16,3 +16,4 @@
 :toc: auto
 :sectanchors:
 
+* new: `FuzzyTimeTrait` adds a static method that returns fuzzy time form input
