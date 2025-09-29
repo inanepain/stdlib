@@ -1,17 +1,5 @@
 = 0.3.1 (2022 Dec 10)
-:author: Philip Michael Raab
-:email: <philip@cathedral.co.za>
-:description: Common classes, tools and utilities used throughout the inanepain libraries.
-:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :revnumber: 0.3.1
 :revdate: 2022-12-10
-:copyright: Unlicense
-:experimental:
-:hide-uri-scheme:
-:icons: font
-:source-highlighter: highlight.js
-:sectnums!:
-:toc: auto
-:sectanchors:
 
 * fix: `Options::offsetExists` Returned false if value was null even though offset exists
