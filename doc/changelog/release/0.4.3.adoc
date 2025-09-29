@@ -1,18 +1,6 @@
 = 0.4.3 (2023 May 03)
-:author: Philip Michael Raab
-:email: <philip@cathedral.co.za>
-:description: Common classes, tools and utilities used throughout the inanepain libraries.
-:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :revnumber: 0.4.3
 :revdate: 2023-05-03
-:copyright: Unlicense
-:experimental:
-:hide-uri-scheme:
-:icons: font
-:source-highlighter: highlight.js
-:sectnums!:
-:toc: auto
-:sectanchors:
 
 * new: `Options::unique` Filters unique items
 * update: `Str::from` now also takes numeric values

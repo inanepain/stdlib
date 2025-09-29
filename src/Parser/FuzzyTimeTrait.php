@@ -27,7 +27,7 @@ namespace Inane\Stdlib\Parser;
 /**
  * Trait FuzzyTime
  * 
- * // todo: version bump
+ * @version 0.5.0
  */
 trait FuzzyTimeTrait {
     /**
