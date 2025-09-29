@@ -1,5 +1,10 @@
 # History
 
+## 0.7.1 (2025 Sep 29)
+
+- new: `FuzzyTimeTrait` adds a static method that returns fuzzy time
+  form input
+
 ## 0.7.0 (2025 Sep 24)
 
 - new: `TraversableToArray` **trait** with `iteratorToArrayDeep`
