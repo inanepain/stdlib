@@ -1,5 +1,9 @@
 # History
 
+## 0.8.0-dev (2025 Xxx xx)
+
+- update: `Options::defaults` now accepts arrays.
+
 ## 0.7.1 (2025 Sep 29)
 
 - new: `FuzzyTimeTrait` adds a static method that returns fuzzy time

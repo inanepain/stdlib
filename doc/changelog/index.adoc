@@ -16,6 +16,8 @@
 
 == History
 
+include::./release/0.0.0.adoc[leveloffset=+2]
+
 include::./release/0.7.1.adoc[leveloffset=+2]
 include::./release/0.7.0.adoc[leveloffset=+2]
 include::./release/0.6.0.adoc[leveloffset=+2]

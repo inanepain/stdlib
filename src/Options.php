@@ -521,15 +521,18 @@ class Options implements OptionsInterface {
 	 * $args->defaults($defaults);
 	 *
 	 * @todo: check for allowModifications
+	 * 
+	 * @since version bump accepts array values
 	 *
-	 * @param Options|OptionsInterface ...$models
+	 * @param array|Options|OptionsInterface ...$models
 	 *
 	 * @return OptionsInterface
 	 */
-	public function defaults(Options|OptionsInterface ...$models): self {
+	public function defaults(array|Options|OptionsInterface ...$models): self {
 		$replaceable = ['', null];
 
 		while ($model = array_pop($models)) foreach ($model as $key => $value) {
+			if (is_array($model)) $model = new static($model);
 			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
 			elseif ((!$this->offsetExists($key) || in_array($this[$key], $replaceable)) && $this[$key] !== false) $this[$key] = $value;
 		}

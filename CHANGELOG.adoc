@@ -18,6 +18,18 @@
 
 :leveloffset: +2
 
+= 0.8.0-dev (2025 Xxx xx)
+:revnumber: 0.8.0-dev
+:revdate: 2025-XX-XX
+:revremark: -dev
+:version-label: Unconfirmed
+
+* update: `Options::defaults` now accepts arrays.
+
+:leveloffset!:
+
+:leveloffset: +2
+
 = 0.7.1 (2025 Sep 29)
 :revnumber: 0.7.1
 :revdate: 2025-09-28
