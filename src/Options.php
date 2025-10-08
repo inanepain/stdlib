@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes, tools and utilities are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -57,9 +57,10 @@ use const null;
 /**
  * Options: recursive key, value store
  *
- * Provides a property based interface to an array.
+ * Provides a property-based interface to an array.
  * The data can be made read-only by setting $allowModifications to false with the `lock` method.
  *
+ * @property \Inane\Stdlib\Array\OptionsInterface|Options|mixed|null $category
  * @version 0.17.0
  */
 class Options implements OptionsInterface {
@@ -89,19 +90,19 @@ class Options implements OptionsInterface {
 	/**
 	 * Options
 	 *
-	 * Create a new options object. Any invalid initial values are ignore resulting in a clean Options object being created.
+	 * Create a new options object. Any invalid initial values are ignored, resulting in a clean Options object being created.
 	 *
-	 * @since 0.10.2
-	 *  - takes \ArrayObject
-	 * @since 0.13.0
-	 *  - takes string - json encoded string
-	 * @since 0.15.0
-	 *  - now also excepts an instance of itself and a null
-	 *
-	 * @param null|array|string|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $data initial data in a variety of formates
+	 * @param null|array|string|\ArrayObject|ArrayObject|Options|OptionsInterface $data initial data in a variety of formates
 	 * @param bool $allowModifications
 	 *
 	 * @return void
+	 *@since 0.10.2
+	 *  - takes \ArrayObject
+     * @since 0.13.0
+	 *  - takes string - JSON encoded string
+	 * @since 0.15.0
+	 *  - now also excepts an instance of itself and a null
+	 *
 	 */
 	public function __construct(
 		/**
@@ -125,7 +126,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * Deep clone of instance ensuring that nested <strong>Inane\Stdlib\Options</strong> are cloned.
+	 * Deep clone of an instance ensuring that nested <strong>Inane\Stdlib\Options</strong> are cloned.
 	 *
 	 * @return void
 	 */
@@ -170,7 +171,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * Whether a data exists by key
+	 * Whether data exists by key
 	 *
 	 * @param mixed $key A data key to check for
 	 *
@@ -197,7 +198,7 @@ class Options implements OptionsInterface {
 	 * Returns false otherwise.
 	 *
 	 * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
-	 * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+	 * It does, however, mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
 	 *
 	 * @param mixed $id Identifier of the entry to look for.
 	 *
@@ -236,7 +237,7 @@ class Options implements OptionsInterface {
 	 * @see in_array
 	 *
 	 * @param mixed $value The searched value
-	 * @param bool $strict If set to true then the type of the value is also checked
+	 * @param bool $strict If set to true, then the type of the value is also checked
 	 *
 	 * @return bool Returns true if value is found, false otherwise
 	 */
@@ -274,9 +275,9 @@ class Options implements OptionsInterface {
 			$case = StringCaseConverter::caseFromString($id);
 
 			$kebab = false;
-			if ($case == Capitalisation::camelCase) {
+			if ($case === Capitalisation::camelCase) {
 				$kebab = StringCaseConverter::camelToKebab($id);
-			} elseif ($case == Capitalisation::PascalCase) {
+			} elseif ($case === Capitalisation::PascalCase) {
 				$kebab = StringCaseConverter::pascalToKebab($id);
 			}
 			if (is_string($kebab) && $this->offsetExists($kebab)) return $this->data[$kebab];
@@ -297,7 +298,7 @@ class Options implements OptionsInterface {
 	/**
 	 * key
 	 *
-	 * Fetch the key for current element
+	 * Fetch the key for the current element
 	 *
 	 * @return string|float|int|bool|null key
 	 */
@@ -335,8 +336,8 @@ class Options implements OptionsInterface {
 				$case = StringCaseConverter::caseFromString($key);
 				
 				$kebab = false;
-				if ($case == Capitalisation::camelCase) $kebab = StringCaseConverter::camelToKebab($key);
-				elseif ($case == Capitalisation::PascalCase) $kebab = StringCaseConverter::pascalToKebab($key);
+				if ($case === Capitalisation::camelCase) $kebab = StringCaseConverter::camelToKebab($key);
+				elseif ($case === Capitalisation::PascalCase) $kebab = StringCaseConverter::pascalToKebab($key);
 				
 				if (is_string($kebab) && $this->offsetExists($kebab)) $key = $kebab;
 			}
@@ -382,14 +383,14 @@ class Options implements OptionsInterface {
 	/**
 	 * Gets the previous value of the key being assigned a new value
 	 * 
-	 * @since 0.16.0
-	 * 
-	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+	 * @param mixed $key The key to which the value will be assigned and whose previous value is returned
 	 * @param mixed $value The value to assign
-	 * 
+	 *
 	 * @return mixed the key's previous value
-	 * 
-	 * @throws \Inane\Stdlib\Exception\RuntimeException 
+	 *
+	 * @throws RuntimeException
+	 *@since 0.16.0
+     *
 	 */
 	public function getSet(mixed $key, mixed $value): mixed {
 		$previous = $this->get($key);
@@ -401,15 +402,15 @@ class Options implements OptionsInterface {
 	/**
 	 * Gets the previous value of the key being assigned a new value
 	 * 
-	 * @since 0.16.0
-	 * 
-	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+	 * @param mixed $key The key to which the value will be assigned and whose previous value is returned
 	 * @param mixed $value The value to assign
-	 * 
+	 *
 	 * @return mixed the key's previous value
-	 * 
-	 * @throws \Inane\Stdlib\Exception\RuntimeException 
-	 */
+	 *
+	 * @throws RuntimeException
+	 *@since 0.16.0
+     *
+     */
 	public function offsetGetSet(mixed $key, mixed $value): mixed {
 		return $this->getSet($key, $value);
 	}
@@ -421,9 +422,9 @@ class Options implements OptionsInterface {
 	 *
 	 * @param string $key The key to unset
 	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
-	public function __unset($key) {
+	public function __unset(string $key) {
 		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
 		elseif ($this->__isset($key)) {
 			unset($this->data[$key]);
@@ -434,11 +435,11 @@ class Options implements OptionsInterface {
 	/**
 	 * delete key
 	 *
-	 * @param mixed $offset key
+	 * @param mixed $key key
 	 *
 	 * @return OptionsInterface
 	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function unset(mixed $key): OptionsInterface {
 		$this->offsetUnset($key);
@@ -452,22 +453,23 @@ class Options implements OptionsInterface {
 	 *
 	 * @return void
 	 *
-	 * @throws \Inane\Stdlib\Exception\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function offsetUnset(mixed $offset): void {
 		$this->__unset($offset);
 	}
 
-	/**
-	 * Get value and delete key
-	 *
-	 * @since 0.15.0
-	 *
-	 * @param string $id      key
-	 * @param mixed  $default value
-	 *
-	 * @return mixed|OptionsInterface value
-	 */
+    /**
+     * Get value and delete key
+     *
+     * @param string $id key
+     * @param mixed $default value
+     *
+     * @return mixed|OptionsInterface value
+     * @throws InvalidArgumentException
+     * @since 0.15.0
+     *
+     */
 	public function pull(mixed $id, mixed $default = null): mixed {
 		$result = $this->get($id, $default);
 		$this->unset($id);
@@ -479,17 +481,17 @@ class Options implements OptionsInterface {
 	/**
 	 * Merge another Options object with this one.
 	 *
-	 * @since 0.10.2
-	 *  - takes array and \ArrayObject
+	 * @param array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge
+	 *
+	 * @return OptionsInterface|Options
+	 *@since 0.10.2
+	 *  - takes an array and \ArrayObject
 	 *
 	 * For duplicate keys, the following will be performed:
 	 * - Nested Options will be recursively merged.
 	 * - Items in $merge with INTEGER keys will be appended.
-	 * - Items in $merge with STRING keys will overwrite current values.
+     * - Items in $merge with STRING keys will overwrite current values.
 	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|OptionsInterface|Options $merge
-	 *
-	 * @return OptionsInterface|Options
 	 */
 	public function merge(array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge): OptionsInterface {
 		if (!$merge instanceof self) $merge = new static($merge);
@@ -498,23 +500,19 @@ class Options implements OptionsInterface {
 		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
 			if (is_int($key)) $this->data[] = $value;
 			elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->merge($value);
-			else {
-				if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-				else $this->data[$key] = $value;
-			}
-		} else {
-			if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-			else $this->data[$key] = $value;
-		}
+			else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
+		} else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+        else $this->data[$key] = $value;
 
 		return $this;
 	}
 
 	/**
-	 * updates properties 2+ into first array with decreasing importance
+	 * updates properties 2+ into the first array with decreasing importance
 	 * so only unset keys are assigned values
 	 *
-	 * 1 array in = same array out
+	 * 1 array in = the same array out
 	 * 0 array in = empty array out
 	 * 
 	 * Apply defaults to $args:
@@ -542,11 +540,11 @@ class Options implements OptionsInterface {
 	/**
 	 * Merge an array but only updates existing keys, ignoring unmatched keys
 	 *
-	 * @since 0.11.0
-	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
+	 * @param array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge
 	 *
 	 * @return OptionsInterface
+	 *@since 0.11.0
+	 *
 	 */
 	public function modify(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
 		if (!$merge instanceof self) $merge = new static($merge);
@@ -555,10 +553,8 @@ class Options implements OptionsInterface {
 		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
 			if (is_int($key)) $this->data[] = $value;
 			elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->modify($value);
-			else {
-				if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-				else $this->data[$key] = $value;
-			}
+			else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
 		}
 
 		return $this;
@@ -567,13 +563,13 @@ class Options implements OptionsInterface {
 	/**
 	 * Merge an array but only adds missing keys, leaving existing keys unmodified
 	 *
-	 * @since 0.11.0
-	 * @since 2025-07-31 array $exclude A list of keys to ignore.
-	 *
-	 * @param array|\ArrayObject|\Inane\Stdlib\ArrayObject|\Inane\Stdlib\Options|OptionsInterface $merge
-	 * @param array																				  $exclude A list of keys to ignore.
+	 * @param array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge
+	 * @param array $exclude A list of keys to ignore.
 	 *
 	 * @return OptionsInterface
+	 *@since 2025-07-31 array $exclude A list of keys to ignore.
+	 *
+	 * @since 0.11.0
 	 */
 	public function complete(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge, array $exclude = []): self {
 		if (!$merge instanceof OptionsInterface) $merge = new static($merge);
@@ -581,10 +577,8 @@ class Options implements OptionsInterface {
 		/** @var OptionsInterface $value */
 		foreach ($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
 			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value, $exclude);
-		} else {
-			if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-			else $this->data[$key] = $value;
-		}
+		} else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+        else $this->data[$key] = $value;
 
 		return $this;
 	}
@@ -730,7 +724,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * Returns keys
+	 * Return keys
 	 *
 	 * @since 0.10.3
 	 *
@@ -741,7 +735,7 @@ class Options implements OptionsInterface {
 	}
 
 	/**
-	 * Returns values
+	 * Return values
 	 *
 	 * If this object is locked,
 	 *  the values are locked too.
