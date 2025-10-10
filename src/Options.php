@@ -420,11 +420,11 @@ class Options implements OptionsInterface {
 	/**
 	 * Unset data by key
 	 *
-	 * @param string $key The key to unset
+	 * @param mixed $key The key to unset
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __unset(string $key) {
+	public function __unset($key) {
 		if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
 		elseif ($this->__isset($key)) {
 			unset($this->data[$key]);

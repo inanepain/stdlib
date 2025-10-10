@@ -44,7 +44,7 @@ class Notice implements NoticeInterface, Stringable {
      *
      * @return void
      */
-    public function __construct($message = '', $code = 0, Throwable $previous = null) {
+    public function __construct($message = '', $code = 0, ?Throwable $previous = null) {
         // modifications
         $code = $this->code + $code;
 
