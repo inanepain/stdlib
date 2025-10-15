@@ -25,6 +25,9 @@
 :version-label: Unconfirmed
 
 * update: `Options::defaults` now accepts arrays.
+* new: ReflectionException
+* new: DateException
+* new: DateMalformedStringException
 
 :leveloffset!:
 

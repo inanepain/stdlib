@@ -4,6 +4,12 @@
 
 - update: `Options::defaults` now accepts arrays.
 
+- new: ReflectionException
+
+- new: DateException
+
+- new: DateMalformedStringException
+
 ## 0.7.1 (2025 Sep 29)
 
 - new: `FuzzyTimeTrait` adds a static method that returns fuzzy time
