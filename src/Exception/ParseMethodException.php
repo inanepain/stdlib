@@ -41,7 +41,8 @@ class ParseMethodException extends LogicException {
         $message = $this->message . ($message ? ': ' . $message : '');
         $code = $this->code + $code;
 
-        $debugBacktrace = array_pop(debug_backtrace(0, 3));
+	    $array = debug_backtrace(0, 3);
+	    $debugBacktrace = array_pop($array);
         $this->file = $debugBacktrace['file'];
         $this->line = $debugBacktrace['line'];
 
@@ -54,7 +55,7 @@ class ParseMethodException extends LogicException {
      *
      * @return string
      */
-    public function __toString() {
+    public function __toString(): string {
         return __CLASS__ . ":\n [{$this->code}]: {$this->message}";
     }
 }
