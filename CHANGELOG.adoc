@@ -28,6 +28,7 @@
 * new: ReflectionException
 * new: DateException
 * new: DateMalformedStringException
+* update: `OptionsInterface` used in more places
 
 :leveloffset!:
 

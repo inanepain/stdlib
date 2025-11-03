@@ -10,6 +10,8 @@
 
 - new: DateMalformedStringException
 
+- update: `OptionsInterface` used in more places
+
 ## 0.7.1 (2025 Sep 29)
 
 - new: `FuzzyTimeTrait` adds a static method that returns fuzzy time

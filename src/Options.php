@@ -44,7 +44,6 @@ use function current;
 use function in_array;
 use function is_array;
 use function is_int;
-use function is_null;
 use function is_string;
 use function key;
 use function next;
@@ -59,6 +58,8 @@ use const null;
  *
  * Provides a property-based interface to an array.
  * The data can be made read-only by setting $allowModifications to false with the `lock` method.
+ * 
+ * @todo: version bump
  *
  * @property \Inane\Stdlib\Array\OptionsInterface|Options|mixed|null $category
  * @version 0.17.0
@@ -494,15 +495,15 @@ class Options implements OptionsInterface {
 	 *
 	 */
 	public function merge(array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge): OptionsInterface {
-		if (!$merge instanceof self) $merge = new static($merge);
+		if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
 		/** @var OptionsInterface $value */
 		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
 			if (is_int($key)) $this->data[] = $value;
-			elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->merge($value);
-			else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+			elseif ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->merge($value);
+			else if ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
             else $this->data[$key] = $value;
-		} else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+		} else if ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
         else $this->data[$key] = $value;
 
 		return $this;
@@ -531,7 +532,7 @@ class Options implements OptionsInterface {
 
 		while ($model = array_pop($models)) foreach ($model as $key => $value) {
 			if (is_array($model)) $model = new static($model);
-			if ($value instanceof self && $this->offsetExists($key) && $this[$key] instanceof self) $this[$key]->defaults($value);
+			if ($value instanceof OptionsInterface && $this->offsetExists($key) && $this[$key] instanceof OptionsInterface) $this[$key]->defaults($value);
 			elseif ((!$this->offsetExists($key) || in_array($this[$key], $replaceable)) && $this[$key] !== false) $this[$key] = $value;
 		}
 		return $this;
@@ -547,13 +548,13 @@ class Options implements OptionsInterface {
 	 *
 	 */
 	public function modify(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge): self {
-		if (!$merge instanceof self) $merge = new static($merge);
+		if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
 		/** @var Options $value */
 		foreach ($merge as $key => $value) if ($this->offsetExists($key)) {
 			if (is_int($key)) $this->data[] = $value;
-			elseif ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->modify($value);
-			else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+			elseif ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->modify($value);
+			else if ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
             else $this->data[$key] = $value;
 		}
 
@@ -576,8 +577,8 @@ class Options implements OptionsInterface {
 
 		/** @var OptionsInterface $value */
 		foreach ($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
-			if ($value instanceof self && $this->data[$key] instanceof self) $this->data[$key]->complete($value, $exclude);
-		} else if ($value instanceof self) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+			if ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->complete($value, $exclude);
+		} else if ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
         else $this->data[$key] = $value;
 
 		return $this;
