@@ -28,6 +28,7 @@
 * new: ReflectionException
 * new: DateException
 * new: DateMalformedStringException
+* new: `NumberFormatterTrail` which can `format` a *number* or *currency* to _currency_ or _pattern_.
 * update: `OptionsInterface` used in more places
 
 :leveloffset!:

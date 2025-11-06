@@ -10,6 +10,9 @@
 
 - new: DateMalformedStringException
 
+- new: `NumberFormatterTrail` which can `format` a **number** or
+  **currency** to *currency* or *pattern*.
+
 - update: `OptionsInterface` used in more places
 
 ## 0.7.1 (2025 Sep 29)
