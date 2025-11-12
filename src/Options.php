@@ -757,6 +757,16 @@ class Options implements OptionsInterface {
 	 *
 	 * @return array
 	 */
+	public function __toArray(): array {
+		// return static::iteratorToArrayDeep($this);
+		return $this->toArray();
+	}
+
+	/**
+	 * Return an associative array of the stored data.
+	 *
+	 * @return array
+	 */
 	public function toArray(): array {
 		return static::iteratorToArrayDeep($this);
 	}
