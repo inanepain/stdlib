@@ -191,7 +191,7 @@ class Options implements OptionsInterface {
 		// 	if (is_string($kebab) && array_key_exists($kebab, $this->data)) $key = $kebab;
 		// }
 
-		return array_key_exists($key, $this->data);
+		return array_key_exists($key ?? '', $this->data);
 	}
 
 	/**
