@@ -9,4 +9,9 @@
 * new: DateException
 * new: DateMalformedStringException
 * new: `NumberFormatterTrail` which can `format` a *number* or *currency* to _currency_ or _pattern_.
-* update: `OptionsInterface` used in more places
+* new: `Json::ecode` new third param `$file`, optionally also write to file.
+* new: `Json::decodeFile` decode JSON from a file.
+* new: `Json::$throwOnError` sets `JSON_THROW_ON_ERROR`.
+* new: `Json::$lastException` set to `null` if no error occurred.
+* new: `JsonException` Inane version.
+* update: `OptionsInterface` used in more places.

@@ -24,11 +24,16 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib;
 
+use Inane\File\File;
+use Inane\Stdlib\Exception\JsonException;
+use JsonException as SystemJsonException;
 use function is_array;
 use function is_null;
 use function json_decode;
 use function json_encode;
 use function json_last_error;
+use function json_last_error_msg;
+use function is_string;
 use const false;
 use const JSON_ERROR_CTRL_CHAR;
 use const JSON_ERROR_DEPTH;
@@ -46,22 +51,48 @@ use const JSON_HEX_TAG;
 use const JSON_NUMERIC_CHECK;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
+use const JSON_THROW_ON_ERROR;
 use const null;
 use const true;
 
 /**
  * JSON en/decoder
  *
- * @todo: version bump
- * @version 0.2.0
+ * @todo: version bumped
+ * @version 0.3.0
  */
 class Json {
+    /**
+     * Determines whether an error should throw an exception or not.
+     *
+     * @since 0.3.0
+     */
+    public static bool $throwOnError = true;
+
+    /**
+     * Holds the last exception encountered, if any.
+     *
+     * @since 0.3.0
+     */
+    protected(set) static ?JsonException $lastException = null;
+
     /**
      * Private constructor
      *
      * @return void
      */
     private function __construct() {
+    }
+
+    /**
+     * Retrieves the throw flag used to determine error handling mode.
+     *
+     * @since 0.3.0
+     *
+     * @return int The flag indicating whether to throw JSON errors or not.
+     */
+    protected static function getThrowFlag(): int {
+        return self::$throwOnError ? JSON_THROW_ON_ERROR : 0;
     }
 
     /**
@@ -101,25 +132,33 @@ class Json {
     }
 
     /**
-     * Encode a value to a json string
+     * Encodes the given data into a JSON string with specified options.
      *
-     * OPTIONS:
-     *  - (bool) [pretty=false] format result
-     *  - (bool) [numeric=true] check for numeric values
-     *  - (bool) [escape=true] unescape slashes and unicode
-     *  - (bool) [hex=false] encode ',<,>,",& are encoded to \u00*
-     *  - (int) [flags=0] Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT, JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE, JSON_THROW_ON_ERROR. The behaviour of these constants is described on the JSON constants page.
+     * Optionally also write to $file.
      *
-     * @todo: version bump
-	 * @version 0.1.3 - [options->hex=false]
-	 * @version version bump - [options->escape=true]
-	 *
-     * @param mixed $data The value being encoded. Can be any type except a resource.
-     * @param array $options encoding options
+     * @version 0.1.3 - [options->hex=false]
+     * @version 0.3.0 - [options->escape=true]
+     * @version 0.3.0 - also write to file
      *
-     * @return string|false Returns a JSON encoded string on success or false on failure.
+     * @param mixed            $data    The data to be encoded. Can be of any type.
+     * @param array            $options An associative array of encoding options. Supported keys:
+     *                                  - 'pretty' (bool): Whether to format the output with indents and whitespace.
+     *                                  - 'numeric' (bool): Whether to convert numeric strings to numbers.
+     *                                  - 'escape' (bool): Whether to use unescaped Unicode and slashes.
+     *                                  - 'hex' (bool): Whether to encode JSON in a hex-safe format.
+     *                                  - 'flags' (int): Additional flags for JSON encoding.
+     * @param null|string|File $file    A file path or File object where the encoded JSON string should be written.
+     *                                  If null, the JSON is not written to a file.
+     *
+     * @return string|false Returns the JSON-encoded string on success, or false on failure.
+     *
+     * @throws JsonException
      */
-    public static function encode(mixed $data, array $options = []): string|false {
+    public static function encode(mixed $data, array $options = [], null|string|File $file = null): string|false {
+        self::$lastException = null;
+
+        if (is_string($file)) $file = new File($file);
+
         $options += [
             'pretty' => false,
             'numeric' => true,
@@ -137,7 +176,20 @@ class Json {
 
         if ($data instanceof Options || $data instanceof ArrayObject) $data = $data->toArray();
 
-		return json_encode($data, $flags);
+        try {
+            $json = json_encode($data, self::getThrowFlag() | $flags);
+        } catch (SystemJsonException $e) {
+            self::$lastException = new JsonException($e->getMessage(), $e->getCode());
+            throw self::$lastException;
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            self::$lastException = new JsonException(json_last_error_msg(), json_last_error());
+        }
+
+        if ($file && $file->isWritable()) $file->write($json);
+
+        return $json;
     }
 
     /**
@@ -147,14 +199,18 @@ class Json {
      *  - (bool) [assoc=true] When true, JSON objects will be returned as associative arrays; when false, JSON objects will be returned as objects. When null, JSON objects will be returned as associative arrays or objects depending on whether JSON_OBJECT_AS_ARRAY is set in the flags.
      *  - (int) [depth=512] Maximum nesting depth of the structure being decoded. The value must be greater than 0, and less than or equal to 2147483647.
      *  - (int) [flags=0] Bitmask of JSON_BIGINT_AS_STRING, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_OBJECT_AS_ARRAY, JSON_THROW_ON_ERROR. The behaviour of these constants is described on the JSON constants page.
-     *  - (bool) [asOptions=false] Return Options object instead of an array.
+     *  - (bool) [asOptions=false] Return an Options object instead of an array.
      *
-     * @param string $json json string to decode
-     * @param array $options decoding options
+     * @param string $json    json string to decode
+     * @param array  $options decoding options
      *
-     * @return mixed Returns the value encoded in json in appropriate PHP type. Values true, false and null are returned as true, false and null respectively. null is returned if the json cannot be decoded or if the encoded data is deeper than the nesting limit.
+     * @return mixed Returns the value encoded in JSON in the appropriate PHP type. Values true, false and null are returned as true, false and null respectively. null is returned if the JSON cannot be decoded or if the encoded data is deeper than the nesting limit.
+     *
+     * @throws JsonException
      */
     public static function decode(string $json, array $options = []): mixed {
+        self::$lastException = null;
+
         $options += [
             'assoc' => true,
             'depth' => 512,
@@ -164,8 +220,34 @@ class Json {
 
         ['assoc' => $assoc, 'depth' => $depth, 'flags' => $flags, 'asOptions' => $asOptions] = $options;
 
-        $array = json_decode($json, $assoc, $depth, $flags);
+        try {
+            $array = json_decode($json, $assoc, $depth, self::getThrowFlag() | $flags);
+        } catch (SystemJsonException $e) {
+            self::$lastException = new JsonException($e->getMessage(), $e->getCode());
+            throw self::$lastException;
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            self::$lastException = new JsonException(json_last_error_msg(), json_last_error());
+        }
 
         return is_null($array) ? null : ($asOptions ? new Options($array) : $array);
+    }
+
+    /**
+     * Decodes the content of a file.
+     *
+     * @since 0.3.0
+     *
+     * @param string|File $file    The file to decode. Can be a file path (string) or a File object.
+     * @param array       $options Optional settings for the decoding process.
+     *
+     * @return mixed The decoded data, or null if the file is not readable.
+     */
+    public static function decodeFile(string|File $file, array $options = []): mixed {
+        if (is_string($file)) $file = new File($file);
+        if (!$file->isReadable()) return null;
+
+        return static::decode($file->read(), $options);
     }
 }
