@@ -204,7 +204,7 @@ class Json {
      * @param string $json    json string to decode
      * @param array  $options decoding options
      *
-     * @return mixed Returns the value encoded in JSON in the appropriate PHP type. Values true, false and null are returned as true, false and null respectively. null is returned if the JSON cannot be decoded or if the encoded data is deeper than the nesting limit.
+     * @return mixed Returns the value encoded in JSON in the appropriate PHP type. Values true, false, and null are returned as true, false, and null respectively. null is returned if the JSON cannot be decoded or if the encoded data is deeper than the nesting limit.
      *
      * @throws JsonException
      */
