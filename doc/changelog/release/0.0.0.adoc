@@ -15,3 +15,4 @@
 * new: `Json::$lastException` set to `null` if no error occurred.
 * new: `JsonException` Inane version.
 * update: `OptionsInterface` used in more places.
+* new: `OptionsInterface` added `Serializable`.

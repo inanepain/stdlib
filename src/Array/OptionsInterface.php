@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Array;
 
+use Serializable;
 use ArrayAccess;
 use Countable;
 use Iterator;
@@ -36,15 +37,15 @@ use Inane\Stdlib\Converters\{
 
 /**
  * Interface: Options
- * 
+ *
  * @version 0.1.0
  */
-interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable {
+interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable, Serializable {
     /**
      * Checks if the specified offset exists.
      *
      * @param mixed $offset The offset to check for existence.
-     * 
+     *
      * @return bool True if the offset exists, false otherwise.
      */
     public function offsetExists(mixed $offset): bool;
@@ -52,7 +53,7 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      * Retrieves the value at the specified offset.
      *
      * @param mixed $offset The offset to retrieve.
-     * 
+     *
      * @return mixed The value at the specified offset, or null if not set.
      */
     public function offsetGet(mixed $offset): mixed;
@@ -69,7 +70,7 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      * Unset the value at the specified offset.
      *
      * @param mixed $offset The offset to unset.
-     * 
+     *
      * @return void
      */
     public function offsetUnset(mixed $offset): void;
@@ -122,12 +123,12 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
 	public function isLocked(): bool;
     /**
 	 * Sorts the options.
-	 * 
+	 *
 	 * @since version
 	 *
 	 * @param bool $preserveIndex Whether to preserve the array keys during sorting. Defaults to true.
 	 * @param bool $createCopy If true, returns a sorted copy of the options; if false, sorts in place.
-	 * 
+	 *
 	 * @return static Returns the sorted options instance.
 	 */
 	public function sort(bool $preserveIndex = true, bool $createCopy = false): static;
@@ -146,7 +147,7 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
 	 *
 	 * @since 0.14.0
 	 * @since version $createCopy param added
-	 * 
+	 *
 	 * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
 	 *
 	 * @return Options|OptionsInterface unique items
@@ -177,19 +178,19 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
 	public function groupBy(string $group): static;
     /**
 	 * Gets the previous value of the key being assigned a new value
-	 * 
+	 *
 	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
 	 * @param mixed $value The value to assign
-	 * 
+	 *
 	 * @return mixed the key's previous value
 	 */
 	public function getSet(mixed $key, mixed $value): mixed;
     /**
 	 * Gets the previous value of the key being assigned a new value
-	 * 
+	 *
 	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
 	 * @param mixed $value The value to assign
-	 * 
+	 *
 	 * @return mixed the key's previous value
 	 */
 	public function offsetGetSet(mixed $key, mixed $value): mixed;
