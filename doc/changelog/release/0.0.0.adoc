@@ -16,3 +16,5 @@
 * new: `JsonException` Inane version.
 * update: `OptionsInterface` used in more places.
 * new: `OptionsInterface` added `Serializable`.
+* update: `HashType` more types.
+* new: `HashUtility` create and identify hashes.
