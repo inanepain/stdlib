@@ -3,12 +3,12 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -29,11 +29,11 @@ use Inane\Stdlib\Exception\JsonException;
 use JsonException as SystemJsonException;
 use function is_array;
 use function is_null;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function json_last_error;
 use function json_last_error_msg;
-use function is_string;
 use const false;
 use const JSON_ERROR_CTRL_CHAR;
 use const JSON_ERROR_DEPTH;
@@ -50,8 +50,8 @@ use const JSON_HEX_QUOT;
 use const JSON_HEX_TAG;
 use const JSON_NUMERIC_CHECK;
 use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
 use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
 use const null;
 use const true;
 
@@ -96,7 +96,7 @@ class Json {
     }
 
     /**
-	 * Test if jsonStr is a valid json string
+	 * Test if jsonStr is a valid JSON string
 	 *
 	 * info:
 	 *  - code		: response code `JSON_ERROR_NONE` for no error
@@ -243,6 +243,8 @@ class Json {
      * @param array       $options Optional settings for the decoding process.
      *
      * @return mixed The decoded data, or null if the file is not readable.
+     *
+     * @throws JsonException Exception thrown if JSON_THROW_ON_ERROR option is set for Json::encode() or Json::decode(). code contains the error type, for possible values see json_last_error().
      */
     public static function decodeFile(string|File $file, array $options = []): mixed {
         if (is_string($file)) $file = new File($file);

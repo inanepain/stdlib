@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -26,7 +26,6 @@ namespace Inane\Stdlib\Converters;
 
 use Iterator;
 use Traversable;
-
 use const true;
 
 /**
@@ -35,26 +34,26 @@ use const true;
  * @version 0.1.0
  */
 trait TraversableToArray {
-	/**
-	 * Recursively converts a Traversable object to an array.
-	 *
-	 * Iterates through the given Traversable, converting all nested Traversable instances
-	 * to arrays as well. Optionally preserves keys if $use_keys is true.
-	 *
-	 * @param Traversable $iterator The traversable object to convert.
-	 * @param bool $use_keys Whether to preserve keys in the resulting array.
-	 * 
-	 * @return array The resulting array representation of the traversable.
-	 */
-	protected static function iteratorToArrayDeep(Traversable $iterator, bool $use_keys = true): array {
-		$array = [];
-		foreach ($iterator as $key => $value) {
-			if ($value instanceof Iterator) $value = static::iteratorToArrayDeep($value, $use_keys);
-			
-			if ($use_keys) $array[$key] = $value;
-			else $array[] = $value;
-		}
+    /**
+     * Recursively converts a Traversable object to an array.
+     *
+     * Iterates through the given Traversable, converting all nested Traversable instances
+     * to arrays as well. Optionally preserves keys if $use_keys is true.
+     *
+     * @param Traversable $iterator The traversable object to convert.
+     * @param bool $use_keys Whether to preserve keys in the resulting array.
+     *
+     * @return array The resulting array representation of the traversable.
+     */
+    protected static function iteratorToArrayDeep(Traversable $iterator, bool $use_keys = true): array {
+        $array = [];
+        foreach ($iterator as $key => $value) {
+            if ($value instanceof Iterator) $value = static::iteratorToArrayDeep($value, $use_keys);
 
-		return $array;
-	}
+            if ($use_keys) $array[$key] = $value;
+            else $array[] = $value;
+        }
+
+        return $array;
+    }
 }

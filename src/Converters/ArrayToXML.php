@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -24,12 +24,12 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Converters;
 
+use Inane\Stdlib\String\Inflector;
 use SimpleXMLElement;
-
+use function htmlspecialchars;
 use function is_array;
 use function is_null;
 use function is_numeric;
-
 use const false;
 use const null;
 
@@ -66,9 +66,9 @@ trait ArrayToXML {
             if (is_numeric($key))
                 $key = ($tagName ?? 'item') . ($unique ? $key : '');
             if (is_array($value))
-                static::arrayToXML($value, $xmlObj->addChild($key), $unique, \Inane\Stdlib\String\Inflector::singularise($key));
+                static::arrayToXML($value, $xmlObj->addChild($key), $unique, Inflector::singularise($key));
             else
-                $xmlObj->addChild("$key", htmlspecialchars("$value"));
+                $xmlObj->addChild("$key", htmlspecialchars((string)$value));
         }
 
         return $xmlObj;

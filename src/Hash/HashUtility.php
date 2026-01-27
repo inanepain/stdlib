@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -25,9 +25,15 @@ declare(strict_types = 1);
 namespace Inane\Stdlib\Hash;
 
 use Inane\Stdlib\Exception\ValueError;
+use function array_merge;
+use function array_unique;
 use function hash;
+use function hash_algos;
+use function preg_match;
 use function str_replace;
+use function str_starts_with;
 use function strtolower;
+use const SORT_REGULAR;
 
 /**
  * Utility class for identifying potential hash types based on the format, length, or prefixes of provided hash strings.
@@ -71,7 +77,10 @@ class HashUtility {
             }
         }
         if (preg_match('/^[a-f0-9]{80}$/i', $hash)) {
-            $types = array_merge($types, HashType::HEX_80->getIndividualCases());
+            // FIX: Missing HashType HEX_80
+            // HashType::RIPEMD_320
+            // $types = array_merge($types, HashType::HEX_80->getIndividualCases());
+            $types = array_merge($types, [HashType::RIPEMD_320]);
         }
         if (preg_match('/^[a-f0-9]{96}$/i', $hash)) {
             $types = array_merge($types, HashType::SHA_384->getIndividualCases());
@@ -100,7 +109,7 @@ class HashUtility {
         if (str_starts_with($hash, '$argon2')) {
             $types = array_merge($types, HashType::Argon2->getIndividualCases());
         }
-        if (preg_match('/^\$pbkdf2-(sha[0-9]+)\$/i', $hash) || preg_match('/^pbkdf2[_-]?sha/i', $hash)) {
+        if (preg_match('/^\$pbkdf2-(sha\d+)\$/i', $hash) || preg_match('/^pbkdf2[_-]?sha/i', $hash)) {
             $types = array_merge($types, HashType::PBKDF2->getIndividualCases());
         }
         if (str_starts_with($hash, '$scrypt')) {
@@ -121,12 +130,11 @@ class HashUtility {
     public static function hash(string $data, HashType|string $hashType = HashType::MD5): string {
         if ($hashType instanceof HashType) $hashType = $hashType->description();
         $type = strtolower($hashType);
-//        $type = strstr($type . ',', ',', true);
         $type = str_replace('-', '', $type);
 
         try {
             $hash = hash($type, $data, false);
-        } catch (\ValueError $e) {
+        } catch (ValueError $e) {
             throw new ValueError("Invalid hash type: $type", $e->getCode(), $e);
         }
 

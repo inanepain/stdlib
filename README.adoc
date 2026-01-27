@@ -1,7 +1,7 @@
 = README: inanepain/stdlib
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
-:description: Common classes, tools and utilities used throughout the inanepain libraries.
+:description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
 :homepage: https://git.cathedral.co.za:3000/inanepain/stdlib

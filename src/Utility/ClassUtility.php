@@ -3,12 +3,12 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -30,6 +30,7 @@ use function array_slice;
 use function count;
 use function explode;
 use function implode;
+use function is_string;
 use function strtolower;
 use function token_get_all;
 use const T_CLASS;

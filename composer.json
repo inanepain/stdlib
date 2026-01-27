@@ -1,6 +1,6 @@
 {
     "name": "inanepain/stdlib",
-    "description": "Common classes, tools and utilities used throughout the inanepain libraries.",
+    "description": "Common classes that cover a wide range of cases that are used throughout the inanepain libraries.",
     "type": "library",
     "license": "Unlicense",
     "homepage": "https://git.cathedral.co.za:3000/inanepain/stdlib",
@@ -42,7 +42,9 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=8.4",
-        "psr/container": "*"
+        "psr/container": "*",
+        "ext-intl": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {},
     "scripts": {

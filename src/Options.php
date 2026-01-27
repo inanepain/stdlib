@@ -3,19 +3,19 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities are used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
- * @author   Philip Michael Raab<philip@cathedral.co.za>
- * @package  inanepain\stdlib
+ * @author Philip Michael Raab<philip@cathedral.co.za>
+ * @package inanepain\stdlib
  * @category stdlib
  *
- * @license  UNLICENSE
- * @license  https://unlicense.org/UNLICENSE UNLICENSE
+ * @license UNLICENSE
+ * @license https://unlicense.org/UNLICENSE UNLICENSE
  *
  * _version_ $version
  */
@@ -26,7 +26,9 @@ namespace Inane\Stdlib;
 
 use Exception;
 use Inane\Stdlib\Array\OptionsInterface;
-use Inane\Stdlib\Exception\{InvalidArgumentException, RuntimeException};
+use Inane\Stdlib\Exception\{
+    InvalidArgumentException,
+    RuntimeException};
 use Inane\Stdlib\String\Capitalisation;
 use Inane\Stdlib\String\StringCaseConverter;
 use function array_key_exists;

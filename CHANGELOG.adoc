@@ -18,26 +18,26 @@
 
 :leveloffset: +2
 
-= 0.8.0-dev (2025 Xxx xx)
+= 0.8.0-dev (2026 Xxx xx)
 :revnumber: 0.8.0-dev
-:revdate: 2025-XX-XX
+:revdate: 2026-XX-XX
 :revremark: -dev
 :version-label: Unconfirmed
 
 * update: `Options::defaults` now accepts arrays.
-* new: ReflectionException
-* new: DateException
-* new: DateMalformedStringException
+* new: `ReflectionException`, `DateMalformedStringException`, `DateException`, `JsonException`
 * new: `NumberFormatterTrail` which can `format` a *number* or *currency* to _currency_ or _pattern_.
 * new: `Json::ecode` new third param `$file`, optionally also write to file.
 * new: `Json::decodeFile` decode JSON from a file.
 * new: `Json::$throwOnError` sets `JSON_THROW_ON_ERROR`.
 * new: `Json::$lastException` set to `null` if no error occurred.
-* new: `JsonException` Inane version.
 * update: `OptionsInterface` used in more places.
 * new: `OptionsInterface` added `Serializable`.
 * update: `HashType` more types.
 * new: `HashUtility` create and identify hashes.
+* new: `CastAndAssign` A class that provides a variety of methods that cast a value to its variable type before assigning it.
+* new: `CastAndAssignTrait` The methods used by `CastAndAssign`.
+* general code update and refresh.
 
 :leveloffset!:
 

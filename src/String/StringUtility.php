@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -26,8 +26,8 @@ namespace Inane\Stdlib\String;
 
 use function array_values;
 use function count;
+use function str_contains;
 use function strlen;
-use function strpos;
 use function substr;
 
 /**
@@ -52,17 +52,17 @@ class StringUtility {
         $s = $d[0]; // get the shortest string
         for ($i = 1; $i < $c; $i++)
             if (strlen($d[$i]) < strlen($s)) $s = $d[$i];
-        $l = strlen($s); // it's length is the limit
+        $l = strlen($s); // its length is the limit
 
         $r = '';
         for ($i = 0; $i < $l; $i++) for ($j = $i + 1; $j <= $l; $j++) { // generating all possible substrings within limits
             $m = substr($s, $i, $j - $i);
 
-            for ($k = 1; $k < $c; $k++) if (strpos($d[$k], $m) === false) // Check if common to all
+            for ($k = 1; $k < $c; $k++) if (!str_contains($d[$k], $m)) // Check if common to all
                 break 2;
 
             if (strlen($r) >= $l) return $r;
-            if ($k <= $c && strlen($r) < strlen($m)) // If common to all & longer then current
+            if ($k <= $c && strlen($r) < strlen($m)) // If common to all & longer than current
                 $r = $m;
         }
 

@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -24,9 +24,12 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Parser;
 
+use Inane\Datetime\Timestamp;
+use function round;
+
 /**
  * Trait FuzzyTime
- * 
+ *
  * @version 0.5.0
  */
 trait FuzzyTimeTrait {
@@ -68,18 +71,18 @@ trait FuzzyTimeTrait {
 
     /**
      * Converts a DateTime into words.
-     * 
-     * @param null|\DateTime|\Inane\Datetime\Timestamp $time time to convert.
-     * 
+     *
+     * @param null|\DateTime|Timestamp $time time to convert.
+     *
      * @return string time words.
      */
-    public static function fuzzyClock(null|\DateTime|\Inane\Datetime\Timestamp $time = null): string {
+    public static function fuzzyClock(null|\DateTime|Timestamp $time = null): string {
         $time = $time ?? new Timestamp()->getDateTime();
         if ($time instanceof Timestamp) $time = $time->getDateTime();
         $hour = (int) $time->format('G');
         $minute = (int) $time->format('i');
 
-        // Round minutes to nearest 5
+        // Round minutes to the nearest 5
         $minute = (int)(5 * round($minute / 5));
 
         if ($minute >= 60) {
@@ -96,9 +99,9 @@ trait FuzzyTimeTrait {
 
     /**
      * converts an integer into words.
-     * 
+     *
      * @param int $num number to convert.
-     * 
+     *
      * @return string words number
      */
     private static function numToWords(int $num): string {

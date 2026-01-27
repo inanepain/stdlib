@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -96,10 +96,10 @@ class ArrayUtil {
             foreach ($a as $k => $v)
                 if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::complete($m[$k], $v);
                 else if (!array_key_exists($k, $m) || in_array($m[$k], [
-                    '',
-                    null,
-                    false
-                ])) $m[$k] = $v;
+                        '',
+                        null,
+                        false
+                    ])) $m[$k] = $v;
         return $m;
     }
 
@@ -149,10 +149,10 @@ class ArrayUtil {
             foreach ($a as $k => $v)
                 if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::update($v, $m[$k]);
                 else if (!array_key_exists($k, $m) || in_array($m[$k], [
-                    '',
-                    null,
-                    false
-                ])) $m[$k] = $v;
+                        '',
+                        null,
+                        false
+                    ])) $m[$k] = $v;
         return $m;
     }
 
@@ -202,7 +202,7 @@ class ArrayUtil {
      * @return array updated array
      */
     public static function writeWithPath(array &$array, string $arrayPath, ?string $separator = null, ?string $assignor = null): array {
-        list($path, $value) = explode($assignor ?? static::$pathAssignor, $arrayPath);
+        [$path, $value] = explode($assignor ?? static::$pathAssignor, $arrayPath);
 
         $explodedPath = explode($separator ?? static::$pathSeparator, $path);
 

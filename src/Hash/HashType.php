@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -53,7 +53,11 @@ enum HashType: int implements CoreEnumInterface {
     case Snefru_256 = 1 << 16;
     case Tiger_256 = 1 << 17;
     case RIPEMD_256 = 1 << 18;
-
+    /**
+     * Represents the RIPEMD-320 hashing algorithm.
+     *
+     * Would also do HASH_80
+     */
     case RIPEMD_320 = 1 << 19;
 
     case SHA_384 = 1 << 20;
