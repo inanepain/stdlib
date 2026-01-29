@@ -27,9 +27,14 @@ namespace Inane\Stdlib\Exception;
 /**
  * Thrown when an invalid Date/Time string is detected.
  *
- * @implements \Inane\Stdlib\Exception\ExceptionInterface
+ * Parent class of Date/Time exceptions, for issues that come to light due to user input or free form text arguments that need to be parsed.
+ *
+ * @implements ExceptionInterface
  * @version 0.1.0
  */
 class DateMalformedStringException extends DateException {
+    /**
+     * Exception code for DateMalformedStringException.
+     */
     protected $code = 810;
 }

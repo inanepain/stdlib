@@ -10,12 +10,12 @@
  *
  * PHP version 8.5
  *
- * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package inanepain\stdlib
+ * @author   Philip Michael Raab<philip@cathedral.co.za>
+ * @package  inanepain\stdlib
  * @category stdlib
  *
- * @license UNLICENSE
- * @license https://unlicense.org/UNLICENSE UNLICENSE
+ * @license  UNLICENSE
+ * @license  https://unlicense.org/UNLICENSE UNLICENSE
  *
  * _version_ $version
  */
@@ -25,6 +25,7 @@ declare(strict_types = 1);
 namespace Inane\Stdlib;
 
 use Exception;
+use Inane\Config\Config;
 use Inane\Stdlib\Array\OptionsInterface;
 use Inane\Stdlib\Exception\{
     InvalidArgumentException,
@@ -69,8 +70,7 @@ class Options implements OptionsInterface {
 
     #endregion TRAITS
 
-    #region PROPERTIES
-//#region Properties
+    //#region Properties
     /**
      * Stores the option values as key-value pairs.
      *
@@ -84,8 +84,15 @@ class Options implements OptionsInterface {
      * @var bool
      */
     protected bool $skipNextIteration;
-//#endregion Properties
-    #endregion PROPERTIES
+    /**
+     * Indicates whether to throw an error when writing to a lock object.
+     *
+     * When `false` the code continues without throwing an error.
+     *
+     * @var bool
+     */
+    public bool $lockWriteError = true;
+    //#endregion Properties
 
     #region CREATE
     /**
@@ -114,15 +121,16 @@ class Options implements OptionsInterface {
      */ private bool                                                            $allowModifications = true,
     ) {
         if (is_string($data)) $data = Json::decode($data);
-        if ($data instanceof \ArrayObject || $data instanceof ArrayObject) $data = $data->getArrayCopy();
+        if ($data instanceof \ArrayObject) $data = $data->getArrayCopy();
 
         // if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
         if ((!is_array($data) && !($data instanceof OptionsInterface)) || $data === null) $data = [];
 
-        foreach($data as $key => $value) if (is_array($value) || $value instanceof \ArrayObject || $value instanceof ArrayObject) $this->data[$key] = new static($value, $this->allowModifications); else $this->data[$key] = $value;
+        foreach($data as $key => $value) if (is_array($value) || $value instanceof \ArrayObject) $this->data[$key] = new static($value, $this->allowModifications); else $this->data[$key] = $value;
     }
 
-//#region Magic Methods
+    //#region Magic Methods
+
     /**
      * get value
      *
@@ -148,7 +156,7 @@ class Options implements OptionsInterface {
      */
     public function __set(mixed $key, mixed $value) {
         if ($this->allowModifications) {
-            if (!$this->offsetExists($key) && is_string($key)) {
+            if (is_string($key) && !$this->offsetExists($key)) {
                 $case = StringCaseConverter::caseFromString($key);
 
                 $kebab = false;
@@ -160,7 +168,9 @@ class Options implements OptionsInterface {
             if (is_array($value)) $value = new static($value);
 
             if ($key === null) $this->data[] = $value; else $this->data[$key] = $value;
-        } else throw new RuntimeException("Option is read only, key: $key");
+        } elseif ($this->lockWriteError) {   // Indicates whether to throw an error when writing to a lock object or silently continue.
+            throw new RuntimeException("Option is read only, key: $key");
+        }
     }
     #endregion CREATE
 
@@ -188,7 +198,7 @@ class Options implements OptionsInterface {
 
         return array_key_exists($key ?? '', $this->data);
     }
-//#endregion Magic Methods
+    //#endregion Magic Methods
 
     /**
      * Recreate Options from `var_export` code
@@ -582,7 +592,9 @@ class Options implements OptionsInterface {
      * @return string JSON string
      */
     public function toJSON(array|int $flags = 0, int $depth = 512): string {
-        if (is_array($flags)) return Json::encode($this->toArray(), $flags);
+        if (is_array($flags)) {
+            return Json::encode($this->toArray(), $flags);
+        }
 
         return Json::encode($this->toArray(), ['flags' => $flags, 'depth' => $depth]);
     }
@@ -635,6 +647,18 @@ class Options implements OptionsInterface {
     #region OTHER
 
     /**
+     * Specify data which should be serialized to JSON
+     *
+     * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
+    public function jsonSerialize(): array {
+        return $this->toArray();
+    }
+
+    /**
      * Checks if a $value exists in an Option's values
      *
      * @since 0.10.3
@@ -665,6 +689,9 @@ class Options implements OptionsInterface {
 
         return $this;
     }
+    #endregion OTHER
+
+    #region EXPORTING
 
     /**
      * Unset data by key
@@ -679,9 +706,6 @@ class Options implements OptionsInterface {
             $this->skipNextIteration = true;
         }
     }
-    #endregion OTHER
-
-    #region EXPORTING
 
     /**
      * delete key
@@ -738,8 +762,10 @@ class Options implements OptionsInterface {
         /** @var OptionsInterface $value */
         foreach($merge as $key => $value) if ($this->offsetExists($key)) {
             if (is_int($key)) $this->data[] = $value; elseif ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->merge($value);
-            elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications); else $this->data[$key] = $value;
-        } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications); else $this->data[$key] = $value;
+            elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
+        } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+        else $this->data[$key] = $value;
 
         return $this;
     }
@@ -788,7 +814,8 @@ class Options implements OptionsInterface {
         /** @var Options $value */
         foreach($merge as $key => $value) if ($this->offsetExists($key)) {
             if (is_int($key)) $this->data[] = $value; elseif ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->modify($value);
-            elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications); else $this->data[$key] = $value;
+            elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+            else $this->data[$key] = $value;
         }
 
         return $this;
@@ -812,7 +839,8 @@ class Options implements OptionsInterface {
         /** @var OptionsInterface $value */
         foreach($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
             if ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->complete($value, $exclude);
-        } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications); else $this->data[$key] = $value;
+        } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
+        else $this->data[$key] = $value;
 
         return $this;
     }
@@ -829,6 +857,7 @@ class Options implements OptionsInterface {
     public function prev(): void {
         prev($this->data);
     }
+    #endregion EXPORTING
 
     /**
      * Make Options play nicely with var_dump
@@ -838,7 +867,6 @@ class Options implements OptionsInterface {
     public function __debugInfo(): array {
         return $this->toArray();
     }
-    #endregion EXPORTING
 
     /**
      * Return an associative array of the stored data.
@@ -885,3 +913,4 @@ class Options implements OptionsInterface {
         $this->data = $data;
     }
 }
+

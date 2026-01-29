@@ -24,23 +24,23 @@ declare(strict_types=1);
 
 namespace Inane\Stdlib\Array;
 
-use Serializable;
 use ArrayAccess;
 use Countable;
-use Iterator;
-use Psr\Container\ContainerInterface;
 use Inane\Stdlib\Converters\{
     Arrayable,
     JSONable,
-    XMLable
-};
+    XMLable};
+use Iterator;
+use JsonSerializable;
+use Psr\Container\ContainerInterface;
+use Serializable;
 
 /**
  * Interface: Options
  *
  * @version 0.1.0
  */
-interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable, Serializable {
+interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, JsonSerializable, Arrayable, JSONable, XMLable, Serializable {
     /**
      * Checks if the specified offset exists.
      *
