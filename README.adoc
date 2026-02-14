@@ -1,4 +1,4 @@
-= README: inanepain/stdlib
+= inanepain/stdlib image:./icon.png[title=inanepain/stdlib,25]
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
@@ -23,6 +23,8 @@
 
 {description}
 
+:sectnums:
+
 <<<
 
 :leveloffset: +1
@@ -38,7 +40,3 @@ composer require {pkg-id}
 :leveloffset!:
 
 <<<
-
-== Revision
-
- version: $Id$ ($Date$)
