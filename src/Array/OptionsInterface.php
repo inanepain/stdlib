@@ -27,6 +27,7 @@ namespace Inane\Stdlib\Array;
 use Serializable;
 use ArrayAccess;
 use Countable;
+use Inane\Stdlib\ArrayObject;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Inane\Stdlib\Converters\{
@@ -116,82 +117,96 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      */
     public function lock(): self;
     /**
-	 * Returns whether this Options object is locked or not.
-	 *
-	 * @return bool
-	 */
-	public function isLocked(): bool;
+     * Returns whether this Options object is locked or not.
+     *
+     * @return bool
+     */
+    public function isLocked(): bool;
     /**
-	 * Sorts the options.
-	 *
-	 * @since version
-	 *
-	 * @param bool $preserveIndex Whether to preserve the array keys during sorting. Defaults to true.
-	 * @param bool $createCopy If true, returns a sorted copy of the options; if false, sorts in place.
-	 *
-	 * @return static Returns the sorted options instance.
-	 */
-	public function sort(bool $preserveIndex = true, bool $createCopy = false): static;
+     * Sorts the options.
+     *
+     * @since version
+     *
+     * @param bool $preserveIndex Whether to preserve the array keys during sorting. Defaults to true.
+     * @param bool $createCopy If true, returns a sorted copy of the options; if false, sorts in place.
+     *
+     * @return static Returns the sorted options instance.
+     */
+    public function sort(bool $preserveIndex = true, bool $createCopy = false): static;
     /**
-	 * count
-	 *
-	 * Counts all elements
-	 *
-	 * @return int item count
-	 */
-	public function count(): int;
+     * count
+     *
+     * Counts all elements
+     *
+     * @return int item count
+     */
+    public function count(): int;
     /**
-	 * UNIQUE
-	 *
-	 * Filters unique items
-	 *
-	 * @since 0.14.0
-	 * @since version $createCopy param added
-	 *
-	 * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
-	 *
-	 * @return Options|OptionsInterface unique items
-	 */
-	public function unique(bool $createCopy = false): static;
+     * UNIQUE
+     *
+     * Filters unique items
+     *
+     * @since 0.14.0
+     * @since version $createCopy param added
+     *
+     * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
+     *
+     * @return Options|OptionsInterface unique items
+     */
+    public function unique(bool $createCopy = false): static;
     /**
-	 * Returns keys
-	 *
-	 * @return array keys
-	 */
-	public function keys(): array;
+     * Returns keys
+     *
+     * @return array keys
+     */
+    public function keys(): array;
     /**
-	 * Returns values
-	 *
-	 * If this object is locked,
-	 *  the values are locked too.
-	 *
-	 * @return iterable|static values
-	 */
-	public function values(): iterable|static;
+     * Returns values
+     *
+     * If this object is locked,
+     *  the values are locked too.
+     *
+     * @return iterable|static values
+     */
+    public function values(): iterable|static;
     /**
-	 * Return new Options group by property $group
-	 *
-	 * @param string $group property to group entries by
-	 *
-	 * @return static grouped options
-	 */
-	public function groupBy(string $group): static;
+     * Return new Options group by property $group
+     *
+     * @param string $group property to group entries by
+     *
+     * @return static grouped options
+     */
+    public function groupBy(string $group): static;
     /**
-	 * Gets the previous value of the key being assigned a new value
-	 *
-	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
-	 * @param mixed $value The value to assign
-	 *
-	 * @return mixed the key's previous value
-	 */
-	public function getSet(mixed $key, mixed $value): mixed;
+     * Gets the previous value of the key being assigned a new value
+     *
+     * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+     * @param mixed $value The value to assign
+     *
+     * @return mixed the key's previous value
+     */
+    public function getSet(mixed $key, mixed $value): mixed;
     /**
-	 * Gets the previous value of the key being assigned a new value
-	 *
-	 * @param mixed $key The key to which the value will be assigned and who's previous value is returned
-	 * @param mixed $value The value to assign
-	 *
-	 * @return mixed the key's previous value
-	 */
-	public function offsetGetSet(mixed $key, mixed $value): mixed;
+     * Gets the previous value of the key being assigned a new value
+     *
+     * @param mixed $key The key to which the value will be assigned and who's previous value is returned
+     * @param mixed $value The value to assign
+     *
+     * @return mixed the key's previous value
+     */
+    public function offsetGetSet(mixed $key, mixed $value): mixed;
+
+    /**
+     * Merge an array but only adds missing keys, leaving existing keys unmodified
+     *
+     * @since 2025-07-31 array $exclude A list of keys to ignore.
+     *
+     * @since 0.11.0
+     *
+     * @param array|\ArrayObject|ArrayObject|OptionsInterface $merge
+     * @param array                                                   $exclude A list of keys to ignore.
+     *
+     * @return OptionsInterface
+     */
+    public function complete(array|\ArrayObject|ArrayObject|OptionsInterface $merge, array $exclude = []): self;
 }

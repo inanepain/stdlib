@@ -799,12 +799,12 @@ class Options implements OptionsInterface {
      *
      * @since 0.11.0
      *
-     * @param array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge
+     * @param array|\ArrayObject|ArrayObject|OptionsInterface $merge
      * @param array                                                   $exclude A list of keys to ignore.
      *
      * @return OptionsInterface
      */
-    public function complete(array|\ArrayObject|ArrayObject|Options|OptionsInterface $merge, array $exclude = []): self {
+    public function complete(array|\ArrayObject|ArrayObject|OptionsInterface $merge, array $exclude = []): self {
         if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
         /** @var OptionsInterface $value */
