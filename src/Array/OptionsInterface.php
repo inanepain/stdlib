@@ -30,6 +30,7 @@ use Inane\Stdlib\Converters\{
     Arrayable,
     JSONable,
     XMLable};
+use Inane\Stdlib\ArrayObject;
 use Iterator;
 use JsonSerializable;
 use Psr\Container\ContainerInterface;

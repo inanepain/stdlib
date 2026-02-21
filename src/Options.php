@@ -837,7 +837,7 @@ class Options implements OptionsInterface {
         if (!$merge instanceof OptionsInterface) $merge = new static($merge);
 
         /** @var OptionsInterface $value */
-        foreach($merge as $key => $value) if (!in_array($key, $exclude) && $this->offsetExists($key)) {
+        foreach($merge as $key => $value) if (!in_array($key, $exclude, true) && $this->offsetExists($key)) {
             if ($value instanceof OptionsInterface && $this->data[$key] instanceof OptionsInterface) $this->data[$key]->complete($value, $exclude);
         } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
         else $this->data[$key] = $value;
