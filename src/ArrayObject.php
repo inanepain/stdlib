@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -26,18 +26,17 @@ namespace Inane\Stdlib;
 
 use ArrayIterator;
 use ArrayObject as SystemArrayObject;
-
+use Inane\Stdlib\Converters\{
+    Arrayable,
+    JSONable};
+use Inane\Stdlib\Exception\JsonException;
+use Random\RandomException;
 use function count;
 use function current;
 use function is_array;
 use function key;
 use function next;
 use function random_int;
-
-use Inane\Stdlib\Converters\{
-    Arrayable,
-    JSONable
-};
 
 /**
  * ArrayObject
@@ -52,7 +51,7 @@ class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
     /**
      * ArrayObject constructor
      *
-     * @param array $array
+     * @param array|object $array $array
      */
     public function __construct(array|object $array = []) {
         $this->setFlags(static::ARRAY_AS_PROPS);
@@ -101,7 +100,7 @@ class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
      *
      * @return void
      */
-    public function set($key, $value): void {
+    public function set(mixed $key, mixed $value): void {
         $this->offsetSet($key, $value);
     }
 
@@ -123,6 +122,8 @@ class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
      * Random Item
      *
      * @return array
+     *
+     * @throws RandomException
      */
     public function randomItem(): array {
         $data = $this->getArrayCopy();
@@ -133,25 +134,27 @@ class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
         return [key($data) => current($data)];
     }
 
-	/**
-	 * Get copy as array
-	 *
-	 * @since 0.2.2
-	 *
-	 * @return array
-	 */
-	public function toArray(): array {
-		return $this->getArrayCopy();
-	}
+    /**
+     * Get copy as array
+     *
+     * @since 0.2.2
+     *
+     * @return array
+     */
+    public function toArray(): array {
+        return $this->getArrayCopy();
+    }
 
-	/**
-	 * Get as JSON string
-	 *
-	 * @since 0.2.2
-	 *
-	 * @return string
-	 */
-	public function toJSON(): string {
-		return Json::encode($this->toArray());
-	}
+    /**
+     * Get as JSON string
+     *
+     * @since 0.2.2
+     *
+     * @return string
+     *
+     * @throws JsonException
+     */
+    public function toJSON(): string {
+        return Json::encode($this->toArray());
+    }
 }

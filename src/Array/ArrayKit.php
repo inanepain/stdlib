@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -25,31 +25,29 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Array;
 
 use ArrayAccess;
-
+use Inane\Stdlib\{
+    Converters\Arrayable,
+    String\Inflector};
+use Random\RandomException;
 use function array_key_exists;
-use function array_push;
 use function call_user_func;
 use function count;
 use function function_exists;
 use function in_array;
 use function is_null;
 use function random_int;
+use function trigger_error;
 use const null;
-
-use Inane\Stdlib\{
-	Converters\Arrayable,
-	Options
-};
 
 /**
  * Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
  *
  * AFT attempts to create a OO array with the `array_*` functions as methods.
- * The various functions differ and AFT uses rule groups to handle these differences.
+ * The various functions differ, and AFT uses rule groups to handle these differences.
  *
  * This is more for shits and giggles, like many of my classes, than any real use case.
- * But it does allow for easy chaining of array functions an can neaten code in various situations.
- * Of course those or more side effects then planned features but it does not make them any less nifty.
+ * But it does allow for easy chaining of array functions a can neaten code in various situations.
+ * Of course those or more side effects than planned features, but it does not make them any less nifty.
  *
  * @todo convert individual rule properties to a single rules array property
  * @todo enable adding custom rules by setting allowModifications to true
@@ -78,222 +76,223 @@ use Inane\Stdlib\{
  * @version 0.2.1
  */
 class ArrayKit implements Arrayable, ArrayAccess {
-	/**
-	 * Allow Modifications
-	 *
-	 * Setting this to true allows adding custom array methods to the object.
-	 *
-	 * Use this to enable `ArrayKit` to handle more functions without throwing an error.
-	 *
-	 * NOTE: consider emailing me the details of the function so I can add it to the defaults.
-	 *
-	 * @var bool
-	 */
-	public static bool $allowModifications = false;
+    /**
+     * Allow Modifications
+     *
+     * Setting this to true allows adding custom array methods to the object.
+     *
+     * Use this to enable `ArrayKit` to handle more functions without throwing an error.
+     *
+     * NOTE: consider emailing me the details of the function so I can add it to the defaults.
+     *
+     * @var bool
+     */
+    public static bool $allowModifications = false;
 
-	/**
-	 * List of array functions that have the array before the arguments
-	 *
-	 * @var array
-	 */
-	private static array $before = [
-		'array_column',
-		'array_filter',
-		'array_push',
-		'array_slice',
-		'array_splice',
-		'array_unshift',
-		'array_walk',
-		'count',
-	];
+    /**
+     * List of array functions that have the array before the arguments
+     *
+     * @var array
+     */
+    private static array $before = [
+        'array_column',
+        'array_filter',
+        'array_push',
+        'array_slice',
+        'array_splice',
+        'array_unshift',
+        'array_walk',
+        'count',
+    ];
 
-	/**
-	 * List of array functions that only have the array as argument
-	 *
-	 * @var array
-	 */
-	private static array $self = [
-		'array_flip',
-		'array_pop',
-		'array_shift',
-		'array_sum',
-	];
+    /**
+     * List of array functions that only have the array as argument
+     *
+     * @var array
+     */
+    private static array $self = [
+        'array_flip',
+        'array_pop',
+        'array_shift',
+        'array_sum',
+    ];
 
-	/**
-	 * List of array functions that arguments other than the array
-	 *
-	 * @var array
-	 */
-	private static array $other = [
-		'array_fill',
-	];
+    /**
+     * List of array functions that arguments other than the array
+     *
+     * @var array
+     */
+    private static array $other = [
+        'array_fill',
+    ];
 
-	/**
-	 * List of array functions that are called without `array_` in their name
-	 *
-	 * @var array
-	 */
-	private static array $plain = [
-		'count',
-		'implode',
-	];
+    /**
+     * List of array functions that are called without `array_` in their name
+     *
+     * @var array
+     */
+    private static array $plain = [
+        'count',
+        'implode',
+    ];
 
-	/**
-	 * List of array functions that update self
-	 *
-	 * @var array
-	 */
-	private static array $store = [
-		'array_fill',
-	];
+    /**
+     * List of array functions that update self
+     *
+     * @var array
+     */
+    private static array $store = [
+        'array_fill',
+    ];
 
-	/**
-	 * List of array functions that return a ArrayKit instance
-	 *
-	 * @var array
-	 */
-	private static array $returnInstance = [
-		'array_flip',
-		'array_merge',
-	];
+    /**
+     * List of array functions that return a ArrayKit instance
+     *
+     * @var array
+     */
+    private static array $returnInstance = [
+        'array_flip',
+        'array_merge',
+    ];
 
-	/**
-	 * List of array functions to allow calling on the array.
-	 *
-	 * These functions have generally gone through some rudimentary testing.
-	 * And should work at least when using the simplest options.
-	 *
-	 * @var array
-	 */
-	private static array $enable = [
-		'array_column',
-		'array_fill',
-		'array_filter',
-		'array_flip',
-		'array_key_exists',
-		'array_map',
-		'array_merge',
-		'array_pop',
-		'array_push',
-		'array_shift',
-		'array_slice',
-		'array_splice',
-		'array_sum',
-		'array_unshift',
-		'array_walk',
-		'count',
-		'implode',
-	];
+    /**
+     * List of array functions to allow calling on the array.
+     *
+     * These functions have generally gone through some rudimentary testing.
+     * And should work at least when using the simplest options.
+     *
+     * @var array
+     */
+    private static array $enable = [
+        'array_column',
+        'array_fill',
+        'array_filter',
+        'array_flip',
+        'array_key_exists',
+        'array_map',
+        'array_merge',
+        'array_pop',
+        'array_push',
+        'array_shift',
+        'array_slice',
+        'array_splice',
+        'array_sum',
+        'array_unshift',
+        'array_walk',
+        'count',
+        'implode',
+    ];
 
-	/**
-	 * Constructor
-	 *
-	 * @return void
-	 */
-	public function __construct(private array $data = []) {
-	}
+    /**
+     * Constructor
+     *
+     * @return void
+     */
+    public function __construct(private array $data = []) {
+    }
 
-	/**
-	 * Whether an offset exists
-	 *
-	 * @param mixed $offset An offset to check for.
-	 *
-	 * @return bool Returns true on success or false on failure.
-	 */
-	public function offsetExists(mixed $offset): bool {
-		return isset($this->data[$offset]) || array_key_exists($offset, $this->data);
-	}
+    /**
+     * Whether an offset exists
+     *
+     * @param mixed $offset An offset to check for.
+     *
+     * @return bool Returns true on success or false on failure.
+     */
+    public function offsetExists(mixed $offset): bool {
+        return isset($this->data[$offset]) || array_key_exists($offset, $this->data);
+    }
 
-	/**
-	 * Offset to retrieve
-	 *
-	 * @param mixed $offset The offset to retrieve.
-	 *
-	 * @return mixed Can return all value types.
-	 */
-	public function offsetGet(mixed $offset): mixed {
-		return $this->offsetExists($offset) ? $this->data[$offset] : null;
-	}
+    /**
+     * Offset to retrieve
+     *
+     * @param mixed $offset The offset to retrieve.
+     *
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet(mixed $offset): mixed {
+        return $this->offsetExists($offset) ? $this->data[$offset] : null;
+    }
 
-	/**
-	 * Assign a value to the specified offset
-	 *
-	 * @param mixed $offset The offset to assign the value to.
-	 * @param mixed $value The value to set.
-	 *
-	 * @return void No value is returned.
-	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
-		if (is_null($offset)) $this->data[] = $value;
+    /**
+     * Assign a value to the specified offset
+     *
+     * @param mixed $offset The offset to assign the value to.
+     * @param mixed $value The value to set.
+     *
+     * @return void No value is returned.
+     */
+    public function offsetSet(mixed $offset, mixed $value): void {
+        if (is_null($offset)) $this->data[] = $value;
         else $this->data[$offset] = $value;
-	}
+    }
 
-	/**
-	 * Unset an offset
-	 *
-	 * @param mixed $offset The offset to unset.
-	 *
-	 * @return void No value is returned.
-	 */
-	public function offsetUnset(mixed $offset): void {
-		if ($this->offsetExists($offset)) unset($this->data[$offset]);
-	}
+    /**
+     * Unset an offset
+     *
+     * @param mixed $offset The offset to unset.
+     *
+     * @return void No value is returned.
+     */
+    public function offsetUnset(mixed $offset): void {
+        if ($this->offsetExists($offset)) unset($this->data[$offset]);
+    }
 
-	/**
-	 * to array
-	 *
-	 * @return array
-	 */
-	public function toArray(): array {
-		return $this->data;
-	}
+    /**
+     * to array
+     *
+     * @return array
+     */
+    public function toArray(): array {
+        return $this->data;
+    }
 
-	/**
-	 * __invoke
-	 *
-	 * @param string $name of array method
-	 * @param array $arguments method arguments
-	 *
-	 * @return \Inane\Stdlib\Array\ArrayKit|array|int|bool|null
-	 */
-	public function __call(string $name, array $arguments): static|array|bool|int|string|null {
-		if (in_array($name, static::$plain)) {
-			$func = $name;
-		} else $func = 'array_' . \Inane\Stdlib\String\Inflector::underscore($name);
+    /**
+     * __invoke
+     *
+     * @param string $name of array method
+     * @param array $arguments method arguments
+     *
+     * @return \Inane\Stdlib\Array\ArrayKit|array|int|bool|null
+     */
+    public function __call(string $name, array $arguments): static|array|bool|int|string|null {
+        if (in_array($name, static::$plain, true)) {
+            $func = $name;
+        } else $func = 'array_' . Inflector::underscore($name);
 
-		if (function_exists($func)) {
-			if (!in_array($func, static::$enable))
-				trigger_error("Untested function: `$func`");
+        if (function_exists($func)) {
+            if (!in_array($func, static::$enable, true))
+                trigger_error("Untested function: `$func`");
 
-			if (count($arguments) == 0 && in_array($func, static::$self))
-				$result = $func($this->data);
-			else if (in_array($func, static::$before))
-				$result = $func($this->data, ...$arguments);
-			else if (in_array($func, static::$other))
-				$result = $func(...$arguments);
-			else {
-				array_push($arguments, $this->data);
-				$result = @call_user_func($func, ...$arguments);
-			}
+            if (count($arguments) === 0 && in_array($func, static::$self, true))
+                $result = $func($this->data);
+            else if (in_array($func, static::$before, true))
+                $result = $func($this->data, ...$arguments);
+            else if (in_array($func, static::$other, true))
+                $result = $func(...$arguments);
+            else {
+                $arguments[] = $this->data;
+                $result = @call_user_func($func, ...$arguments);
+            }
 
-			if (in_array($func, static::$returnInstance)) return new static($result);
+            if (in_array($func, static::$returnInstance, true)) return new static($result);
 
-			if (in_array($func, static::$store)) {
-				$this->data = $result;
-				return $this;
-			}
-			return $result;
-		}
+            if (in_array($func, static::$store, true)) {
+                $this->data = $result;
+                return $this;
+            }
+            return $result;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Random Item
-	 *
-	 * @return mixed
-	 */
-	public function randomItem(): mixed {
-		return $this->data[random_int(0, count($this->data) - 1)];
-	}
+    /**
+     * Random Item
+     *
+     * @return mixed
+     * @throws RandomException
+     */
+    public function randomItem(): mixed {
+        return $this->data[random_int(0, count($this->data) - 1)];
+    }
 }

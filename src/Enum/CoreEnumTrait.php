@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Enum;
 
 use function strcasecmp;
-
 use const false;
 use const null;
 
@@ -47,7 +46,7 @@ trait CoreEnumTrait {
 	 */
 	public static function tryFromName(string $name, bool $ignoreCase = false): ?static {
 		foreach (static::cases() as $case)
-			if (($ignoreCase && strcasecmp($case->name, $name) == 0) || $case->name === $name)
+			if ($case->name === $name || ($ignoreCase && strcasecmp($case->name, $name) === 0))
 				return $case;
 
 		return null;
