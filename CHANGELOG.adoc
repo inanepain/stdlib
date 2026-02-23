@@ -2,9 +2,9 @@
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities are used throughout the inanepain libraries.
-:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.7.1
-:revdate: 2025-09-29
+:keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.8.0
+:revdate: 2026-02-23
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -18,11 +18,9 @@
 
 :leveloffset: +2
 
-= 0.8.0-dev (2026 Xxx xx)
-:revnumber: 0.8.0-dev
-:revdate: 2026-XX-XX
-:revremark: -dev
-:version-label: Unconfirmed
+= 0.8.0 (2026 Feb 23)
+:revnumber: 0.8.0
+:revdate: 2026-02-23
 
 * update: `Options::defaults` now accepts arrays.
 * new: `ReflectionException`, `DateMalformedStringException`, `DateException`, `JsonException`
@@ -45,7 +43,6 @@
 * general code update and refresh.
 
 :leveloffset!:
-
 :leveloffset: +2
 
 = 0.7.1 (2025 Sep 29)
