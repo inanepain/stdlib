@@ -21,4 +21,5 @@
 * new: `HashUtility` create and identify hashes.
 * new: `CastAndAssign` A class that provides a variety of methods that cast a value to its variable type before assigning it.
 * new: `CastAndAssignTrait` The methods used by `CastAndAssign`.
+* new: `NotFoundException` when required items are not found.
 * general code update and refresh.
