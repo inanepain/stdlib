@@ -4,7 +4,7 @@
 :description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
 :keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
-:homepage: https://git.cathedral.co.za:3000/inanepain/stdlib
+:homepage: https://gitgithub.com/inanepain/stdlib
 :revnumber: 0.7.1
 :revdate: 2025-09-29
 :experimental:
