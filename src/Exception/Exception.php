@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Exception;
 
 use Exception as SystemException;
-use Stringable;
 use Throwable;
 
 /**
@@ -33,17 +32,17 @@ use Throwable;
  *
  * @version 0.3.2
  */
-class Exception extends SystemException implements ExceptionInterface, Stringable {
+class Exception extends SystemException implements ExceptionInterface {
     /**
      * Custom construct template
      *
-     * @param string $message error description
-     * @param int $code unique identifier
+     * @param string          $message  error description
+     * @param int|mixed             $code     unique identifier
      * @param \Throwable|null $previous error if any
      *
      * @return void
      */
-    public function __construct($message = '', $code = 0, ?Throwable $previous = null) {
+    public function __construct(string $message = '', $code = 0, ?Throwable $previous = null) {
         // modifications
         $code = $this->code + $code;
 

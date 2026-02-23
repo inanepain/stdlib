@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -28,6 +28,7 @@ use function array_keys;
 use function array_push;
 use function array_search;
 use function get_class;
+use function gettype;
 use function str_repeat;
 use function str_replace;
 use function strtr;
@@ -156,7 +157,7 @@ class ObjectParser {
      *
      * @param mixed $object The object to be parsed.
      * @param int|null $parseDepth Optional. The maximum depth to parse nested objects. If null, uses default depth.
-     * 
+     *
      * @return string The string representation of the parsed object.
      */
     public static function parse(mixed $object, ?int $parseDepth = null): string {

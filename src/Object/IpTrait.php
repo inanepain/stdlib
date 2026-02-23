@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$

@@ -25,10 +25,12 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Exception;
 
 /**
- * Exception thrown if a callback refers to an undefined method or if some arguments are missing.
+ * NotFoundException
  *
- * @implements \Inane\Stdlib\Exception\ExceptionInterface
- * @version 0.2.0
+ * Required item not found.
+ *
+ * @version 0.1.0
  */
-class BadMethodCallException extends BadFunctionCallException {
+class NotFoundException extends Exception {
+    protected $code = 760;
 }

@@ -12,7 +12,7 @@ _default:
     @echo "{{project}}:"
     @just --list --list-heading ''
 
-# generate php doc (v2) (all, cache, html)
+# generate php part (v2) (all, cache, html)
 php-doc clear="all":
 	#!/usr/bin/env zsh
 	if [ -d .phpdoc ] && [[ "{{clear}}" = "all" || "{{clear}}" = "cache" ]]; then

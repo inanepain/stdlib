@@ -3,12 +3,12 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -25,34 +25,22 @@ declare(strict_types=1);
 namespace Inane\Stdlib;
 
 use SplStack;
-
 use function array_flip;
 use function array_map;
 use function count;
-use function floatval;
 use function implode;
 use function in_array;
-use function intval;
 use function ltrim;
-use function pow;
 use function preg_split;
 use function str_split;
 use function strlen;
 use function strrev;
 use function strtolower;
 use function strtr;
-use function strval;
 use function substr;
 use function trim;
 use const false;
-use const JSON_HEX_APOS;
-use const JSON_HEX_QUOT;
-use const JSON_HEX_TAG;
-use const JSON_NUMERIC_CHECK;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
 use const PHP_INT_MAX;
-use const true;
 
 /**
  * Number and word converter
@@ -65,7 +53,7 @@ class NumericalWords {
     /**
      * A Scale for testing
      *
-     * @var \Inane\Stdlib\Options
+     * @var Options
      */
     protected static Options $scale;
 
@@ -99,19 +87,18 @@ class NumericalWords {
         'twenty' => 20,
         'thirty' => 30,
         'forty' => 40,
-        'forty' => 40,
         'fifty' => 50,
         'sixty' => 60,
         'seventy' => 70,
         'eighty' => 80,
         'ninety' => 90,
         'hundred' => 100, // +1*0
-        'thousand' => 1000,
-        'million' => 1000000,
-        'billion' => 1000000000,
-        'trillion' => 1000000000000,
-        'quadrillion' => 1000000000000000,
-        'quintillion' => 1000000000000000000, //10^18
+        'thousand' => 1_000,
+        'million' => 1_000_000,
+        'billion' => 1_000_000_000,
+        'trillion' => 1_000_000_000_000,
+        'quadrillion' => 1_000_000_000_000_000,
+        'quintillion' => 1_000_000_000_000_000_000, //10^18
         'and' => '',
     ];
 
@@ -127,21 +114,21 @@ class NumericalWords {
     /**
      * Scale to use for testing
      *
-     * @return \Inane\Stdlib\Options
+     * @return Options
      */
     public function getScale(): Options {
         if (!isset(static::$scale) || !static::$scale->isLocked()) {
             static::$scale = new Options([
-                'one'         => pow(10, 0),
+                'one'         => 10 ** 0,
                 'five'        => 5,
-                'ten'         => pow(10, 1),
-                'hundred'     => pow(10, 2),
-                'thousand'    => pow(10, 3),
-                'million'     => pow(10, 6),
-                'billion'     => pow(10, 9),
-                'trillion'    => pow(10, 12),
-                'quadrillion' => pow(10, 15),
-                'quintillion' => pow(10, 18),
+                'ten'         => 10 ** 1,
+                'hundred'     => 10 ** 2,
+                'thousand'    => 10 ** 3,
+                'million'     => 10 ** 6,
+                'billion'     => 10 ** 9,
+                'trillion'    => 10 ** 12,
+                'quadrillion' => 10 ** 15,
+                'quintillion' => 10 ** 18,
                 'seven hundred thirty six  two hundred twelve thousand six hundred eighty four million nineteen billion eight hundred twenty trillion eight hundred seventy five quadrillion three quintillion' => 3875820019684212736,
                 // 'Sextillion'  => pow(10, 21),
             ], false);
@@ -150,6 +137,13 @@ class NumericalWords {
         return static::$scale;
     }
 
+    /**
+     * Returns the maximum integer value supported by PHP, either as a number or in words.
+     *
+     * @param bool $inWords Determines whether the maximum integer value should be returned in words (true) or as a number (false).
+     *
+     * @return string|int The maximum integer value as a number or its equivalent in words.
+     */
     public function phpIntMax(bool $inWords = false): string|int {
         if ($inWords) return $this->toWords(PHP_INT_MAX);
 
@@ -174,7 +168,7 @@ class NumericalWords {
 
         // Coerce all tokens to numbers
         $parts = array_map(
-            fn ($val) => floatval($val),
+            fn ($val) => (float)$val,
             preg_split('/[\s-]+/', $data)
         );
 
@@ -184,16 +178,16 @@ class NumericalWords {
 
         foreach ($parts as $part) {
             if (!$stack->isEmpty()) {
-                // We're part way through a phrase
+                // We're part-way through a phrase
                 if ($stack->top() > $part) {
                     // Decreasing step, e.g. from hundreds to ones
                     if ($last >= 1000) {
-                        $sum += $stack->pop(); // If we drop from more than 1000 then we've finished the phrase
+                        $sum += $stack->pop(); // If we drop from more than 1000, then we've finished the phrase
                         $stack->push($part); // This is the first element of a new phrase
                     } else
-                        $stack->push($stack->pop() + $part); // Drop down from less than 1000, just addition // e.g. "seventy one" -> "70 1" -> "70 + 1"
+                        $stack->push($stack->pop() + $part); // Drop down from less than 1000, just addition // e.g. "seventy-one" -> "70 1" -> "70 + 1"
                 } else
-                    $stack->push($stack->pop() * $part); // Increasing step, e.g ones to hundreds
+                    $stack->push($stack->pop() * $part); // Increasing step, e.g. ones to hundreds
             } else
                 $stack->push($part); // This is the first element of a new phrase
 
@@ -213,10 +207,10 @@ class NumericalWords {
     public function toWords(float $number): string {
         $w = '';
 
-        $n = strval(intval($number));
+        $n = (string)(int)$number;
         $r = strrev($n);
         $g = str_split($r, 3);
-        $p = array_map(fn ($i) => strrev($i), $g);
+        $p = array_map(static fn ($i) => strrev($i), $g);
 
         $us = ['', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion',];
         $upLook = array_flip(static::$lookup);
@@ -228,32 +222,32 @@ class NumericalWords {
             $u = $us[$i];
             $v = ltrim($v, '0');
 
-            if (strlen($v) == 1)
-                $tmp[] = $upLook["$v"];
-            else if (strlen($v) == 2) {
-                $z = intval($v);
-                if ($z == 0) {
-                } else if (in_array($z, static::$lookup))
+            if (strlen($v) === 1)
+                $tmp[] = $upLook[(string)$v];
+            else if (strlen($v) === 2) {
+                $z = (int)$v;
+                if ($z === 0) {
+                } else if (in_array($z, static::$lookup, true))
                     $tmp[] = $upLook[$z];
                 else {
-                    $z1 = substr("$z", 0, 1) . '0';
+                    $z1 = substr((string)$z, 0, 1) . '0';
                     $tmp[] = $upLook[$z1];
-                    $tmp[] = $upLook[substr("$z", 1)];
+                    $tmp[] = $upLook[substr((string)$z, 1)];
                 }
-            } else if (strlen($v) == 3) {
-                $tmp[] = $upLook[substr($v, 0, 1) . ''] . ' hundred';
+            } else if (strlen($v) === 3) {
+                $tmp[] = $upLook[$v[0]] . ' hundred';
                 $z = (int) substr($v, 1);
 
-                if ($z == 0) {
-                } else if (in_array($z, static::$lookup))
+                if ($z === 0) {
+                } else if (in_array($z, static::$lookup, true))
                     $tmp[] = $upLook[$z];
                 else {
-                    $z1 = substr("$z", 0, 1) . '0';
+                    $z1 = substr((string)$z, 0, 1) . '0';
                     $tmp[] = $upLook[$z1];
-                    $tmp[] = $upLook[substr("$z", 1)];
+                    $tmp[] = $upLook[substr((string)$z, 1)];
                 }
             }
-            if ($v != '') $tmp[] = $us[$i];
+            if ($v !== '') $tmp[] = $us[$i];
         }
 
         $w = implode(' ', $tmp);

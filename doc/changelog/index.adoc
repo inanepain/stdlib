@@ -1,10 +1,10 @@
 = Changelog: inanepain/stdlib
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
-:description: Common classes, tools and utilities used throughout the inanepain libraries.
-:keywords: inanepain, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.7.1
-:revdate: 2025-09-29
+:description: Common classes, tools and utilities are used throughout the inanepain libraries.
+:keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
+:revnumber: 0.8.0
+:revdate: 2026-02-23
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -16,8 +16,7 @@
 
 == History
 
-include::./release/0.0.0.adoc[leveloffset=+2]
-
+include::./release/0.8.0.adoc[leveloffset=+2]
 include::./release/0.7.1.adoc[leveloffset=+2]
 include::./release/0.7.0.adoc[leveloffset=+2]
 include::./release/0.6.0.adoc[leveloffset=+2]

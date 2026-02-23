@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace Inane\Stdlib;
 
 use ArrayAccess;
-
 use function array_shift;
 use function explode;
 use function is_array;
@@ -58,7 +57,7 @@ trait ArrayPathAccessTrait {
      *
      * @return void
      */
-    private static function walkPath(array|ArrayAccess &$array, array $path, $value): void {
+    private static function walkPath(array|ArrayAccess $array, array $path, $value): void {
         $key = array_shift($path);
 
         if (empty($path))

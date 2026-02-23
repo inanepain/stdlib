@@ -3,7 +3,7 @@
 /**
  * Inane: Stdlib
  *
- * Common classes, tools and utilities used throughout the inanepain libraries.
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
  *
  * $Id$
  * $Date$
@@ -36,22 +36,22 @@ use const true;
  * @version 0.1.0
  */
 trait ClassIdTrait {
-	/**
-	 * Build a class id based on class name.
-	 *
-	 * Some customisation is available.
-	 *
-	 * @param int $size number of parts used, namespace and class
-	 * @param string $separator used when combining parts
-	 * @param bool $lower convert to lowercase
-	 *
-	 * @return string class id
-	 */
-	public static function classId(int $size = 1, string $separator = '/', bool $lower = true): string {
-		$ids = explode('\\', static::class);
-		$cids =  array_slice($ids, $size * -1);
-		$id = implode($separator, $cids);
+    /**
+     * Build a class id based on class name.
+     *
+     * Some customisation is available.
+     *
+     * @param int $size number of parts used, namespace and class
+     * @param string $separator used when combining parts
+     * @param bool $lower convert to lowercase
+     *
+     * @return string class id
+     */
+    public static function classId(int $size = 1, string $separator = '/', bool $lower = true): string {
+        $ids = explode('\\', static::class);
+        $cids =  array_slice($ids, $size * -1);
+        $id = implode($separator, $cids);
 
-		return $lower ? strtolower($id) : $id;
-	}
+        return $lower ? strtolower($id) : $id;
+    }
 }
