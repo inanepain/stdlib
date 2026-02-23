@@ -3,23 +3,3 @@
 :revdate: 2026-XX-XX
 :revremark: -dev
 :version-label: Unconfirmed
-
-* update: `Options::defaults` now accepts arrays.
-* new: `ReflectionException`, `DateMalformedStringException`, `DateException`, `JsonException`
-* new: `NumberFormatterTrail` which can `format` a *number* or *currency* to _currency_ or _pattern_.
-* update: `Json`:
-** new: `::ecode` new third param `$file`, optionally also write to file.
-** new: `::decodeFile` decode JSON from a file.
-** new: `::$throwOnError` sets `JSON_THROW_ON_ERROR`.
-** new: `::$lastException` set to `null` if no error occurred.
-** *update*:  `encode` & `decode` methods new options key *onerror*. This lets you set if an error should be *thrown* and if *UTF8* characters should be either *ignored* or *substituted* in the response.
-* update: `OptionsInterface`:
-** added `Serializable`.
-** added `complete`.
-** increased usage.
-* update: `HashType` more types.
-* new: `HashUtility` create and identify hashes.
-* new: `CastAndAssign` A class that provides a variety of methods that cast a value to its variable type before assigning it.
-* new: `CastAndAssignTrait` The methods used by `CastAndAssign`.
-* new: `NotFoundException` when required items are not found.
-* general code update and refresh.
