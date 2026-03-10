@@ -27,6 +27,7 @@ namespace Inane\Stdlib;
 use Inane\File\File;
 use Inane\Stdlib\Array\OptionsInterface;
 use Inane\Stdlib\Exception\JsonException;
+
 use function is_array;
 use function is_null;
 use function is_string;
@@ -35,6 +36,7 @@ use function json_encode;
 use function json_last_error;
 use function json_last_error_msg;
 use function json_validate;
+
 use const false;
 use const JSON_ERROR_NONE;
 use const JSON_HEX_AMP;
@@ -46,6 +48,7 @@ use const JSON_INVALID_UTF8_SUBSTITUTE;
 use const JSON_NUMERIC_CHECK;
 use const JSON_PARTIAL_OUTPUT_ON_ERROR;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 use const null;
@@ -132,9 +135,10 @@ class Json {
      *
      * @return string|false Returns the JSON-encoded string on success, or false on failure.
      *
-     * @throws JsonException
+     * @throws JsonException Exception thrown if JSON_THROW_ON_ERROR option is set for Json::encode().
      */
     public static function encode(mixed $data, array $options = [], null|string|File $file = null, ?array &$error = null): string|false {
+        // Reset the last exception to null before encoding.
         self::$lastException = null;
 
         if (is_string($file)) $file = new File($file);
@@ -157,25 +161,31 @@ class Json {
         $flags |= match ($onerror) {
             'ignore' => JSON_INVALID_UTF8_IGNORE | JSON_PARTIAL_OUTPUT_ON_ERROR,
             'substitute' => JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR,
-            //            'throw' => JSON_THROW_ON_ERROR,
+            'throw' => JSON_THROW_ON_ERROR,
             default => 0,
         };
 
         if ($data instanceof OptionsInterface || $data instanceof ArrayObject) $data = $data->toArray();
 
-        $json = json_encode($data, $flags);
+        $error = [];
+        try {
+            /** @noinspection JsonEncodingApiUsageInspection */
+            $json = json_encode($data, $flags);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $error = [
-                'code'    => json_last_error(),
-                'message' => json_last_error_msg(),
-            ];
-            self::$lastException = new JsonException(...$error);
-
-            if ($onerror === 'throw') {
-                throw self::$lastException;
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $error = [
+                    'code'    => json_last_error(),
+                    'message' => json_last_error_msg(),
+                ];
             }
+        } catch (\JsonException $e) {
+            $error = [
+                'code'    => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
         }
+
+        static::handleException($error, $onerror);
 
         if ($file && $file->isWritable()) $file->write($json);
 
@@ -203,9 +213,10 @@ class Json {
      *
      * @return mixed Returns the value encoded in JSON in the appropriate PHP type. Values true, false, and null are returned as true, false, and null respectively. null is returned if the JSON cannot be decoded or if the encoded data is deeper than the nesting limit.
      *
-     * @throws JsonException
+     * @throws JsonException Exception thrown if JSON_THROW_ON_ERROR option is set for Json::decode().
      */
     public static function decode(string $json, array $options = [], ?array &$error = null): mixed {
+        // Reset the last exception to null before decoding.
         self::$lastException = null;
 
         $options += [
@@ -220,25 +231,58 @@ class Json {
         $flags |= match ($onerror) {
             'ignore' => JSON_INVALID_UTF8_IGNORE,
             'substitute' => JSON_INVALID_UTF8_SUBSTITUTE,
-            //            'throw' => JSON_THROW_ON_ERROR,
+            'throw' => JSON_THROW_ON_ERROR,
             default => 0,
         };
 
-        $array = json_decode($json, $assoc, $depth, $flags);
+        $error = [];
+        try {
+            /** @noinspection JsonEncodingApiUsageInspection */
+            $array = json_decode($json, $assoc, $depth, $flags);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $error = [
+                    'code'    => json_last_error(),
+                    'message' => json_last_error_msg(),
+                ];
+            }
+        } catch (\JsonException $e) {
             $error = [
-                'code'    => json_last_error(),
-                'message' => json_last_error_msg(),
+                'code'    => $e->getCode(),
+                'message' => $e->getMessage(),
             ];
+        }
+
+        static::handleException($error, $onerror);
+
+        if (!$asOptions) {
+            return is_null($array) ? null : $array;
+        }
+
+        return is_null($array) ? null : new Options($array);
+    }
+
+    /**
+     * Handles an exception by creating a new JsonException instance and optionally throwing it.
+     *
+     * @param null|array  $error   The error details used to construct the JsonException instance.
+     * @param string $onerror Determines the handling behavior. If set to 'throw', the exception is thrown.
+     *
+     * @return void
+     *
+     * @throws JsonException Exception thrown if JSON_THROW_ON_ERROR option is set for Json::encode() or Json::decode(). code contains the error type, for possible values see json_last_error().
+     */
+    protected static function handleException(?array $error, string $onerror): void {
+        // Check if we have an error by testing if the error array is not empty.
+        if (!empty($error)) {
+            // Use the error array to create a JsonException and set it as the last exception.
             self::$lastException = new JsonException(...$error);
 
+            // If onerror is set to 'throw', throw the exception.
             if ($onerror === 'throw') {
                 throw self::$lastException;
             }
         }
-
-        return is_null($array) ? null : ($asOptions ? new Options($array) : $array);
     }
 
     /**

@@ -29,9 +29,14 @@ use Inane\Config\Config;
 use Inane\Stdlib\Array\OptionsInterface;
 use Inane\Stdlib\Exception\{
     InvalidArgumentException,
-    RuntimeException};
-use Inane\Stdlib\String\Capitalisation;
-use Inane\Stdlib\String\StringCaseConverter;
+    JsonException,
+    RuntimeException
+};
+use Inane\Stdlib\String\{
+    Capitalisation,
+    StringCaseConverter
+};
+
 use function array_key_exists;
 use function array_keys;
 use function array_pop;
@@ -49,7 +54,10 @@ use function key;
 use function next;
 use function prev;
 use function reset;
+use function serialize;
 use function sort;
+use function unserialize;
+
 use const null;
 
 /**
@@ -590,6 +598,8 @@ class Options implements OptionsInterface {
      * @param int $depth Set the maximum depth. Must be greater than zero.
      *
      * @return string JSON string
+     *
+     * @throws JsonException Exception thrown if JSON_THROW_ON_ERROR option is set for Json::encode().
      */
     public function toJSON(array|int $flags = 0, int $depth = 512): string {
         if (is_array($flags)) {
@@ -650,8 +660,9 @@ class Options implements OptionsInterface {
      * Specify data which should be serialized to JSON
      *
      * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     *
+     * @return array data which can be serialized by <b>json_encode</b>, which is a value of any type other than a resource.
+     *
      * @since 5.4
      */
     public function jsonSerialize(): array {

@@ -3,3 +3,5 @@
 :revdate: 2026-XX-XX
 :revremark: -dev
 :version-label: Unconfirmed
+
+* update: `JSONable` got `JsonSerializable`.

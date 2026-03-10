@@ -29,11 +29,11 @@ namespace Inane\Stdlib\Converters;
  *
  * @version 0.1.0
  */
-interface JSONable {
+interface JSONable extends \JsonSerializable {
     /**
      * Return JSON representation of data
      *
-     * @return array as JSON
+     * @return string as JSON
      */
     public function toJSON(): string;
 }
