@@ -523,6 +523,8 @@ class Options implements OptionsInterface {
      * @param array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge
      *
      * @return OptionsInterface|Options
+     *
+     * @throws JsonException
      */
     public function merge(array|\ArrayObject|ArrayObject|OptionsInterface|Options $merge): OptionsInterface {
         if (!$merge instanceof OptionsInterface) $merge = new static($merge);
@@ -540,8 +542,9 @@ class Options implements OptionsInterface {
     }
 
     /**
-     * updates properties 2+ into the first array with decreasing importance
-     * so only unset keys are assigned values
+     * Updates properties 2+ into the first array with decreasing importance.
+     *
+     * Only unset keys are assigned values. Used to apply defaults to an options object where it only fills in missing values.
      *
      * 1 array in = the same array out
      * 0 array in = empty array out
@@ -556,6 +559,8 @@ class Options implements OptionsInterface {
      * @param array|Options|OptionsInterface ...$models
      *
      * @return OptionsInterface
+     *
+     * @throws JsonException
      */
     public function defaults(array|Options|OptionsInterface ...$models): self {
         $replaceable = [
@@ -566,10 +571,7 @@ class Options implements OptionsInterface {
         while ($model = array_pop($models)) foreach ($model as $key => $value) {
             if (is_array($model)) $model = new static($model);
             if ($value instanceof OptionsInterface && $this->offsetExists($key) && $this[$key] instanceof OptionsInterface) $this[$key]->defaults($value);
-            elseif ((!$this->offsetExists($key) || in_array(
-                $this[$key],
-                $replaceable
-            )) && $this[$key] !== false) $this[$key] = $value;
+            elseif ((!$this->offsetExists($key) || in_array($this[$key], $replaceable, true)) && $this[$key] !== false) $this[$key] = $value;
         }
 
         return $this;
