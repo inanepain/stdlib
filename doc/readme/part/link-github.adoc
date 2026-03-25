@@ -1,48 +1,3 @@
-= inanepain/stdlib image:./icon.png[title=inanepain/stdlib,25]
-:author: Philip Michael Raab
-:email: <philip@cathedral.co.za>
-:description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
-:keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
-:copyright: Unlicense
-:homepage: https://gitgithub.com/inanepain/stdlib
-:revnumber: 0.8.0
-:revdate: 2026-02-23
-:experimental:
-:hide-uri-scheme:
-:icons: font
-:source-highlighter: highlight.js
-:toc: left
-:sectanchors:
-:idprefix: topic-
-:idseparator: -
-:pkg-vendor: inanepain
-:pkg-name: stdlib
-:pkg-id: {pkg-vendor}/{pkg-name}
-
-== image:./icon.png[title={pkg-id},25] {pkg-id}
-
-{description}
-
-:sectnums:
-
-<<<
-
-:leveloffset: +1
-
-= Install
-
-.composer
-[source,shell,subs=attributes+]
-----
-composer require {pkg-id}
-----
-
-:leveloffset!:
-
-<<<
-
-:leveloffset: +1
-
 = Website: github
 
 ++++
@@ -92,5 +47,3 @@ composer require {pkg-id}
   ██████████████      ██    ██    ████      ██  ████      ██      ████    ██
 </code></pre>
 ++++
-
-:leveloffset!:
