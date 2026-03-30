@@ -31,4 +31,8 @@ include::part/install.adoc[leveloffset=+1]
 
 <<<
 
+include::part/verify-value.adoc[leveloffset=+1]
+
+<<<
+
 include::part/link-github.adoc[leveloffset=+1]

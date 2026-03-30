@@ -1,0 +1,377 @@
+= VerifyValue
+
+Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains, and regex-matched strings.
+
+All methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults.
+
+== Methods
+
+=== boolVerify
+
+Validates and converts a given value into a boolean.
+
+Accepts the same truthy/falsy strings that PHP's `filter_var` recognises (e.g. `"true"`, `"yes"`, `"1"`, `"on"` and their negatives).
+
+.Signature
+[source,php]
+----
+public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?bool
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate and convert to boolean.
+
+|`$nullOnFailure`
+|`bool`
+|When `true`, returns `null` on failure instead of `false`.
+|===
+
+.Returns: `bool\|null` — The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
+
+.Example
+[source,php]
+----
+VerifyValue::boolVerify('yes');          // true
+VerifyValue::boolVerify('off');          // false
+VerifyValue::boolVerify('maybe', true);  // null
+----
+
+=== emailVerify
+
+Validates an email address or an array of email addresses.
+
+When an array is supplied, each element is validated individually, and the method returns an associative array keyed by the original input values.
+
+.Signature
+[source,php]
+----
+public static function emailVerify(string|array $value): false|string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string\|array`
+|A single email address string, or an array of email address strings.
+|===
+
+.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input, or `false` if a single address fails validation.
+
+.Example
+[source,php]
+----
+VerifyValue::emailVerify('user@example.com');                    // 'user@example.com'
+VerifyValue::emailVerify('not-an-email');                        // false
+VerifyValue::emailVerify(['a@b.com', 'bad', 'c@d.com']);        // ['a@b.com' => 'a@b.com', 'bad' => false, 'c@d.com' => 'c@d.com']
+----
+
+=== integerVerify
+
+Validates an integer value with optional range and base constraints.
+
+Supports octal (prefix `0`) and hexadecimal (prefix `0x`) notation when the corresponding flags are enabled.
+
+.Signature
+[source,php]
+----
+public static function integerVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $allowOctal = false, bool $allowHex = false): bool
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$int`
+|`mixed`
+|The value to validate as an integer.
+
+|`$default`
+|`mixed`
+|Fallback value returned on validation failure. Pass `false` to omit.
+
+|`$min`
+|`int\|null`
+|Optional minimum allowed value (inclusive).
+
+|`$max`
+|`int\|null`
+|Optional maximum allowed value (inclusive).
+
+|`$allowOctal`
+|`bool`
+|When `true`, octal notation is accepted.
+
+|`$allowHex`
+|`bool`
+|When `true`, hexadecimal notation is accepted.
+|===
+
+.Returns: `bool` — `true` when the value passes integer validation, `false` otherwise.
+
+.Example
+[source,php]
+----
+VerifyValue::integerVerify(42);                        // true
+VerifyValue::integerVerify(42, false, 1, 100);         // true
+VerifyValue::integerVerify(200, false, 1, 100);        // false
+VerifyValue::integerVerify('0x1A', false, null, null, false, true);  // true
+----
+
+=== intVerify
+
+Validates an integer value using a named options array.
+
+A convenience wrapper around `integerVerify()` that accepts a named options array instead of individual parameters. Unrecognised keys are silently ignored.
+
+.Signature
+[source,php]
+----
+public static function intVerify(mixed $int, array $options = []): bool
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$int`
+|`mixed`
+|The value to validate as an integer.
+
+|`$options`
+|`array`
+|Named validation options: `default`, `min`, `max`, `allowOctal`, `allowHex`.
+|===
+
+.Returns: `bool` — `true` when the value passes integer validation, `false` otherwise.
+
+.Example
+[source,php]
+----
+VerifyValue::intVerify(42, ['min' => 1, 'max' => 100]);   // true
+VerifyValue::intVerify('0xFF', ['allowHex' => true]);      // true
+----
+
+=== floatVerify
+
+Validates a float value with optional range and thousand-separator support.
+
+.Signature
+[source,php]
+----
+public static function floatVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $acceptFloat = false): bool
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$int`
+|`mixed`
+|The value to validate as a float.
+
+|`$default`
+|`mixed`
+|Fallback value returned on validation failure. Pass `false` to omit.
+
+|`$min`
+|`int\|null`
+|Optional minimum allowed value (inclusive).
+
+|`$max`
+|`int\|null`
+|Optional maximum allowed value (inclusive).
+
+|`$acceptFloat`
+|`bool`
+|When `true`, values containing a thousand separator (`,`) are accepted.
+|===
+
+.Returns: `bool` — `true` when the value passes float validation, `false` otherwise.
+
+.Example
+[source,php]
+----
+VerifyValue::floatVerify(3.14);                        // true
+VerifyValue::floatVerify('1,234.56', false, null, null, true);  // true
+VerifyValue::floatVerify('abc');                       // false
+----
+
+=== regexVerify
+
+Validates a value against a regular expression pattern.
+
+Returns the original value when it matches the pattern, the `$default` string when provided and the match fails, or `null` otherwise.
+
+.Signature
+[source,php]
+----
+public static function regexVerify(mixed $value, string $pattern, ?string $default = null): ?string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate.
+
+|`$pattern`
+|`string`
+|A valid PCRE regular expression (including delimiters).
+
+|`$default`
+|`string\|null`
+|Optional fallback string returned when validation fails.
+|===
+
+.Returns: `string\|null` — The matched value, the default fallback, or `null` on failure.
+
+.Example
+[source,php]
+----
+VerifyValue::regexVerify('hello123', '/^[a-z]+\d+$/');          // 'hello123'
+VerifyValue::regexVerify('!!!', '/^[a-z]+$/', 'no-match');      // 'no-match'
+VerifyValue::regexVerify('!!!', '/^[a-z]+$/');                  // null
+----
+
+=== domainVerify
+
+Validates a domain name, optionally enforcing strict hostname rules.
+
+.Signature
+[source,php]
+----
+public static function domainVerify(mixed $value, bool $hostname = false): ?string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate as a domain name.
+
+|`$hostname`
+|`bool`
+|When `true`, applies stricter hostname validation rules.
+|===
+
+.Returns: `string\|null` — The validated domain string, or `null` if validation fails.
+
+.Example
+[source,php]
+----
+VerifyValue::domainVerify('example.com');          // 'example.com'
+VerifyValue::domainVerify('-bad.com', true);       // null
+VerifyValue::domainVerify('not a domain');         // null
+----
+
+=== ipVerify
+
+Validates an IP address with configurable version and range policies.
+
+By default, both IPv4 and IPv6 addresses are accepted. Passing `false` for one version while leaving the other as `true` restricts validation to the remaining version.
+
+.Signature
+[source,php]
+----
+public static function ipVerify(mixed $value, bool $allowV4 = true, bool $allowV6 = true, bool $denyPrivate = false, bool $denyReserved = false, bool $globalOnly = false): ?string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate as an IP address.
+
+|`$allowV4`
+|`bool`
+|Accept IPv4 addresses (default `true`).
+
+|`$allowV6`
+|`bool`
+|Accept IPv6 addresses (default `true`).
+
+|`$denyPrivate`
+|`bool`
+|Reject private-range addresses (e.g. `192.168.x.x`).
+
+|`$denyReserved`
+|`bool`
+|Reject reserved-range addresses (e.g. `0.0.0.0`).
+
+|`$globalOnly`
+|`bool`
+|Accept only globally routable addresses.
+|===
+
+.Returns: `string\|null` — The validated IP address string, or `null` if validation fails.
+
+.Example
+[source,php]
+----
+VerifyValue::ipVerify('192.168.1.1');                          // '192.168.1.1'
+VerifyValue::ipVerify('192.168.1.1', true, true, true);       // null (private range denied)
+VerifyValue::ipVerify('::1', false, true);                    // '::1' (IPv6 only)
+VerifyValue::ipVerify('not-an-ip');                           // null
+----
+
+=== macVerify
+
+Validates a MAC address and optionally normalises its format.
+
+PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as separators. When `$normalize` is `true` the validated address is stripped of its original separators and rebuilt using `$separator`.
+
+.Signature
+[source,php]
+----
+public static function macVerify(mixed $value, bool $normalize = false, string $separator = ':'): ?string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate as a MAC address.
+
+|`$normalize`
+|`bool`
+|When `true`, the returned address is normalised to a consistent separator.
+
+|`$separator`
+|`string`
+|The separator character used when normalising (default `:`).
+|===
+
+.Returns: `string\|null` — The validated (and optionally normalised) MAC address, or `null` if validation fails.
+
+.Example
+[source,php]
+----
+VerifyValue::macVerify('00-1A-2B-3C-4D-5E');                    // '00-1A-2B-3C-4D-5E'
+VerifyValue::macVerify('00-1A-2B-3C-4D-5E', true);              // '00:1a:2b:3c:4d:5e'
+VerifyValue::macVerify('00.1A.2B.3C.4D.5E', true, '-');         // '00-1a-2b-3c-4d-5e'
+VerifyValue::macVerify('not-a-mac');                            // null
+----

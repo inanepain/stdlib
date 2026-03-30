@@ -5,3 +5,4 @@
 :version-label: Unconfirmed
 
 * update: `JSONable` got `JsonSerializable`.
+* new: `VerifyValue` - wrapper around `filter_var`.
