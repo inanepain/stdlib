@@ -25,6 +25,8 @@
 :version-label: Unconfirmed
 
 * update: `JSONable` got `JsonSerializable`.
+* new: `VerifyValue` - wrapper around `filter_var`.
+* new: `ArrayToCodeTrait` - export an array as its code.
 
 :leveloffset!:
 :leveloffset: +2
