@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * Inane: Stdlib
+ *
+ * Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
+ *
+ * $Id$
+ * $Date$
+ *
+ * PHP version 8.5
+ *
+ * @author   Philip Michael Raab<philip@cathedral.co.za>
+ * @package  inanepain\stdlib
+ * @category stdlib
+ *
+ * @license  UNLICENSE
+ * @license  https://unlicense.org/UNLICENSE UNLICENSE
+ *
+ * _version_ $version
+ */
+
+declare(strict_types = 1);
+
+namespace Inane\Stdlib\Output;
+
+use Inane\Stdlib\Json;
+
+/**
+ * JsonStringOutput
+ */
+class JsonStringOutput extends AbstractOutput {
+    /**
+     * @inheritDoc
+     */
+    public function output(): false|string {
+        if (!isset($this->outputData)) {
+            $this->outputData = Json::encode($this->inputData, [
+                'numeric' => true,
+                'escape'  => true,
+            ]);
+        }
+
+        return $this->outputData;
+    }
+}

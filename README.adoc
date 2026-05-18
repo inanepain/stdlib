@@ -43,6 +43,310 @@ composer require {pkg-id}
 
 :leveloffset: +1
 
+= Output Strategy
+
+The Output component provides a consistent strategy for converting data into
+various formats. It is designed around the `OutputInterface` and an abstract
+base class, allowing for easy expansion and uniform usage across the framework.
+
+The Output tools are located in the `Inane\Stdlib\Output` namespace.
+
+== Components
+
+- `OutputInterface` — defines the `output()` method.
+- `AbstractOutput` — base implementation handling input data storage and lazy-processing.
+- `ArrayOutput` — converts input to a PHP array (supports JSON, Serialized, Objects).
+- `JsonStringOutput` — converts input to a JSON string.
+- `SerializedOutput` — converts input to a PHP serialized string.
+- `XmlOutput` — converts input to a `SimpleXMLElement` object.
+- `XmlStringOutput` — converts input to an XML string.
+
+== API Overview
+
+All output classes share the same constructor and method:
+
+[source,php]
+----
+public function __construct(protected mixed $inputData);
+
+public function output(): mixed;
+----
+
+The `output()` method is lazy-loaded; the processing happens once and the result
+is cached in the `outputData` property.
+
+== Usage
+
+=== ArrayOutput
+
+`ArrayOutput` is highly flexible. It attempts to detect the input type and convert
+it to an array accordingly.
+
+[source,php]
+----
+use Inane\Stdlib\Output\ArrayOutput;
+
+// From an object (recursive conversion)
+$output = new ArrayOutput($myObject);
+$array = $output->output();
+
+// From a JSON string
+$output = new ArrayOutput('{"key": "value"}');
+$array = $output->output(); // ['key' => 'value']
+
+// From a serialized string
+$output = new ArrayOutput(serialize(['a' => 1]));
+$array = $output->output(); // ['a' => 1]
+----
+
+==== Conversion Logic (ArrayOutput)
+
+1. If input is an **array**, it is returned as is.
+2. If input is a **string**:
+   - Tries to decode as **JSON**.
+   - If not JSON, tries to **unserialize**.
+   - If both fail, wraps the string in an array: `[$input]`.
+3. If input is an **object**, it uses `iteratorToArrayDeep` to convert it recursively.
+4. For any other type, it wraps the input in an array: `[$input]`.
+
+=== JsonStringOutput
+
+Converts any input into a JSON string using `Inane\Stdlib\Json`.
+
+[source,php]
+----
+use Inane\Stdlib\Output\JsonStringOutput;
+
+$data = ['name' => 'Inane', 'type' => 'Framework'];
+$output = new JsonStringOutput($data);
+echo $output->output(); // {"name":"Inane","type":"Framework"}
+----
+
+=== SerializedOutput
+
+Converts input into a PHP serialized string.
+
+[source,php]
+----
+use Inane\Stdlib\Output\SerializedOutput;
+
+$output = new SerializedOutput(['a', 'b', 'c']);
+echo $output->output(); // a:3:{i:0;s:1:"a";i:1;s:1:"b";i:2;s:1:"c";}
+----
+
+=== XmlOutput
+
+Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
+to normalize the input before conversion.
+
+[source,php]
+----
+use Inane\Stdlib\Output\XmlOutput;
+
+$data = ['user' => ['id' => 1, 'name' => 'John']];
+$output = new XmlOutput($data);
+$xml = $output->output(); // SimpleXMLElement instance
+----
+
+=== XmlStringOutput
+
+Converts input data into a formatted XML string.
+
+[source,php]
+----
+use Inane\Stdlib\Output\XmlStringOutput;
+
+$data = ['root' => ['item' => 'value']];
+$output = new XmlStringOutput($data);
+echo $output->output();
+/*
+<?xml version="1.0"?>
+<data><root><item>value</item></root></data>
+*/
+----
+
+== Extending
+
+To create a new output format, extend `AbstractOutput` and implement the `output()` method:
+
+[source,php]
+----
+use Inane\Stdlib\Output\AbstractOutput;
+
+class MyCustomOutput extends AbstractOutput {
+    public function output(): string {
+        if (!isset($this->outputData)) {
+            // ... custom conversion logic ...
+            $this->outputData = "processed data";
+        }
+        return $this->outputData;
+    }
+}
+----
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
+= Merge
+
+Helper utilities for merging configuration/options arrays and iterators with
+explicit control over how keys are added and/or updated. The Merge tool lives
+under `Inane\Stdlib\Merge` and consists of:
+
+- `MergeTrait` — core implementation and convenience helpers
+- `Merge` — small class that exposes the trait as a ready‑to‑use type
+- `MergeInterface` — contract for merge behaviour
+- `MergeMethod` — enum that selects the merge strategy
+
+== When to use
+
+Use Merge to combine option sets coming from defaults, environment, per‑user
+overrides, feature flags, etc. It supports nested structures and works with
+both PHP arrays and `ArrayAccess`/`Iterator` implementations.
+
+== Strategies (MergeMethod)
+
+`MergeMethod` controls how keys are handled during a merge:
+
+- `AddOnly` — only add keys that do not exist on the target; existing keys are left unchanged.
+- `UpdateOnly` (default) — only update keys that already exist on the target; new keys are ignored.
+- `AddAndUpdate` — add missing keys and update existing keys (full overlay/recursive replace).
+
+Merging is recursive for nested arrays/objects that are arrays or implement
+`ArrayAccess`/`Iterator` on both source and target sides.
+
+== API overview
+
+Namespace: `Inane\Stdlib\Merge`
+
+Core static method:
+
+```php
+Iterator|array MergeTrait::mergeOptionsWithMethod(
+    MergeMethod $mergeMethod,
+    Iterator|array $target,
+    Iterator|array ...$sources
+): Iterator|array
+```
+
+Convenience helpers (static):
+
+- `mergeOptionsWithAddOnly($target, ...$sources)`
+- `mergeOptionsWithUpdateOnly($target, ...$sources)`
+- `mergeOptionsWithAddAndUpdate($target, ...$sources)`
+
+Instance method (via `Merge` or any class using the trait):
+
+```php
+public MergeMethod $mergeMethod = MergeMethod::UpdateOnly; // default
+
+public function mergeOptions(Iterator|array $target, Iterator|array ...$sources): Iterator|array
+```
+
+== Usage
+
+=== Static helpers
+
+```php
+<?php
+use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
+use Inane\Stdlib\Merge\Merge;
+
+$defaults = [
+    'host' => 'localhost',
+    'port' => 3306,
+    'flags' => [ 'compress' => false, 'strict' => true ],
+];
+
+$env = [
+    'port' => 3307,
+    'flags' => [ 'compress' => true ],
+    'extra' => 'ignored in UpdateOnly',
+];
+
+// Update existing keys only (default semantics)
+$merged = Merge::mergeOptionsWithUpdateOnly($defaults, $env);
+/* Result:
+[
+  'host' => 'localhost',
+  'port' => 3307,
+  'flags' => [ 'compress' => true, 'strict' => true ],
+]
+*/
+
+// Add missing keys only
+$added = Merge::mergeOptionsWithAddOnly($defaults, ['timeout' => 5]);
+// 'timeout' is appended, existing values untouched
+
+// Add and update (full overlay)
+$overlay = Merge::mergeOptionsWithAddAndUpdate($defaults, $env);
+// Includes 'extra' and applies nested updates
+```
+
+=== Instance with a configurable method
+
+```php
+<?php
+use Inane\Stdlib\Merge\{Merge, MergeMethod};
+
+$merger = new Merge();
+$merger->mergeMethod = MergeMethod::AddAndUpdate; // choose strategy at runtime
+
+$target = [ 'a' => 1, 'b' => ['x' => true] ];
+$source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
+
+$result = $merger->mergeOptions($target, $source);
+// [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
+```
+
+== Behavior details
+
+- The key existence on the target is determined as follows:
+  - arrays: `array_key_exists($key, $target)`
+  - `ArrayAccess`: `$target->offsetExists($key)`
+  - iterables: `isset($target[$key])`
+- Recursion happens only when both source and target values at a key are array‑like
+  (`is_array` or `ArrayAccess`). Otherwise, the source value replaces the target value
+  subject to the chosen strategy.
+- Multiple sources are merged left‑to‑right in the order provided.
+
+== Working with iterators and ArrayAccess
+
+You can pass objects implementing `Iterator` and/or `ArrayAccess` as both target
+and sources. Merge will respect their semantics for key existence checks and
+assignments, allowing use with custom option containers.
+
+== Selecting a strategy dynamically
+
+If you receive a user‑provided string (e.g. from config), you can map it to a
+`MergeMethod` case using `MergeMethod::tryFromName($name, $ignoreCase = false)`.
+
+```php
+use Inane\Stdlib\Merge\MergeMethod;
+
+$method = MergeMethod::tryFromName('addonly', true) ?? MergeMethod::UpdateOnly;
+```
+
+== JavaScript counterpart
+
+For frontend experiments there is a simple ES module at
+`public/js/inane/class-lib/MergeOptions.mjs` that mirrors the basic behaviour for merging option objects.
+
+== Tips
+
+- Use `UpdateOnly` to enforce a strict schema: only predefined keys get updated.
+- Use `AddOnly` to apply safe defaults without overwriting user choices.
+- Use `AddAndUpdate` when you want a typical deep overlay of configuration.
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
 = VerifyValue
 
 Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains, and regex-matched strings.

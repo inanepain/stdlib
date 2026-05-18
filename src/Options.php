@@ -544,7 +544,7 @@ class Options implements OptionsInterface {
     /**
      * Updates properties 2+ into the first array with decreasing importance.
      *
-     * Only unset keys are assigned values. Used to apply defaults to an options object where it only fills in missing values.
+     * Only unset keys are assigned values. Used to apply defaults to an option object where it only fills in missing values.
      *
      * 1 array in = the same array out
      * 0 array in = empty array out

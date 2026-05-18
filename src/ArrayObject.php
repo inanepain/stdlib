@@ -31,6 +31,7 @@ use Inane\Stdlib\Converters\{
     JSONable};
 use Inane\Stdlib\Exception\JsonException;
 use Random\RandomException;
+
 use function count;
 use function current;
 use function is_array;
@@ -157,4 +158,37 @@ class ArrayObject extends SystemArrayObject implements Arrayable, JSONable {
     public function toJSON(): string {
         return Json::encode($this->toArray());
     }
-}
+
+    /**
+     * Returns array containing all the necessary state of the object.
+     *
+     * @since 7.4
+     * @link  https://wiki.php.net/rfc/custom_object_serialization
+     */
+    public function __serialize(): array {
+        return $this->toArray();
+    }
+
+    /**
+     * Restores the object state from the given data array.
+     *
+     * @since 7.4
+     * @link  https://wiki.php.net/rfc/custom_object_serialization
+     *
+     * @param array $data
+     */
+    public function __unserialize(array $data): void {
+        $this->exchangeArray($data);
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     *
+     * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4
+     */
+    public function jsonSerialize(): mixed {
+        return $this->toJSON();
+}}

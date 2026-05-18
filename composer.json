@@ -45,7 +45,8 @@
         "php": ">=8.4",
         "psr/container": "*",
         "ext-intl": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-libxml": "*"
     },
     "require-dev": {},
     "scripts": {
