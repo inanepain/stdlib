@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -55,6 +55,7 @@ use function explode;
 use function in_array;
 use function is_array;
 use function str_contains;
+
 use const false;
 use const null;
 

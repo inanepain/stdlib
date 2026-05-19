@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author   Philip Michael Raab<philip@cathedral.co.za>
  * @package  inanepain\stdlib
@@ -25,6 +25,7 @@ declare(strict_types = 1);
 namespace Inane\Stdlib\Hash;
 
 use Inane\Stdlib\Exception\ValueError;
+
 use function array_merge;
 use function array_unique;
 use function hash;
@@ -33,6 +34,7 @@ use function preg_match;
 use function str_replace;
 use function str_starts_with;
 use function strtolower;
+
 use const SORT_REGULAR;
 
 /**

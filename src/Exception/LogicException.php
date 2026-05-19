@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -23,8 +23,6 @@
 declare(strict_types=1);
 
 namespace Inane\Stdlib\Exception;
-
-use Inane\Stdlib\Exception\Exception;
 
 /**
  * Exception that represents error in the program logic. This kind of exception should lead directly to a fix in your code.

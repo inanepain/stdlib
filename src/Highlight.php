@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -31,6 +31,7 @@ use function ini_set;
 use function preg_replace;
 use function str_replace;
 use function trim;
+
 use const null;
 
 /**

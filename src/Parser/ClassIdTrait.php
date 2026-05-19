@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -28,6 +28,7 @@ use function array_slice;
 use function explode;
 use function implode;
 use function strtolower;
+
 use const true;
 
 /**

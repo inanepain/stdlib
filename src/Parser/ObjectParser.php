@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -33,6 +33,7 @@ use function str_repeat;
 use function str_replace;
 use function strtr;
 use function trim;
+
 use const PHP_EOL;
 
 /**
