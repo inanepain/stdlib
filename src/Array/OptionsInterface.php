@@ -31,6 +31,8 @@ use Inane\Stdlib\Converters\{
     Arrayable,
     JSONable,
     XMLable};
+use Inane\Stdlib\Exception\RuntimeException;
+use Inane\Stdlib\Options;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Serializable;
@@ -50,6 +52,15 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      */
     public function offsetExists(mixed $offset): bool;
     /**
+     * get key
+     *
+     * @param string $id      key
+     * @param mixed  $default value
+     *
+     * @return mixed|OptionsInterface value
+     */
+    public function get(mixed $id, mixed $default = null): mixed;
+    /**
      * Retrieves the value at the specified offset.
      *
      * @param mixed $offset The offset to retrieve.
@@ -57,6 +68,17 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      * @return mixed The value at the specified offset, or null if not set.
      */
     public function offsetGet(mixed $offset): mixed;
+    /**
+     * set key
+     *
+     * @param mixed $key   key
+     * @param mixed $value value
+     *
+     * @return OptionsInterface
+     *
+     * @throws RuntimeException
+     */
+    public function set(mixed $key, mixed $value): OptionsInterface;
     /**
      * Sets the value at the specified offset.
      *

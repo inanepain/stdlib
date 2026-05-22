@@ -35,7 +35,9 @@ use Inane\Stdlib\String\{
     Capitalisation,
     StringCaseConverter};
 
+use function array_first;
 use function array_key_exists;
+use function array_key_first;
 use function array_keys;
 use function array_pop;
 use function array_reduce;
@@ -697,6 +699,44 @@ class Options implements OptionsInterface {
     }
     #endregion NAVIGATION
 
+    #region FIRST/LAST
+    /**
+     * Retrieve the first key of the data array
+     *
+     * @return mixed The first key of the array, or null if the array is empty.
+     */
+    public function firstKey(): mixed {
+        return array_key_first($this->data);
+    }
+
+    /**
+     * Retrieve the first element of the data array.
+     *
+     * @return mixed The first element of the data array, or null if the array is empty.
+     */
+    public function first(): mixed {
+        return array_first($this->data);
+    }
+
+    /**
+     * Retrieve the last key of the dataset
+     *
+     * @return mixed The last key of the array, or null if the array is empty.
+     */
+    public function lastKey(): mixed {
+        return array_key_last($this->data);
+    }
+
+    /**
+     * Retrieve the last element of an array
+     *
+     * @return mixed The last element of the array, or null if the array is empty.
+     */
+    public function last(): mixed {
+        return array_last($this->data);
+    }
+    #endregion FIRST/LAST
+
     #region OTHER
     /**
      * Sorts the options.
@@ -707,6 +747,8 @@ class Options implements OptionsInterface {
      * @param bool $createCopy    If true, returns a sorted copy of the options; if false, sorts in place.
      *
      * @return static Returns the sorted options instance.
+     *
+     * @throws JsonException
      */
     public function sort(bool $preserveIndex = true, bool $createCopy = false): static {
         $sorted = $this->toArray();
@@ -724,17 +766,6 @@ class Options implements OptionsInterface {
     }
 
     /**
-     * count
-     *
-     * Counts all elements
-     *
-     * @return int item count
-     */
-    public function count(): int {
-        return count($this->data);
-    }
-
-    /**
      * UNIQUE
      *
      * Filters unique items
@@ -744,7 +775,9 @@ class Options implements OptionsInterface {
      *
      * @param bool $createCopy If true, returns a new instance with unique values; if false, modifies the current instance.
      *
-     * @return Options|OptionsInterface unique items
+     * @return Options unique items
+     *
+     * @throws JsonException
      */
     public function unique(bool $createCopy = false): static {
         $unique = new static(array_unique($this->toArray()));
@@ -754,6 +787,17 @@ class Options implements OptionsInterface {
         $this->merge($unique);
 
         return $this;
+    }
+
+    /**
+     * count
+     *
+     * Counts all elements
+     *
+     * @return int item count
+     */
+    public function count(): int {
+        return count($this->data);
     }
     #endregion OTHER
 
