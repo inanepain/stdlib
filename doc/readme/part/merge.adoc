@@ -76,7 +76,7 @@ $env = [
 ];
 
 // Update existing keys only (default semantics)
-$merged = Merge::mergeOptionsWithUpdateOnly($defaults, $env);
+$merged = Merge::mergeOptionsUpdateOnly($defaults, $env);
 /* Result:
 [
   'host' => 'localhost',
@@ -86,11 +86,11 @@ $merged = Merge::mergeOptionsWithUpdateOnly($defaults, $env);
 */
 
 // Add missing keys only
-$added = Merge::mergeOptionsWithAddOnly($defaults, ['timeout' => 5]);
+$added = Merge::mergeOptionsAddOnly($defaults, ['timeout' => 5]);
 // 'timeout' is appended, existing values untouched
 
 // Add and update (full overlay)
-$overlay = Merge::mergeOptionsWithAddAndUpdate($defaults, $env);
+$overlay = Merge::mergeOptionsAddAndUpdate($defaults, $env);
 // Includes 'extra' and applies nested updates
 ```
 

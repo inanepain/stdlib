@@ -86,7 +86,7 @@ trait MergeTrait {
      *
      * @return Iterator|array The target container after merging the options.
      */
-    public static function mergeOptionsWithAddOnly(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
+    public static function mergeOptionsAddOnly(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
         return static::mergeOptionsWithMethod(MergeMethod::AddOnly, $target, ...$sources);
     }
 
@@ -99,7 +99,7 @@ trait MergeTrait {
      *
      * @return Iterator|array The target container after merging the options.
      */
-    public static function mergeOptionsWithUpdateOnly(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
+    public static function mergeOptionsUpdateOnly(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
         return static::mergeOptionsWithMethod(MergeMethod::UpdateOnly, $target, ...$sources);
     }
 
@@ -111,7 +111,7 @@ trait MergeTrait {
      *
      * @return Iterator|array The resulting array after merging the source arrays into the target array.
      */
-    public static function mergeOptionsWithAddAndUpdate(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
+    public static function mergeOptionsAddAndUpdate(Iterator|array $target, Iterator|array ...$sources): Iterator|array {
         return static::mergeOptionsWithMethod(MergeMethod::AddAndUpdate, $target, ...$sources);
     }
 
