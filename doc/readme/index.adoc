@@ -31,6 +31,10 @@ include::part/install.adoc[leveloffset=+1]
 
 <<<
 
+include::part/enum-bitmask.adoc[leveloffset=+1]
+
+<<<
+
 include::part/output.adoc[leveloffset=+1]
 
 <<<

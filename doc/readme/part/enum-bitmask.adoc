@@ -1,0 +1,95 @@
+= Enum Bitmask
+
+This section documents the `BitmaskEnumTrait` used to add bitmask (flags) behaviour to backed `enum`s.
+
+== Overview
+
+`BitmaskEnumTrait` provides a concise API for working with integer bitmasks on PHP 8.5+ backed enums. It enables:
+
+- Combining multiple enum cases into a single integer mask
+- Checking if any or all cases are set in a mask
+- Testing for and modifying individual flags (both statically and via instance helpers)
+- Listing the set enum cases from a mask
+
+Trait location:
+
+- Namespace: `Inane\Stdlib\Bitmask`
+- File: `lib/inanepain/stdlib/src/Bitmask/EnumBitmaskTrait.php`
+
+== Requirements and conventions
+
+- Use on backed enums with `int` values only.
+- Each enum case should represent a single bit: use powers of two (e.g. `1 << 0`, `1 << 1`, `1 << 2`, …).
+- Masks are plain integers (`int`).
+
+== API
+
+Static helpers on the enum using the trait:
+
+- `parseBitmask(mixed $mask): int` — Normalises arbitrary input into an `int` mask (null-safe, defaults to `0`).
+- `combine(self ...$flags): int` — ORs cases to a single mask.
+- `hasAny(int $mask): bool` — True if any defined case is present in the mask.
+- `hasAll(int $mask): bool` — True if all defined cases are present in the mask.
+- `has(int $mask, self $flag): bool` — True if the given case is present in the mask.
+- `add(int $mask, self $flag): int` — Returns a mask with the case added.
+- `remove(int $mask, self $flag): int` — Returns a mask with the case removed.
+- `list(int $mask): array<self>` — Returns the enum cases present in the mask.
+
+Instance helpers on an enum case:
+
+- `in(int $mask): bool` — True if this case is present in the mask.
+- `addTo(int $mask): int` — Returns a mask with this case added.
+- `removeFrom(int $mask): int` — Returns a mask with this case removed.
+
+NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to “any”/“all” checks over `self::cases()`.
+
+== Example: Permission flags
+
+The following example shows a typical permission enum using the trait.
+
+```php
+<?php
+declare(strict_types=1);
+
+use Inane\Stdlib\Bitmask\BitmaskEnumTrait;
+
+enum Permission: int {
+    use BitmaskEnumTrait;
+
+    case Read    = 1 << 0; // 1
+    case Write   = 1 << 1; // 2
+    case Execute = 1 << 2; // 4
+    case Delete  = 1 << 3; // 8
+}
+
+// Build a mask from multiple flags
+$mask = Permission::combine(Permission::Read, Permission::Write); // 3
+
+// Normalise input
+$mask = Permission::parseBitmask($mask); // still 3
+
+// Check across the enum
+$hasAny = Permission::hasAny($mask); // true (at least one flag set)
+$hasAll = Permission::hasAll($mask); // false (not all flags set)
+
+// Check a specific flag
+$canRead  = Permission::has($mask, Permission::Read); // true
+$canExec  = Permission::has($mask, Permission::Execute); // false
+
+// The same checks via instance helpers
+$canRead2 = Permission::Read->in($mask); // true
+$canExec2 = Permission::Execute->in($mask); // false
+
+// Modify mask
+$mask = Permission::add($mask, Permission::Delete);        // add Delete
+$mask = Permission::Write->removeFrom($mask);               // remove Write
+
+// Enumerate set flags
+$set = Permission::list($mask); // [Permission::Read, Permission::Delete]
+```
+
+== Tips
+
+- When defining new flags, always shift from 0 upwards (`1 << n`) and avoid overlapping values.
+- Store masks as integers in persistence layers. The trait makes converting to/from cases trivial.
+
