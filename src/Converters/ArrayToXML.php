@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -26,10 +26,12 @@ namespace Inane\Stdlib\Converters;
 
 use Inane\Stdlib\String\Inflector;
 use SimpleXMLElement;
+
 use function htmlspecialchars;
 use function is_array;
 use function is_null;
 use function is_numeric;
+
 use const false;
 use const null;
 

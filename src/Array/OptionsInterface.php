@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -26,13 +26,14 @@ namespace Inane\Stdlib\Array;
 
 use ArrayAccess;
 use Countable;
+use Inane\Stdlib\ArrayObject;
 use Inane\Stdlib\Converters\{
     Arrayable,
     JSONable,
     XMLable};
-use Inane\Stdlib\ArrayObject;
+use Inane\Stdlib\Exception\RuntimeException;
+use Inane\Stdlib\Options;
 use Iterator;
-use JsonSerializable;
 use Psr\Container\ContainerInterface;
 use Serializable;
 
@@ -41,7 +42,7 @@ use Serializable;
  *
  * @version 0.1.0
  */
-interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, JsonSerializable, Arrayable, JSONable, XMLable, Serializable {
+interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerInterface, Arrayable, JSONable, XMLable, Serializable {
     /**
      * Checks if the specified offset exists.
      *
@@ -51,6 +52,15 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      */
     public function offsetExists(mixed $offset): bool;
     /**
+     * get key
+     *
+     * @param string $id      key
+     * @param mixed  $default value
+     *
+     * @return mixed|OptionsInterface value
+     */
+    public function get(mixed $id, mixed $default = null): mixed;
+    /**
      * Retrieves the value at the specified offset.
      *
      * @param mixed $offset The offset to retrieve.
@@ -58,6 +68,17 @@ interface OptionsInterface extends ArrayAccess, Iterator, Countable, ContainerIn
      * @return mixed The value at the specified offset, or null if not set.
      */
     public function offsetGet(mixed $offset): mixed;
+    /**
+     * set key
+     *
+     * @param mixed $key   key
+     * @param mixed $value value
+     *
+     * @return OptionsInterface
+     *
+     * @throws RuntimeException
+     */
+    public function set(mixed $key, mixed $value): OptionsInterface;
     /**
      * Sets the value at the specified offset.
      *

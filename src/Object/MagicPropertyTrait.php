@@ -8,7 +8,7 @@
  * $Id$
  * $Date$
  *
- * PHP version 8.4
+ * PHP version 8.5
  *
  * @author Philip Michael Raab<philip@cathedral.co.za>
  * @package inanepain\stdlib
@@ -27,6 +27,7 @@ namespace Inane\Stdlib\Object;
 use Inane\Stdlib\Exception\{
     InvalidPropertyException,
     ParseMethodException};
+
 use function get_class_methods;
 use function in_array;
 use function is_null;
@@ -34,6 +35,7 @@ use function lcfirst;
 use function property_exists;
 use function str_replace;
 use function ucwords;
+
 use const null;
 
 /**

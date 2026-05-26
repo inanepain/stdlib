@@ -1,0 +1,140 @@
+= Output Strategy
+
+The Output component provides a consistent strategy for converting data into
+various formats. It is designed around the `OutputInterface` and an abstract
+base class, allowing for easy expansion and uniform usage across the framework.
+
+The Output tools are located in the `Inane\Stdlib\Output` namespace.
+
+== Components
+
+- `OutputInterface` — defines the `output()` method.
+- `AbstractOutput` — base implementation handling input data storage and lazy-processing.
+- `ArrayOutput` — converts input to a PHP array (supports JSON, Serialized, Objects).
+- `JsonStringOutput` — converts input to a JSON string.
+- `SerializedOutput` — converts input to a PHP serialized string.
+- `XmlOutput` — converts input to a `SimpleXMLElement` object.
+- `XmlStringOutput` — converts input to an XML string.
+
+== API Overview
+
+All output classes share the same constructor and method:
+
+[source,php]
+----
+public function __construct(protected mixed $inputData);
+
+public function output(): mixed;
+----
+
+The `output()` method is lazy-loaded; the processing happens once and the result
+is cached in the `outputData` property.
+
+== Usage
+
+=== ArrayOutput
+
+`ArrayOutput` is highly flexible. It attempts to detect the input type and convert
+it to an array accordingly.
+
+[source,php]
+----
+use Inane\Stdlib\Output\ArrayOutput;
+
+// From an object (recursive conversion)
+$output = new ArrayOutput($myObject);
+$array = $output->output();
+
+// From a JSON string
+$output = new ArrayOutput('{"key": "value"}');
+$array = $output->output(); // ['key' => 'value']
+
+// From a serialized string
+$output = new ArrayOutput(serialize(['a' => 1]));
+$array = $output->output(); // ['a' => 1]
+----
+
+==== Conversion Logic (ArrayOutput)
+
+1. If input is an **array**, it is returned as is.
+2. If input is a **string**:
+   - Tries to decode as **JSON**.
+   - If not JSON, tries to **unserialize**.
+   - If both fail, wraps the string in an array: `[$input]`.
+3. If input is an **object**, it uses `iteratorToArrayDeep` to convert it recursively.
+4. For any other type, it wraps the input in an array: `[$input]`.
+
+=== JsonStringOutput
+
+Converts any input into a JSON string using `Inane\Stdlib\Json`.
+
+[source,php]
+----
+use Inane\Stdlib\Output\JsonStringOutput;
+
+$data = ['name' => 'Inane', 'type' => 'Framework'];
+$output = new JsonStringOutput($data);
+echo $output->output(); // {"name":"Inane","type":"Framework"}
+----
+
+=== SerializedOutput
+
+Converts input into a PHP serialized string.
+
+[source,php]
+----
+use Inane\Stdlib\Output\SerializedOutput;
+
+$output = new SerializedOutput(['a', 'b', 'c']);
+echo $output->output(); // a:3:{i:0;s:1:"a";i:1;s:1:"b";i:2;s:1:"c";}
+----
+
+=== XmlOutput
+
+Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
+to normalize the input before conversion.
+
+[source,php]
+----
+use Inane\Stdlib\Output\XmlOutput;
+
+$data = ['user' => ['id' => 1, 'name' => 'John']];
+$output = new XmlOutput($data);
+$xml = $output->output(); // SimpleXMLElement instance
+----
+
+=== XmlStringOutput
+
+Converts input data into a formatted XML string.
+
+[source,php]
+----
+use Inane\Stdlib\Output\XmlStringOutput;
+
+$data = ['root' => ['item' => 'value']];
+$output = new XmlStringOutput($data);
+echo $output->output();
+/*
+<?xml version="1.0"?>
+<data><root><item>value</item></root></data>
+*/
+----
+
+== Extending
+
+To create a new output format, extend `AbstractOutput` and implement the `output()` method:
+
+[source,php]
+----
+use Inane\Stdlib\Output\AbstractOutput;
+
+class MyCustomOutput extends AbstractOutput {
+    public function output(): string {
+        if (!isset($this->outputData)) {
+            // ... custom conversion logic ...
+            $this->outputData = "processed data";
+        }
+        return $this->outputData;
+    }
+}
+----
