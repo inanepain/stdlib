@@ -24,7 +24,7 @@ namespace Inane\Stdlib\Bitmask;
  *
  * @version 0.1.0
  */
-trait BitmaskEnumTrait {
+trait EnumBitmaskTrait {
     /**
      * Parse a given bitmask and convert it to an integer value.
      *

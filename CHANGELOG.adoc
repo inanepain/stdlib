@@ -28,6 +28,7 @@
 * new: `VerifyValue` - wrapper around `filter_var`.
 * new: `ArrayToCodeTrait` - export an array as its code.
 * new: `Merge` and related classes for customisable merging.
+* new: `EnumBitmaskTrait` using bitmask with an enum.
 * new: `AbstractOutput` and related classes for use with *Output Strategy*.
 ** `ArrayOutput`
 ** `JsonStringOutput`
