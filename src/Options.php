@@ -471,10 +471,10 @@ class Options implements OptionsInterface {
      *
      * @param mixed $key The key to unset
      *
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function __unset($key) {
-        if (!$this->allowModifications) throw new InvalidArgumentException('Option is read only');
+        if (!$this->allowModifications && $this->lockWriteError) throw new RuntimeException('Option is read only');
         elseif ($this->__isset($key)) {
             unset($this->data[$key]);
             $this->skipNextIteration = true;
@@ -488,7 +488,7 @@ class Options implements OptionsInterface {
      *
      * @return OptionsInterface
      *
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function unset(mixed $key): OptionsInterface {
         $this->offsetUnset($key);
@@ -502,8 +502,8 @@ class Options implements OptionsInterface {
      * @param string $offset key
      *
      * @return void
-     *
-     * @throws InvalidArgumentException
+     *             
+     * @throws RuntimeException
      */
     public function offsetUnset(mixed $offset): void {
         $this->__unset($offset);
