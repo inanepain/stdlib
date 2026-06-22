@@ -27,17 +27,16 @@ namespace Inane\Stdlib\Converters;
 use BackedEnum;
 use Inane\Stdlib\Exception\InvalidArgumentException;
 use Inane\Stdlib\Exception\ValueError;
+use Inane\Stdlib\VerifyValue;
 use ReflectionClass;
 use UnitEnum;
-use function filter_var;
+
 use function get_debug_type;
 use function is_array;
 use function is_numeric;
 use function is_object;
 use function is_subclass_of;
 use function method_exists;
-use const FILTER_NULL_ON_FAILURE;
-use const FILTER_VALIDATE_BOOL;
 
 /**
  * Provides utility methods for type-safe assignment and casting of variables
@@ -99,7 +98,8 @@ trait CastAndAssignTrait {
                 return;
 
             case 'bool':
-                $var = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);   // Casts and assigns a value to a variable according to its type. Supports various data types including | Filters a variable with a specified filter
+                $var = VerifyValue::boolVerify($value,
+                    true); // Casts and assigns a value to a variable according to its type. Supports various data types including | Filters a variable with a specified filter
 
                 if ($var === null) {                                               // Casts and assigns a value to a variable according to its type. Supports various data types including
                     throw new InvalidArgumentException('Invalid boolean value');   // Custom construct template

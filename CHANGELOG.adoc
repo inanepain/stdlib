@@ -24,6 +24,9 @@
 :revremark: -dev
 :version-label: Unconfirmed
 
+* update: `CastAndAssignTrait` uses `VerifyValue`.
+* update: `Str` general code structure and convention improvements.
+
 :leveloffset!:
 :leveloffset: +2
 

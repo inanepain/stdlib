@@ -3,3 +3,6 @@
 :revdate: 2026-XX-XX
 :revremark: -dev
 :version-label: Unconfirmed
+
+* update: `CastAndAssignTrait` uses `VerifyValue`.
+* update: `Str` general code structure and convention improvements.

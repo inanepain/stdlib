@@ -82,9 +82,9 @@ class VerifyValue {
         $options = [];
 
         // Only include keys that were explicitly provided
-        if ($default !== false) $options['default']   = $default;
-        if ($min !== null)      $options['min_range'] = $min;
-        if ($max !== null)      $options['max_range'] = $max;
+        if ($default !== false) $options['default'] = $default;
+        if ($min !== null) $options['min_range'] = $min;
+        if ($max !== null) $options['max_range'] = $max;
 
         if (!empty($options)) return [
             'options' => $options,
@@ -153,7 +153,7 @@ class VerifyValue {
 
         // Conditionally enable alternative numeric base flags
         if ($allowOctal) $opts['flags'] |= FILTER_FLAG_ALLOW_OCTAL;
-        if ($allowHex)   $opts['flags'] |= FILTER_FLAG_ALLOW_HEX;
+        if ($allowHex) $opts['flags'] |= FILTER_FLAG_ALLOW_HEX;
 
         return filter_var($int, FILTER_VALIDATE_INT, $opts);
     }
@@ -260,12 +260,12 @@ class VerifyValue {
      * remaining version. When both are `false`, the filter still runs, but no
      * version flag is set, which may yield unexpected results.
      *
-     * @param mixed $value       The value to validate as an IP address.
-     * @param bool  $allowV4     Accept IPv4 addresses (default `true`).
-     * @param bool  $allowV6     Accept IPv6 addresses (default `true`).
-     * @param bool  $denyPrivate Reject private-range addresses (e.g. `192.168.x.x`).
+     * @param mixed $value        The value to validate as an IP address.
+     * @param bool  $allowV4      Accept IPv4 addresses (default `true`).
+     * @param bool  $allowV6      Accept IPv6 addresses (default `true`).
+     * @param bool  $denyPrivate  Reject private-range addresses (e.g. `192.168.x.x`).
      * @param bool  $denyReserved Reject reserved-range addresses (e.g. `0.0.0.0`).
-     * @param bool  $globalOnly  Accept only globally routable addresses.
+     * @param bool  $globalOnly   Accept only globally routable addresses.
      *
      * @return string|null The validated IP address string, or `null` if validation fails.
      */
@@ -282,9 +282,9 @@ class VerifyValue {
         // If both are true → no version flag (accept both); if both false → undefined behaviour
 
         // Range policies — each flag independently restricts the accepted address space
-        if ($denyPrivate)  $flags |= FILTER_FLAG_NO_PRIV_RANGE;
+        if ($denyPrivate) $flags |= FILTER_FLAG_NO_PRIV_RANGE;
         if ($denyReserved) $flags |= FILTER_FLAG_NO_RES_RANGE;
-        if ($globalOnly)   $flags |= FILTER_FLAG_GLOBAL_RANGE;
+        if ($globalOnly) $flags |= FILTER_FLAG_GLOBAL_RANGE;
 
         $result = filter_var($value, FILTER_VALIDATE_IP, $flags);
 
@@ -319,7 +319,7 @@ class VerifyValue {
         // Defensive guard — a valid MAC must yield exactly 12 hex characters
         if (strlen($hex) !== 12) return null;
 
-        $hex    = strtolower($hex);
+        $hex = strtolower($hex);
         $chunks = str_split($hex, 2);
 
         return implode($separator, $chunks);
