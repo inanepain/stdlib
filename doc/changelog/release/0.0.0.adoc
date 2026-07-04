@@ -6,3 +6,4 @@
 
 * update: `CastAndAssignTrait` uses `VerifyValue`.
 * update: `Str` general code structure and convention improvements.
+* new: Added PHPUnit tests.
