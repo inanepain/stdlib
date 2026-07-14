@@ -6,4 +6,6 @@
 
 * update: `CastAndAssignTrait` uses `VerifyValue`.
 * update: `Str` general code structure and convention improvements.
+* update: Renamed some classes.
 * new: Added PHPUnit tests.
+* new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.

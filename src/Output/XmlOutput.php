@@ -34,9 +34,18 @@ use function is_numeric;
 
 /**
  * XmlOutput
+ *
+ * Provides functionality to convert input data to an XML format.
  */
 class XmlOutput extends AbstractOutput {
-    protected static function isXmlString(string $string): bool {
+    /**
+     * Determine if a string is a valid XML string.
+     *
+     * @param string $string The source string.
+     *
+     * @return bool True if valid XML, false otherwise.
+     */
+    public static function isXmlString(string $string): bool {
         $string = trim($string);
 
         if ($string === '') {
@@ -59,6 +68,8 @@ class XmlOutput extends AbstractOutput {
      * @param null|string           $tagName to use when converting plain arrays, mainly for internally use
      *
      * @return SimpleXMLElement XML string of $array
+     *
+     * @throws \Exception
      */
     protected static function arrayToXML(array $array, ?SimpleXMLElement $xmlObj = null, bool $unique = false, ?string $tagName = null): SimpleXMLElement {
         if (is_null($xmlObj)) $xmlObj = new SimpleXMLElement('<?xml version="1.0"?><data></data>');
@@ -77,14 +88,17 @@ class XmlOutput extends AbstractOutput {
 
     /**
      * @inheritDoc
+     *
+     * @return SimpleXMLElement
+     *
+     * @throws \RuntimeException
      */
     public function output(): SimpleXMLElement {
         if (!isset($this->outputData)) {
             if (is_string($this->inputData) && static::isXmlString($this->inputData)) {
                 $this->outputData = simplexml_load_string($this->inputData);
             } else {
-                $ao = new \Inane\Stdlib\Output\ArrayOutput($this->inputData);
-                $this->outputData = static::arrayToXML($ao->output());
+                $this->outputData = static::arrayToXML(new ArrayOutput($this->inputData)->output());
             }
         }
 

@@ -27,13 +27,9 @@ namespace Inane\Stdlib\Output;
 use Inane\Stdlib\Converters\TraversableToArray;
 use Inane\Stdlib\Json;
 
-use function is_array;
 use function is_object;
 use function is_string;
-use function json_last_error;
 use function unserialize;
-
-use const JSON_ERROR_NONE;
 
 /**
  * ArrayOutput
@@ -48,20 +44,24 @@ class ArrayOutput extends AbstractOutput {
      */
     public function output(): array {
         if (!isset($this->outputData)) {
-            if (is_array($this->inputData)) $result = $this->inputData;
-            elseif (is_string($this->inputData)) {
-                $result = Json::decode($this->inputData, [
-                    'numeric' => true,
-                    'escape'  => true,
-                ]);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $result = @unserialize($this->inputData, ['allowed_classes' => true]);
-                    if ($result === false) $result = [$this->inputData];
+            $data = $this->inputData;
+            if (is_string($data)) {
+                if (XmlOutput::isXmlString($data)) {
+                    $data = new XmlOutput($data)->output();
+                } elseif(Json::isJsonString($data)) {
+                    $data = Json::decode($data, [
+                        'numeric' => true,
+                        'escape'  => true,
+                    ]);
+                } else {
+                    $result = @unserialize($data, ['allowed_classes' => true]);
+                    if ($result !== false) $data = $result;
                 }
-            } elseif (is_object($this->inputData)) $result = static::iteratorToArrayDeep($this->inputData);
-            else $result = [$this->inputData];
+            }
+            if (is_object($data)) $data = static::iteratorToArrayDeep($data);
+            elseif (!is_array($data)) $data = [$data];
 
-            $this->outputData = $result;
+            $this->outputData = $data;
         }
 
         return $this->outputData;

@@ -28,10 +28,16 @@ use function serialize;
 
 /**
  * SerializedOutput
+ *
+ * Provides functionality to serialise input data into a string format.
  */
 class SerializedOutput extends AbstractOutput {
     /**
-     * @inheritDoc
+     * Serialise the input data.
+     *
+     * @return string The serialised data.
+     *
+     * @throws \RuntimeException
      */
     public function output(): string {
         if (!isset($this->outputData)) $this->outputData = serialize($this->inputData);

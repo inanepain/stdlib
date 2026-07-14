@@ -24,31 +24,26 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Output;
 
-use Inane\Stdlib\Json;
-
-use function is_string;
+use Inane\Stdlib\Converters\ArrayStringShortSyntaxTrait;
 
 /**
- * JsonStringOutput
+ * ArrayShortSyntaxStringOutput
  *
- * Provides functionality to output data as a JSON encoded string.
+ * Provides functionality to output data in a short array syntax string format.
  */
-class JsonStringOutput extends AbstractOutput {
+class ArrayStringShortSyntaxOutput extends AbstractOutput {
+    use ArrayStringShortSyntaxTrait;
+
     /**
-     * Encode and return the input data as a JSON string.
+     * Convert and return the input data as a short array syntax string.
      *
-     * @return false|string The encoded JSON string or false on failure.
+     * @return string The data as a short array syntax string.
      *
      * @throws \RuntimeException
      */
-    public function output(): false|string {
+    public function output(): string {
         if (!isset($this->outputData)) {
-            if (!is_string($this->inputData)) {
-                $this->outputData = Json::encode($this->inputData, [
-                    'numeric' => true,
-                    'escape'  => true,
-                ]);
-            }
+            $this->outputData = self::arrayToString(new ArrayOutput($this->inputData)->output());
         }
 
         return $this->outputData;
