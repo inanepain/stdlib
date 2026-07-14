@@ -160,6 +160,7 @@ The Output tools are located in the `Inane\Stdlib\Output` namespace.
 - `OutputInterface` — defines the `output()` method.
 - `AbstractOutput` — base implementation handling input data storage and lazy-processing.
 - `ArrayOutput` — converts input to a PHP array (supports JSON, Serialized, Objects).
+- `ArrayStringShortSyntaxOutput` — converts input to a PHP short array syntax string.
 - `JsonStringOutput` — converts input to a JSON string.
 - `SerializedOutput` — converts input to a PHP serialized string.
 - `XmlOutput` — converts input to a `SimpleXMLElement` object.
@@ -236,6 +237,27 @@ use Inane\Stdlib\Output\SerializedOutput;
 
 $output = new SerializedOutput(['a', 'b', 'c']);
 echo $output->output(); // a:3:{i:0;s:1:"a";i:1;s:1:"b";i:2;s:1:"c";}
+----
+
+=== ArrayStringShortSyntaxOutput
+
+Converts input data into a PHP short array syntax string (`[]`). It first uses
+`ArrayOutput` to normalise input into an array, then transforms the result to
+short syntax.
+
+[source,php]
+----
+use Inane\Stdlib\Output\ArrayStringShortSyntaxOutput;
+
+$data = ['name' => 'Ada', 'count' => 2];
+$output = new ArrayStringShortSyntaxOutput($data);
+echo $output->output();
+/*
+[
+  'name' => 'Ada',
+  'count' => 2,
+]
+*/
 ----
 
 === XmlOutput
