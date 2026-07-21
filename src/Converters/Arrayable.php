@@ -27,7 +27,7 @@ namespace Inane\Stdlib\Converters;
 /**
  * Arrayable
  *
- * Array Export Interface. Methods to export object as a standard array type.
+ * Array Export Interface. Methods to export an object as a standard array type.
  *
  * @version 0.1.1
  */
