@@ -9,3 +9,4 @@
 * update: Renamed some classes.
 * new: Added PHPUnit tests.
 * new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.
+* new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they are the same or their differences.

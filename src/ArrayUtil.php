@@ -10,17 +10,17 @@
  *
  * PHP version 8.5
  *
- * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package inanepain\stdlib
+ * @author   Philip Michael Raab<philip@cathedral.co.za>
+ * @package  inanepain\stdlib
  * @category stdlib
  *
- * @license UNLICENSE
- * @license https://unlicense.org/UNLICENSE UNLICENSE
+ * @license  UNLICENSE
+ * @license  https://unlicense.org/UNLICENSE UNLICENSE
  *
  * _version_ $version
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /*
 $data = [
     'people' => [
@@ -50,11 +50,13 @@ use function array_filter;
 use function array_key_exists;
 use function array_pop;
 use function array_shift;
+use function array_values;
 use function count;
 use function explode;
 use function in_array;
 use function is_array;
 use function str_contains;
+use function usort;
 
 use const false;
 use const null;
@@ -90,17 +92,18 @@ class ArrayUtil {
      * @return array completed array
      */
     public static function complete(array ...$arrays): array {
-        $arrays = array_filter($arrays, fn ($a) => count($a) > 0) ?: [[]];
+        $arrays = array_filter($arrays, static fn($a) => count($a) > 0) ?: [[]];
         $m = array_shift($arrays);
 
-        while ($a = array_shift($arrays))
-            foreach ($a as $k => $v)
+        while($a = array_shift($arrays))
+            foreach($a as $k => $v)
                 if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::complete($m[$k], $v);
-                else if (!array_key_exists($k, $m) || in_array($m[$k], [
+                elseif (!array_key_exists($k, $m) || in_array($m[$k], [
                         '',
                         null,
-                        false
-                    ])) $m[$k] = $v;
+                        false,
+                    ], true)) $m[$k] = $v;
+
         return $m;
     }
 
@@ -116,15 +119,16 @@ class ArrayUtil {
      * @return array updated array
      */
     public static function modify(array ...$arrays): array {
-        $arrays = array_filter($arrays, fn ($a) => count($a) > 0) ?: [[]];
+        $arrays = array_filter($arrays, static fn($a) => count($a) > 0) ?: [[]];
         $m = array_shift($arrays);
 
-        while ($a = array_shift($arrays))
-            foreach ($a as $k => $v)
+        while($a = array_shift($arrays))
+            foreach($a as $k => $v)
                 if (array_key_exists($k, $m)) {
                     if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::modify($v, $m[$k]);
                     else $m[$k] = $v;
                 }
+
         return $m;
     }
 
@@ -143,17 +147,18 @@ class ArrayUtil {
      * @return array updated array
      */
     public static function update(array ...$arrays): array {
-        $arrays = array_filter($arrays, fn ($a) => count($a) > 0) ?: [[]];
+        $arrays = array_filter($arrays, static fn($a) => count($a) > 0) ?: [[]];
         $m = array_pop($arrays);
 
-        while ($a = array_pop($arrays))
-            foreach ($a as $k => $v)
+        while($a = array_pop($arrays))
+            foreach($a as $k => $v)
                 if (is_array($v) && isset($m[$k]) && is_array($m[$k])) $m[$k] = static::update($v, $m[$k]);
-                else if (!array_key_exists($k, $m) || in_array($m[$k], [
+                elseif (!array_key_exists($k, $m) || in_array($m[$k], [
                         '',
                         null,
-                        false
-                    ])) $m[$k] = $v;
+                        false,
+                    ], true)) $m[$k] = $v;
+
         return $m;
     }
 
@@ -166,8 +171,8 @@ class ArrayUtil {
      * # => Bob
      * ```
      *
-     * @param array $array array to query
-     * @param string $path path to get
+     * @param array       $array     array to query
+     * @param string      $path      path to get
      * @param null|string $separator path separator char (default: /)
      *
      * @return mixed path value
@@ -176,7 +181,7 @@ class ArrayUtil {
         $explodedPath = explode($separator ?? static::$pathSeparator, $path);
 
         $temp = &$array;
-        foreach ($explodedPath as $key) {
+        foreach($explodedPath as $key) {
             if (array_key_exists($key, $temp)) $temp = &$temp[$key];
             else return null;
         }
@@ -195,20 +200,23 @@ class ArrayUtil {
      * # => ['people' => ['bob' => [ 'age' => 7, 'firstName' => 'Bob', 'lastName' => 'Tail']]];
      * ```
      *
-     * @param array $array array to update
-     * @param string $arrayPath assignment string
+     * @param array       $array     array to update
+     * @param string      $arrayPath assignment string
      * @param null|string $separator path separator character (default: /)
-     * @param null|string $assignor assignment character (default: =)
+     * @param null|string $assignor  assignment character (default: =)
      *
      * @return array updated array
      */
     public static function writeWithPath(array &$array, string $arrayPath, ?string $separator = null, ?string $assignor = null): array {
-        [$path, $value] = explode($assignor ?? static::$pathAssignor, $arrayPath);
+        [
+            $path,
+            $value,
+        ] = explode($assignor ?? static::$pathAssignor, $arrayPath);
 
         $explodedPath = explode($separator ?? static::$pathSeparator, $path);
 
         $temp = &$array;
-        foreach ($explodedPath as $key) $temp = &$temp[$key];
+        foreach($explodedPath as $key) $temp = &$temp[$key];
         $temp = $value;
         unset($temp);
 
@@ -216,15 +224,15 @@ class ArrayUtil {
     }
 
     /**
-     * Set value using path but separate $value
+     * Set a value using a path but separate $value
      *
      * This allows for $value to be anything you can normally add to an array
      *
-     * @param array $array array to update
-     * @param string $arrayPath assignment string
-     * @param mixed $value assignment value
+     * @param array       $array     array to update
+     * @param string      $arrayPath assignment string
+     * @param mixed       $value     assignment value
      * @param null|string $separator path separator character (default: /)
-     * @param null|string $assignor assignment character (default: =)
+     * @param null|string $assignor  assignment character (default: =)
      *
      * @return array updated array
      */
@@ -232,7 +240,7 @@ class ArrayUtil {
         $explodedPath = explode($separator ?? static::$pathSeparator, $arrayPath);
 
         $temp = &$array;
-        foreach ($explodedPath as $key) $temp = &$temp[$key];
+        foreach($explodedPath as $key) $temp = &$temp[$key];
         $temp = $value;
         unset($temp);
 
@@ -247,8 +255,8 @@ class ArrayUtil {
      *
      * @since 0.3.3
      *
-     * @param array       $array array to update
-     * @param string      $pathAction string array path to read or assign value to
+     * @param array  $array      array to update
+     * @param string $pathAction string array path to read or assign value to
      *
      * @return mixed read value|updated array
      */
@@ -257,5 +265,84 @@ class ArrayUtil {
             return static::writeWithPath($array, $pathAction);
 
         return static::readWithPath($array, $pathAction);
+    }
+
+    /**
+     * Recursively compare two arrays.
+     *
+     * NOTE: $strict
+     *
+     * Returns:
+     * - true if the arrays match.
+     * - An array describing the differences otherwise.
+     *
+     * @param array $expected The expected array.
+     * @param array $actual   The actual array.
+     * @param bool  $strict   For numeric arrays only:
+     *                        - true: element order must match.
+     *                        - false: element order is ignored.
+     *
+     * @return true|array
+     */
+    public static function compareArrays(array $expected, array $actual, bool  $strict = false): true|array {
+        // If this is a numeric array and order isn't important,
+        // compare sorted copies.
+        if (
+            !$strict &&
+            array_is_list($expected) &&
+            array_is_list($actual)
+        ) {
+            $expected = array_values($expected);
+            $actual = array_values($actual);
+
+            usort($expected, static fn(mixed $a, mixed $b) => $a <=> $b);
+            usort($actual, static fn(mixed $a, mixed $b) => $a <=> $b);
+        }
+
+        $differences = [];
+
+        foreach($expected as $key => $expectedValue) {
+            if (!array_key_exists($key, $actual)) {
+                $differences[$key] = [
+                    'status'   => 'missingInActual',
+                    'expected' => $expectedValue,
+                ];
+                continue;
+            }
+
+            $actualValue = $actual[$key];
+
+            if (is_array($expectedValue) && is_array($actualValue)) {
+                $result = static::compareArrays(
+                    $expectedValue,
+                    $actualValue,
+                    $strict,
+                );
+
+                if ($result !== true) {
+                    $differences[$key] = $result;
+                }
+
+                continue;
+            }
+
+            if ($expectedValue !== $actualValue) {
+                $differences[$key] = [
+                    'expected' => $expectedValue,
+                    'actual'   => $actualValue,
+                ];
+            }
+        }
+
+        foreach($actual as $key => $actualValue) {
+            if (!array_key_exists($key, $expected)) {
+                $differences[$key] = [
+                    'status' => 'unexpectedInActual',
+                    'actual' => $actualValue,
+                ];
+            }
+        }
+
+        return $differences === [] ? true : $differences;
     }
 }
