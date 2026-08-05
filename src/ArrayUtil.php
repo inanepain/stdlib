@@ -46,6 +46,7 @@ echo ArrayUtil::readWithPath($data, 'people->philip->colour') . PHP_EOL;
 
 namespace Inane\Stdlib;
 
+use InvalidArgumentException;
 use function array_filter;
 use function array_key_exists;
 use function array_pop;
@@ -268,23 +269,22 @@ class ArrayUtil {
     }
 
     /**
-     * Recursively compare two arrays.
+     * Compares two arrays and identifies differences between them.
+     * This method can compare arrays based on strict or loose ordering,
+     * and optionally exclude unexpected elements in the actual array.
+     * It supports nested array comparisons.
      *
-     * NOTE: $strict
+     * @param array $expected The expected array to compare against.
+     * @param array $actual   The actual array to compare.
+     * @param array $options  Comparison options:
+     *                        - 'strict_order' (bool) Whether order matters (default: false).
+     *                        - 'expected_only' (bool) Whether to only consider keys present in the expected array (default: true).
      *
-     * Returns:
-     * - true if the arrays match.
-     * - An array describing the differences otherwise.
-     *
-     * @param array $expected The expected array.
-     * @param array $actual   The actual array.
-     * @param bool  $strict   For numeric arrays only:
-     *                        - true: element order must match.
-     *                        - false: element order is ignored.
-     *
-     * @return true|array
+     * @return true|array Returns true if arrays match, or an array of differences if they do not.
+     * @throws InvalidArgumentException If invalid options are provided.
      */
-    public static function compareArrays(array $expected, array $actual, bool  $strict = false): true|array {
+    public static function compareArrays(array $expected, array $actual, array $options = []): true|array {
+        ['strict_order' => $strict, 'expected_only' => $onlyExpected] = static::modify(['strict_order' => false, 'expected_only' => true], $options);
         // If this is a numeric array and order isn't important,
         // compare sorted copies.
         if (
@@ -336,7 +336,7 @@ class ArrayUtil {
 
         foreach($actual as $key => $actualValue) {
             if (!array_key_exists($key, $expected)) {
-                $differences[$key] = [
+                if (!$onlyExpected) $differences[$key] = [
                     'status' => 'unexpectedInActual',
                     'actual' => $actualValue,
                 ];
