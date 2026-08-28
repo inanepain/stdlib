@@ -857,6 +857,78 @@ VerifyValue::macVerify('not-a-mac');                            // null
 
 :leveloffset: +1
 
+= FuzzyTime
+
+This section documents the `FuzzyTimeTrait` used to express a point in time the way a person would say it out loud.
+
+== Overview
+
+`FuzzyTimeTrait` converts a time into a spoken-style English phrase such as `quarter past nine`. It provides:
+
+* Rounding of minutes to the nearest five minutes
+* `past` phrasing up to and including half past the hour
+* `to` phrasing with the following hour after half past
+* Hour roll-over when the rounded minutes reach sixty
+
+Trait location:
+
+* Namespace: `Inane\Stdlib\Parser`
+* File: `lib/inanepain/stdlib/src/Parser/FuzzyTimeTrait.php`
+
+== Requirements and conventions
+
+* Use on any class that needs fuzzy time wording; the API is static, so no state is added.
+* Accepted input is a `DateTime`, an `Inane\Datetime\Timestamp`, or `null` for the current time.
+* Output is a twelve-hour phrase without a meridiem indicator: `one o'clock` covers both 01:00 and 13:00.
+
+== API
+
+Static helper on the class using the trait:
+
+* `fuzzyClock(null|\DateTime|Timestamp $time = null): string` — Returns the time in words, defaulting to now.
+
+NOTE: `numToWords()` it’s an internal helper and isn’t part of the public API.
+
+== Example: Time in words
+
+[source,php]
+----
+<?php
+declare(strict_types=1);
+
+use Inane\Stdlib\Parser\FuzzyTimeTrait;
+
+final class Clock {
+    use FuzzyTimeTrait;
+}
+
+// Exact hour
+Clock::fuzzyClock(new DateTime('2026-07-04 13:00:00')); // one o'clock
+
+// Minutes rounded to the nearest five, phrased as past
+Clock::fuzzyClock(new DateTime('2026-07-04 09:13:00')); // quarter past nine
+
+// After half past, phrased as to the next hour
+Clock::fuzzyClock(new DateTime('2026-07-04 09:34:00')); // twenty-five to ten
+
+// Rounding up to sixty minutes rolls the hour over
+Clock::fuzzyClock(new DateTime('2026-07-04 23:58:00')); // twelve o'clock
+
+// Current time
+Clock::fuzzyClock();
+----
+
+== Tips
+
+* Set the timezone on the supplied `DateTime`; the wording follows whatever local time the object reports.
+* Because the phrasing is rounded, it suits summaries and labels rather than anything needing exact times.
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
 = Website: github
 
 ++++

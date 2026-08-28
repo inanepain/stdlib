@@ -35,7 +35,7 @@ Static helpers on the enum using the trait:
 - `remove(int $mask, self $flag): int` — Returns a mask with the case removed.
 - `list(int $mask): array<self>` — Returns the enum cases present in the mask.
 
-Instance helpers on an enum case:
+Instance helpers in an enum case:
 
 - `in(int $mask): bool` — True if this case is present in the mask.
 - `addTo(int $mask): int` — Returns a mask with this case added.
@@ -47,7 +47,9 @@ NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to “any�
 
 The following example shows a typical permission enum using the trait.
 
-```php
+.Example: Permissions
+[source,php]
+----
 <?php
 declare(strict_types=1);
 
@@ -84,12 +86,11 @@ $canExec2 = Permission::Execute->in($mask); // false
 $mask = Permission::add($mask, Permission::Delete);        // add Delete
 $mask = Permission::Write->removeFrom($mask);               // remove Write
 
-// Enumerate set flags
+// List set flags
 $set = Permission::list($mask); // [Permission::Read, Permission::Delete]
-```
+----
 
 == Tips
 
 - When defining new flags, always shift from 0 upwards (`1 << n`) and avoid overlapping values.
 - Store masks as integers in persistence layers. The trait makes converting to/from cases trivial.
-

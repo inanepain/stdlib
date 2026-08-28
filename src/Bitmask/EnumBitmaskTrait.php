@@ -19,10 +19,13 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Bitmask;
 
+use function array_filter;
+use function array_reduce;
+
 /**
  * Trait for adding bitmask functionality to enums.
  *
- * @version 0.1.0
+ * @version 0.2.0
  */
 trait EnumBitmaskTrait {
     /**
@@ -33,6 +36,10 @@ trait EnumBitmaskTrait {
      * @return int The parsed integer value of the bitmask.
      */
     public static function parseBitmask(mixed $mask): int {
+        if ($mask instanceof self) {
+            return $mask->value;
+        }
+
         return (int)($mask ?? 0);
     }
 
@@ -74,39 +81,45 @@ trait EnumBitmaskTrait {
     }
 
     /**
-     * Checks if a bitmask contains a specific flag.
+     * Checks if a bitmask contains a specific flag or flags.
      *
-     * @param int  $mask The bitmask to check.
-     * @param self $flag The flag to look for.
+     * @param int      $mask The bitmask to check.
+     * @param int|self $flag The flag or flags (as int) to look for.
      *
      * @return bool True if the flag is present in the mask.
      */
-    public static function has(int $mask, self $flag): bool {
-        return ($mask & $flag->value) === $flag->value;
+    public static function has(int $mask, int|self $flag): bool {
+        $value = self::parseBitmask($flag);
+
+        return ($mask & $value) === $value;
     }
 
     /**
      * Adds a flag to a bitmask.
      *
-     * @param int  $mask The bitmask to add to.
-     * @param self $flag The flag to add.
+     * @param int      $mask The bitmask to add to.
+     * @param int|self $flag The flag or flags (as int) to add.
      *
      * @return int The new bitmask.
      */
-    public static function add(int $mask, self $flag): int {
-        return $mask | $flag->value;
+    public static function add(int $mask, int|self $flag): int {
+        $value = self::parseBitmask($flag);
+
+        return $mask | $value;
     }
 
     /**
      * Removes a flag from a bitmask.
      *
-     * @param int  $mask The bitmask to remove from.
-     * @param self $flag The flag to remove.
+     * @param int      $mask The bitmask to remove from.
+     * @param int|self $flag The flag to remove.
      *
      * @return int The new bitmask.
      */
-    public static function remove(int $mask, self $flag): int {
-        return $mask & ~$flag->value;
+    public static function remove(int $mask, int|self $flag): int {
+        $value = self::parseBitmask($flag);
+
+        return $mask & ~$value;
     }
 
     /**
@@ -122,6 +135,10 @@ trait EnumBitmaskTrait {
 
     /**
      * Add this method in a bitmask.
+     *
+     * @param int $mask The bitmask to add to.
+     *
+     * @return int The new bitmask.
      */
     public function addTo(int $mask): int {
         return $mask | $this->value;
@@ -129,6 +146,10 @@ trait EnumBitmaskTrait {
 
     /**
      * Remove this method in a bitmask.
+     *
+     * @param int $mask The bitmask to remove from.
+     *
+     * @return int The new bitmask.
      */
     public function removeFrom(int $mask): int {
         return $mask & ~$this->value;

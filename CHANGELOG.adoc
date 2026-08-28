@@ -29,7 +29,9 @@
 * update: Renamed some classes.
 * new: Added PHPUnit tests.
 * new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.
-* new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they are the same or their differences.
+* new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they’re the same or their differences.
+* update: `EnumBitmaskTrait` most static methods that took an `enum` can now also take an `int`.
+* update: Add `FuzzyTime` to the README.
 
 :leveloffset!:
 :leveloffset: +2

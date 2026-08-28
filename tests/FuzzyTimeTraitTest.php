@@ -24,6 +24,7 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Tests;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeZone;
 use Inane\Stdlib\Parser\FuzzyTimeTrait;
@@ -47,7 +48,7 @@ final class FuzzyTimeTraitTest extends TestCase {
     /**
      * Verifies exact-hour times produce the expected "o'clock" wording.
      *
-     * @return void
+     * @throws DateMalformedStringException
      */
     public function testFuzzyClockReturnsOClockForExactHour(): void {
         $helper = $this->getFuzzyTimeHelper();
@@ -58,9 +59,9 @@ final class FuzzyTimeTraitTest extends TestCase {
 
     /**
      * Verifies minutes are rounded to the nearest five and phrased as "past"
-     * before or at half past.
+     * before or at half-past.
      *
-     * @return void
+     * @throws DateMalformedStringException
      */
     public function testFuzzyClockRoundsAndUsesPastPhraseBeforeHalfHour(): void {
         $helper = $this->getFuzzyTimeHelper();
@@ -72,7 +73,7 @@ final class FuzzyTimeTraitTest extends TestCase {
     /**
      * Verifies times past half-hour are phrased as "to" the next hour.
      *
-     * @return void
+     * @throws DateMalformedStringException
      */
     public function testFuzzyClockUsesToPhraseWithNextHourAfterHalfPast(): void {
         $helper = $this->getFuzzyTimeHelper();
@@ -84,7 +85,7 @@ final class FuzzyTimeTraitTest extends TestCase {
     /**
      * Verifies rounding up to sixty minutes rolls over to the next hour.
      *
-     * @return void
+     * @throws DateMalformedStringException
      */
     public function testFuzzyClockRollsOverHourWhenRoundedMinuteIsSixty(): void {
         $helper = $this->getFuzzyTimeHelper();

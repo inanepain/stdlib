@@ -114,7 +114,7 @@ echo $output->output();
 === XmlOutput
 
 Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
-to normalize the input before conversion.
+to normalise the input before conversion.
 
 [source,php]
 ----

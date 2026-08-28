@@ -49,4 +49,8 @@ include::part/verify-value.adoc[leveloffset=+1]
 
 <<<
 
+include::part/fuzzy-time.adoc[leveloffset=+1]
+
+<<<
+
 include::part/link-github.adoc[leveloffset=+1]
