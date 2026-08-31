@@ -142,7 +142,10 @@ class StringCaseConverter {
      * @return string The converted string in kebab-case format.
      */
     public static function pascalToKebab(string $string): string {
-        return strtolower(preg_replace('/([A-Z])/', '-$1', lcfirst($string)));
+        return $string
+                |> lcfirst(...)
+                |> (fn($x) => preg_replace('/([A-Z])/', '-$1', $x))
+                |> strtolower(...);
     }
 
     /**
@@ -187,7 +190,10 @@ class StringCaseConverter {
      * @return string The converted string in snake_case format.
      */
     public static function pascalToSnake(string $string): string {
-        return strtolower(preg_replace('/([A-Z])/', '_$1', lcfirst($string)));
+        return $string
+                |> lcfirst(...)
+                |> (fn($x) => preg_replace('/([A-Z])/', '_$1', $x))
+                |> strtolower(...);
     }
 
     /**
@@ -227,7 +233,7 @@ class StringCaseConverter {
                 break;
         }
 
-        throw new InvalidArgumentException("Unsupported conversion: {$from->name} -> {$to->name}");
+        throw new InvalidArgumentException("Unsupported conversion: $from->name -> $to->name");
     }
 
     /**

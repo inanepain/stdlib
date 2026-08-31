@@ -149,7 +149,7 @@ class Str implements Stringable {
         if (!in_array($property, [
             'length',
             'string',
-        ])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: {$property}");
+        ])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: $property");
 
         $methods = [
             'length' => 'length',
@@ -170,7 +170,7 @@ class Str implements Stringable {
      * @throws InvalidPropertyException|ParseMethodException when requested property does not exist
      */
     public function __set(string $property, mixed $value) {
-        if (!in_array($property, ['string'])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: {$property}");
+        if ($property !== 'string') throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: $property");
 
         $methods = [
             'length' => 'length',
@@ -180,9 +180,6 @@ class Str implements Stringable {
         $this->{$methods[$property]}($value);
 
         return $this;
-
-        $method = $this->parseMethodName($property, 'set');
-        $this->$method($value);
     }
 
     /**
@@ -364,7 +361,7 @@ class Str implements Stringable {
      * @return Str
      */
     public function prepend(string $str): self {
-        $this->value = "{$str}{$this->value}";
+        $this->value = "$str$this->value";
 
         return $this;
     }

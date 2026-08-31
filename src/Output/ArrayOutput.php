@@ -25,6 +25,7 @@ declare(strict_types = 1);
 namespace Inane\Stdlib\Output;
 
 use Inane\Stdlib\Converters\TraversableToArray;
+use Inane\Stdlib\Exception\JsonException;
 use Inane\Stdlib\Json;
 
 use function is_object;
@@ -40,9 +41,14 @@ class ArrayOutput extends AbstractOutput {
     /**
      * Processes the input data and converts it into an array format, ensuring compatibility with various input types.
      *
+     * @param mixed $inputData The input data to be processed or utilised by the class.
+     *
      * @return array The processed representation of the input data in an array format.
+     * @throws JsonException
      */
-    public function output(): array {
+    public function output(mixed $inputData = null): array {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             $data = $this->inputData;
             if (is_string($data)) {

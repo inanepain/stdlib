@@ -82,7 +82,7 @@ Static helpers on the enum using the trait:
 - `remove(int $mask, self $flag): int` — Returns a mask with the case removed.
 - `list(int $mask): array<self>` — Returns the enum cases present in the mask.
 
-Instance helpers on an enum case:
+Instance helpers in an enum case:
 
 - `in(int $mask): bool` — True if this case is present in the mask.
 - `addTo(int $mask): int` — Returns a mask with this case added.
@@ -94,7 +94,9 @@ NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to “any�
 
 The following example shows a typical permission enum using the trait.
 
-```php
+.Example: Permissions
+[source,php]
+----
 <?php
 declare(strict_types=1);
 
@@ -131,15 +133,14 @@ $canExec2 = Permission::Execute->in($mask); // false
 $mask = Permission::add($mask, Permission::Delete);        // add Delete
 $mask = Permission::Write->removeFrom($mask);               // remove Write
 
-// Enumerate set flags
+// List set flags
 $set = Permission::list($mask); // [Permission::Read, Permission::Delete]
-```
+----
 
 == Tips
 
 - When defining new flags, always shift from 0 upwards (`1 << n`) and avoid overlapping values.
 - Store masks as integers in persistence layers. The trait makes converting to/from cases trivial.
-
 
 :leveloffset!:
 
@@ -263,7 +264,7 @@ echo $output->output();
 === XmlOutput
 
 Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
-to normalize the input before conversion.
+to normalise the input before conversion.
 
 [source,php]
 ----
@@ -300,14 +301,103 @@ To create a new output format, extend `AbstractOutput` and implement the `output
 use Inane\Stdlib\Output\AbstractOutput;
 
 class MyCustomOutput extends AbstractOutput {
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        // Store input and clear cache if required.
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             // ... custom conversion logic ...
+            // Store output in cache.
             $this->outputData = "processed data";
         }
         return $this->outputData;
     }
 }
+----
+
+== Example
+
+A more complete example, using an `Output` class as a property.
+
+[source,php]
+----
+$opt = new \Inane\Stdlib\Options([
+    'one' => $data,
+    'two' => [
+        'two' => 2,
+        'three' => [
+            'four' => 'five',
+        ],
+    ],
+]);
+
+final class SomeThing {
+    /**
+     * Handles the output data and processes it appropriately.
+     *
+     * @param mixed $outputHandler The handler responsible for managing and processing the output.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If the output handler encounters a processing error.
+     */
+    private \Inane\Stdlib\Output\OutputInterface $outputHandler;
+
+    /**
+     * Initializes the class with the given input data.
+     *
+     * @param mixed $inputData The data to be processed by the class.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the input data is invalid.
+     */
+    public function __construct(protected mixed $inputData) {}
+
+    /**
+     * Sets the output handler to be used.
+     *
+     * @param \Inane\Stdlib\Output\OutputInterface $outputHandler The output handler to set.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the provided output handler is invalid.
+     */
+    public function setOutput(\Inane\Stdlib\Output\OutputInterface $outputHandler): void {
+        $this->outputHandler = $outputHandler;
+    }
+
+    /**
+     * Processes the input data and returns the output.
+     *
+     * @return mixed The result of processing the input data.
+     *
+     * @throws \Exception If an error occurs during output processing.
+     */
+    public function output(): mixed {
+        return $this->outputHandler->output($this->inputData);
+    }
+}
+
+
+echo "\nREUSABLE:\n";
+$thing = new SomeThing($opt);
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlStringOutput());
+echo "\nXMLString:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlOutput());
+echo "\nXML:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\ArrayOutput());
+echo "\nARRAY:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\JsonStringOutput());
+echo "\nJSON:\n";
+var_dump($thing->output());
+
 ----
 
 :leveloffset!:
@@ -337,7 +427,7 @@ both PHP arrays and `ArrayAccess`/`Iterator` implementations.
 
 `MergeMethod` controls how keys are handled during a merge:
 
-- `AddOnly` — only add keys that do not exist on the target; existing keys are left unchanged.
+- `AddOnly` — only add keys that don’t exist on the target; existing keys are left unchanged.
 - `UpdateOnly` (default) — only update keys that already exist on the target; new keys are ignored.
 - `AddAndUpdate` — add missing keys and update existing keys (full overlay/recursive replace).
 
@@ -350,13 +440,14 @@ Namespace: `Inane\Stdlib\Merge`
 
 Core static method:
 
-```php
+[source,php]
+----
 Iterator|array MergeTrait::mergeOptionsWithMethod(
     MergeMethod $mergeMethod,
     Iterator|array $target,
     Iterator|array ...$sources
 ): Iterator|array
-```
+----
 
 Convenience helpers (static):
 
@@ -366,18 +457,19 @@ Convenience helpers (static):
 
 Instance method (via `Merge` or any class using the trait):
 
-```php
+[source,php]
+----
 public MergeMethod $mergeMethod = MergeMethod::UpdateOnly; // default
 
 public function mergeOptions(Iterator|array $target, Iterator|array ...$sources): Iterator|array
-```
+----
 
 == Usage
 
 === Static helpers
 
-```php
-<?php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
 use Inane\Stdlib\Merge\Merge;
 
@@ -426,9 +518,9 @@ $source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
 
 $result = $merger->mergeOptions($target, $source);
 // [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
-```
+----
 
-== Behavior details
+== Behaviour details
 
 - The key existence on the target is determined as follows:
   - arrays: `array_key_exists($key, $target)`
@@ -450,15 +542,16 @@ assignments, allowing use with custom option containers.
 If you receive a user‑provided string (e.g. from config), you can map it to a
 `MergeMethod` case using `MergeMethod::tryFromName($name, $ignoreCase = false)`.
 
-```php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeMethod;
 
 $method = MergeMethod::tryFromName('addonly', true) ?? MergeMethod::UpdateOnly;
-```
+----
 
 == JavaScript counterpart
 
-For frontend experiments there is a simple ES module at
+For frontend experiments there’s a simple ES module at
 `public/js/inane/class-lib/MergeOptions.mjs` that mirrors the basic behaviour for merging option objects.
 
 == Tips
@@ -475,7 +568,7 @@ For frontend experiments there is a simple ES module at
 
 = VerifyValue
 
-Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains, and regex-matched strings.
+Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains and regex-matched strings.
 
 All methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults.
 
@@ -507,7 +600,7 @@ public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?b
 |When `true`, returns `null` on failure instead of `false`.
 |===
 
-.Returns: `bool\|null` — The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
+.Returns: `bool\|null` — The boolean result or `null` when conversion fails and `$nullOnFailure` is `true`.
 
 .Example
 [source,php]
@@ -539,7 +632,7 @@ public static function emailVerify(string|array $value): false|string|array
 |A single email address string, or an array of email address strings.
 |===
 
-.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input, or `false` if a single address fails validation.
+.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input or `false` if a single address fails validation.
 
 .Example
 [source,php]
@@ -713,7 +806,7 @@ public static function regexVerify(mixed $value, string $pattern, ?string $defau
 |Optional fallback string returned when validation fails.
 |===
 
-.Returns: `string\|null` — The matched value, the default fallback, or `null` on failure.
+.Returns: `string\|null` — The matched value, the default fallback or `null` on failure.
 
 .Example
 [source,php]
@@ -747,7 +840,7 @@ public static function domainVerify(mixed $value, bool $hostname = false): ?stri
 |When `true`, applies stricter hostname validation rules.
 |===
 
-.Returns: `string\|null` — The validated domain string, or `null` if validation fails.
+.Returns: `string\|null` — The validated domain string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -799,7 +892,7 @@ public static function ipVerify(mixed $value, bool $allowV4 = true, bool $allowV
 |Accept only globally routable addresses.
 |===
 
-.Returns: `string\|null` — The validated IP address string, or `null` if validation fails.
+.Returns: `string\|null` — The validated IP address string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -840,7 +933,7 @@ public static function macVerify(mixed $value, bool $normalize = false, string $
 |The separator character used when normalising (default `:`).
 |===
 
-.Returns: `string\|null` — The validated (and optionally normalised) MAC address, or `null` if validation fails.
+.Returns: `string\|null` — The validated (and optionally normalised) MAC address or `null` if validation fails.
 
 .Example
 [source,php]

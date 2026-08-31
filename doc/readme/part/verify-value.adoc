@@ -1,6 +1,6 @@
 = VerifyValue
 
-Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains, and regex-matched strings.
+Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains and regex-matched strings.
 
 All methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults.
 
@@ -32,7 +32,7 @@ public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?b
 |When `true`, returns `null` on failure instead of `false`.
 |===
 
-.Returns: `bool\|null` — The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
+.Returns: `bool\|null` — The boolean result or `null` when conversion fails and `$nullOnFailure` is `true`.
 
 .Example
 [source,php]
@@ -64,7 +64,7 @@ public static function emailVerify(string|array $value): false|string|array
 |A single email address string, or an array of email address strings.
 |===
 
-.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input, or `false` if a single address fails validation.
+.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input or `false` if a single address fails validation.
 
 .Example
 [source,php]
@@ -238,7 +238,7 @@ public static function regexVerify(mixed $value, string $pattern, ?string $defau
 |Optional fallback string returned when validation fails.
 |===
 
-.Returns: `string\|null` — The matched value, the default fallback, or `null` on failure.
+.Returns: `string\|null` — The matched value, the default fallback or `null` on failure.
 
 .Example
 [source,php]
@@ -272,7 +272,7 @@ public static function domainVerify(mixed $value, bool $hostname = false): ?stri
 |When `true`, applies stricter hostname validation rules.
 |===
 
-.Returns: `string\|null` — The validated domain string, or `null` if validation fails.
+.Returns: `string\|null` — The validated domain string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -324,7 +324,7 @@ public static function ipVerify(mixed $value, bool $allowV4 = true, bool $allowV
 |Accept only globally routable addresses.
 |===
 
-.Returns: `string\|null` — The validated IP address string, or `null` if validation fails.
+.Returns: `string\|null` — The validated IP address string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -365,7 +365,7 @@ public static function macVerify(mixed $value, bool $normalize = false, string $
 |The separator character used when normalising (default `:`).
 |===
 
-.Returns: `string\|null` — The validated (and optionally normalised) MAC address, or `null` if validation fails.
+.Returns: `string\|null` — The validated (and optionally normalised) MAC address or `null` if validation fails.
 
 .Example
 [source,php]

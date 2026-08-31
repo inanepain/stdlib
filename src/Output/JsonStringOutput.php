@@ -37,11 +37,15 @@ class JsonStringOutput extends AbstractOutput {
     /**
      * Encode and return the input data as a JSON string.
      *
+     * @param mixed $inputData The data to encode.
+     *
      * @return false|string The encoded JSON string or false on failure.
      *
      * @throws \RuntimeException
      */
-    public function output(): false|string {
+    public function output(mixed $inputData = null): false|string {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             if (!is_string($this->inputData)) {
                 $this->outputData = Json::encode($this->inputData, [

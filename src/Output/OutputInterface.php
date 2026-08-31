@@ -31,7 +31,9 @@ interface OutputInterface {
     /**
      * Retrieves the output in the format of the Class.
      *
+     * @param mixed $inputData The input data to be processed or utilised by the class.
+     *
      * @return mixed The data returned in the class format.
      */
-    public function output(): mixed;
+    public function output(mixed $inputData = null): mixed;
 }

@@ -19,7 +19,7 @@
 :leveloffset: +2
 
 = 0.10.0-dev (2026 Xxx xx)
-:revnumber: 0.19.0-dev
+:revnumber: 0.10.0-dev
 :revdate: 2026-XX-XX
 :revremark: -dev
 :version-label: Unconfirmed
@@ -28,10 +28,12 @@
 * update: `Str` general code structure and convention improvements.
 * update: Renamed some classes.
 * new: Added PHPUnit tests.
+* new: `OutputInterface` and `AbstractOutput` support passing `$inputDate` to `ouput` method making it more reusable.
 * new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.
 * new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they’re the same or their differences.
 * update: `EnumBitmaskTrait` most static methods that took an `enum` can now also take an `int`.
 * update: Add `FuzzyTime` to the README.
+* update: `FuzzyTimeTrait` add to unit tests.
 
 :leveloffset!:
 :leveloffset: +2

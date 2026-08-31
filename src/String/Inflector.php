@@ -133,12 +133,12 @@ class Inflector {
     protected static function swapPluralSingular(string $word, string $action): string {
         if (count(static::$rules['data'][$action]) === 0) {
             $data = [];
-            if ($action === 'pluralise') foreach(static::$rules['irregular'] as $singular => $plural) $data["/{$singular}/"] = $plural; else foreach(static::$rules['irregular'] as $singular => $plural) $data["/{$plural}/"] = $singular;
+            if ($action === 'pluralise') foreach(static::$rules['irregular'] as $singular => $plural) $data["/$singular/"] = $plural; else foreach(static::$rules['irregular'] as $singular => $plural) $data["/$plural/"] = $singular;
             static::$rules['data'][$action] = array_merge($data, static::$rules[$action]);
         }
 
         if (static::isCountable($word)) foreach(static::$rules['data'][$action] as $pattern => $replace) {
-            if (preg_match($pattern, $word, $match)) return preg_replace($pattern, $replace, $word);
+            if (preg_match($pattern, $word)) return preg_replace($pattern, $replace, $word);
         }
 
         return $word;
@@ -184,7 +184,7 @@ class Inflector {
      * @return bool word
      */
     public static function isCountable(string $word): bool {
-        return !in_array($word, static::$rules['uncountable']);
+        return !in_array($word, static::$rules['uncountable'], true);
     }
 
     /**
@@ -200,7 +200,7 @@ class Inflector {
      * @return string camel case word
      */
     public static function camelise(string $word, bool $upperFirst = false): string {
-        $word = preg_replace_callback('/([_ \-\/])+(.?)/', fn($m) => ($m[1] === '/' ? '\\' : '') . strtoupper($m[2]), $word);
+        $word = preg_replace_callback('/([_ \-\/])+(.?)/', static fn($m) => ($m[1] === '/' ? '\\' : '') . strtoupper($m[2]), $word);
 
         return $upperFirst ? ucfirst($word) : $word;
     }

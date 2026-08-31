@@ -37,11 +37,15 @@ class ArrayStringShortSyntaxOutput extends AbstractOutput {
     /**
      * Convert and return the input data as a short array syntax string.
      *
+     * @param mixed $inputData The data to convert.
+     *
      * @return string The data as a short array syntax string.
      *
      * @throws \RuntimeException
      */
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             $this->outputData = self::arrayToString(new ArrayOutput($this->inputData)->output());
         }

@@ -35,11 +35,15 @@ class SerializedOutput extends AbstractOutput {
     /**
      * Serialise the input data.
      *
+     * @param mixed $inputData The data to serialise.
+     *
      * @return string The serialised data.
      *
      * @throws \RuntimeException
      */
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) $this->outputData = serialize($this->inputData);
 
         return $this->outputData;

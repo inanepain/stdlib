@@ -89,11 +89,15 @@ class XmlOutput extends AbstractOutput {
     /**
      * @inheritDoc
      *
+     * @param mixed $inputData The data to convert.
+     *
      * @return SimpleXMLElement
      *
      * @throws \RuntimeException
      */
-    public function output(): SimpleXMLElement {
+    public function output(mixed $inputData = null): SimpleXMLElement {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             if (is_string($this->inputData) && static::isXmlString($this->inputData)) {
                 $this->outputData = simplexml_load_string($this->inputData);

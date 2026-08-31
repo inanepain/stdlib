@@ -57,9 +57,13 @@ class XmlStringOutput extends AbstractOutput {
     /**
      * Converts the input data to XML format and returns it as a string.
      *
+     * @param mixed $inputData The data to convert.
+     *
      * @return string The input data converted to XML format.
      */
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             $xo = new XmlOutput($this->inputData);
             $this->outputData = $xo->output()->asXML();
