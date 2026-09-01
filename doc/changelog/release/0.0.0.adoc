@@ -14,3 +14,5 @@
 * update: `EnumBitmaskTrait` most static methods that took an `enum` can now also take an `int`.
 * update: Add `FuzzyTime` to the README.
 * update: `FuzzyTimeTrait` add to unit tests.
+* update: `Options::get` added parameter `saveDefault` to store the default value if no value is found.
+* fix: `Options::merge` improved handling of *lists* (numerically indexed arrays).

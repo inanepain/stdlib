@@ -31,9 +31,11 @@ use Inane\Stdlib\Array\OptionsInterface;
 use Inane\Stdlib\Exception\{
     JsonException,
     RuntimeException};
+use Inane\Stdlib\Output\ArrayOutput;
 use Inane\Stdlib\String\{
     Capitalisation,
     StringCaseConverter};
+use InvalidArgumentException;
 
 use function array_first;
 use function array_key_exists;
@@ -135,10 +137,9 @@ class Options implements OptionsInterface {
          */
         private bool                                                          $allowModifications = true,
     ) {
-        if (is_string($data)) $data = Json::decode($data);
+        if (is_string($data)) $data = new ArrayOutput($data)->output();
         if ($data instanceof SystemArrayObject) $data = $data->getArrayCopy();
 
-        // if ((!is_array($data) && !($data instanceof static)) || $data === null) $data = [];
         if ((!is_array($data) && !($data instanceof OptionsInterface))) $data = [];
 
         foreach($data as $key => $value) if (is_array($value) || $value instanceof SystemArrayObject) $this->data[$key] = new static(
@@ -268,14 +269,23 @@ class Options implements OptionsInterface {
     }
 
     /**
-     * get key
+     * Retrieve a value from the data store by its identifier.
      *
-     * @param string $id      key
-     * @param mixed  $default value
+     * This method attempts to locate the value associated with the provided identifier. If the
+     * value doesn't exist, it can return a default value. Additionally, if specified, the default
+     * value can be saved in the data store for future access.
      *
-     * @return mixed|Options|OptionsInterface value
+     * @param mixed $id          The identifier of the value to retrieve. Can be a string or any other type.
+     * @param mixed $default     The default value to return if the identifier does not exist. Defaults to null.
+     * @param bool  $saveDefault A flag indicating whether to save the default value in the data store
+     *                           if the identifier does not exist. Defaults to false.
+     *
+     * @return mixed The value associated with the identifier, or the default value if the identifier
+     *               does not exist.
+     *
+     * @throws InvalidArgumentException If the identifier is not valid or cannot be processed.
      */
-    public function get(mixed $id, mixed $default = null): mixed {
+    public function get(mixed $id, mixed $default = null, bool $saveDefault = false): mixed {
         if ($this->offsetExists($id)) return $this->data[$id];
 
         if (is_string($id)) {
@@ -288,6 +298,10 @@ class Options implements OptionsInterface {
                 $kebab = StringCaseConverter::pascalToKebab($id);
             }
             if (is_string($kebab) && $this->offsetExists($kebab)) return $this->data[$kebab];
+        }
+
+        if ($saveDefault) {
+            $this->data[$id] = $default;
         }
 
         return $default;
@@ -548,7 +562,10 @@ class Options implements OptionsInterface {
             elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
             else $this->data[$key] = $value;
         } elseif ($value instanceof OptionsInterface) $this->data[$key] = new static($value->toArray(), $this->allowModifications);
-        else $this->data[$key] = $value;
+        else {
+            if (is_int($key)) $this->data[] = $value;
+            else $this->data[$key] = $value;
+        }
 
         return $this;
     }
