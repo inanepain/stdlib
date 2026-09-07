@@ -1,0 +1,9 @@
+= Value
+
+Classes that verify or sanitise values. Mostly using `filter_var`.
+
+include::value/verify.adoc[leveloffset=+1]
+
+<<<
+
+include::value/sanitise.adoc[leveloffset=+1]

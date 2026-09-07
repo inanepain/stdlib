@@ -1,4 +1,4 @@
-= VerifyValue
+= Verify Value
 
 Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains and regex-matched strings.
 

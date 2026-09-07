@@ -45,7 +45,7 @@ include::part/merge.adoc[leveloffset=+1]
 
 <<<
 
-include::part/verify-value.adoc[leveloffset=+1]
+include::part/value.adoc[leveloffset=+1]
 
 <<<
 
