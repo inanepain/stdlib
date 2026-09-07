@@ -566,7 +566,13 @@ For frontend experiments there’s a simple ES module at
 
 :leveloffset: +1
 
-= VerifyValue
+= Value
+
+Classes that verify or sanitise values. Mostly using `filter_var`.
+
+:leveloffset: +1
+
+= Verify Value
 
 Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains and regex-matched strings.
 
@@ -608,6 +614,122 @@ public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?b
 VerifyValue::boolVerify('yes');          // true
 VerifyValue::boolVerify('off');          // false
 VerifyValue::boolVerify('maybe', true);  // null
+----
+
+=== alphaVerify
+
+Validates an alphabetic string.
+
+.Signature
+[source,php]
+----
+public static function alphaVerify(string $value): false|string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string`
+|The value to validate.
+|===
+
+.Returns: `false\|string` — The original value when alphabetic; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::alphaVerify('Hello');     // 'Hello'
+VerifyValue::alphaVerify('Hello123');  // false
+----
+
+=== digitVerify
+
+Validates a value containing only decimal digits.
+
+.Signature
+[source,php]
+----
+public static function digitVerify(mixed $value): mixed
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate.
+|===
+
+.Returns: `mixed` — The original value when it contains only decimal digits; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::digitVerify('12345');  // '12345'
+VerifyValue::digitVerify('12.45');  // false
+----
+
+=== xdigitVerify
+
+Validates a value containing only hexadecimal digits.
+
+.Signature
+[source,php]
+----
+public static function xdigitVerify(mixed $value): mixed
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate.
+|===
+
+.Returns: `mixed` — The original value when it contains only hexadecimal digits; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::xdigitVerify('1A2b3C');  // '1A2b3C'
+VerifyValue::xdigitVerify('0x1A');    // false
+----
+
+=== alphaNumericVerify
+
+Validates an alphanumeric string.
+
+.Signature
+[source,php]
+----
+public static function alphaNumericVerify(string $value): false|string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string`
+|The value to validate.
+|===
+
+.Returns: `false\|string` — The original value when alphanumeric; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::alphaNumericVerify('abc123');   // 'abc123'
+VerifyValue::alphaNumericVerify('abc 123');  // false
 ----
 
 === emailVerify
@@ -697,7 +819,7 @@ VerifyValue::integerVerify('0x1A', false, null, null, false, true);  // true
 
 === intVerify
 
-Validates an integer value using a named options array.
+Validates an integer value using an option array.
 
 A convenience wrapper around `integerVerify()` that accepts a named options array instead of individual parameters. Unrecognised keys are silently ignored.
 
@@ -907,12 +1029,12 @@ VerifyValue::ipVerify('not-an-ip');                           // null
 
 Validates a MAC address and optionally normalises its format.
 
-PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as separators. When `$normalize` is `true` the validated address is stripped of its original separators and rebuilt using `$separator`.
+PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as separators. When `$normalise` is `true`, the validated address is stripped of its original separators and rebuilt using `$separator`.
 
 .Signature
 [source,php]
 ----
-public static function macVerify(mixed $value, bool $normalize = false, string $separator = ':'): ?string
+public static function macVerify(mixed $value, bool $normalise = false, string $separator = ':'): ?string
 ----
 
 .Parameters
@@ -924,7 +1046,7 @@ public static function macVerify(mixed $value, bool $normalize = false, string $
 |`mixed`
 |The value to validate as a MAC address.
 
-|`$normalize`
+|`$normalise`
 |`bool`
 |When `true`, the returned address is normalised to a consistent separator.
 
@@ -943,6 +1065,198 @@ VerifyValue::macVerify('00-1A-2B-3C-4D-5E', true);              // '00:1a:2b:3c:
 VerifyValue::macVerify('00.1A.2B.3C.4D.5E', true, '-');         // '00-1a-2b-3c-4d-5e'
 VerifyValue::macVerify('not-a-mac');                            // null
 ----
+
+:leveloffset: 1
+
+<<<
+
+:leveloffset: +1
+
+= Sanitise Value
+
+Utility class providing static methods for sanitising common value types such as strings containing markup, emails, URLs, integers and floats.
+
+Most methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults. Each method accepts either a single value or an array of values.
+
+== Methods
+
+=== stripTags
+
+Removes HTML and PHP tags from a string or each string in an array.
+
+.Signature
+[source,php]
+----
+public static function stripTags(string|array $string, array|string|null $allowedTags = null): string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$string`
+|`string\|array`
+|The value to sanitise.
+
+|`$allowedTags`
+|`array\|string\|null`
+|Tags permitted in the result.
+|===
+
+.Returns: `string\|array` — The sanitised value.
+
+.Example
+[source,php]
+----
+SanitiseValue::stripTags('<p>Hello <b>World</b></p>');            // 'Hello World'
+SanitiseValue::stripTags('<p>Hello <b>World</b></p>', '<b>');     // 'Hello <b>World</b>'
+SanitiseValue::stripTags(['<i>a</i>', '<i>b</i>']);               // ['a', 'b']
+----
+
+=== emailSanitise
+
+Sanitises an email address or each address in an array.
+
+.Signature
+[source,php]
+----
+public static function emailSanitise(string|array $value, bool $stripTags = false): false|string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string\|array`
+|The email address or addresses to sanitise.
+
+|`$stripTags`
+|`bool`
+|Whether to remove tags before sanitising.
+|===
+
+.Returns: `false\|string\|array` — The sanitised email value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::emailSanitise('us(er)@example.com');                  // 'user@example.com'
+SanitiseValue::emailSanitise('<b>user</b>@example.com', true);       // 'user@example.com'
+SanitiseValue::emailSanitise(['a b@c.com', 'd@e.com']);              // ['ab@c.com', 'd@e.com']
+----
+
+=== urlSanitise
+
+Sanitises a URL or each URL in an array.
+
+.Signature
+[source,php]
+----
+public static function urlSanitise(string|array $value, bool $stripTags = false): false|string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string\|array`
+|The URL or URLs to sanitise.
+
+|`$stripTags`
+|`bool`
+|Whether to remove tags before sanitising.
+|===
+
+.Returns: `false\|string\|array` — The sanitised URL value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::urlSanitise('http://exa mple.com/pa th');           // 'http://example.com/path'
+SanitiseValue::urlSanitise('<b>http://example.com</b>', true);     // 'http://example.com'
+----
+
+=== intSanitise
+
+Sanitises an integer value or each value in an array by removing all characters except digits, plus and minus signs.
+
+.Signature
+[source,php]
+----
+public static function intSanitise(int|float|string|array $value): false|int|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`int\|float\|string\|array`
+|The value or values to sanitise.
+|===
+
+.Returns: `false\|int\|array` — The sanitised integer value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::intSanitise('R 1 234.56');          // '123456'
+SanitiseValue::intSanitise('-42abc');              // '-42'
+SanitiseValue::intSanitise(['1a', '2b']);          // ['1', '2']
+----
+
+=== floatSanitise
+
+Sanitises a floating-point value or each value in an array.
+
+By default, all characters except digits, plus and minus signs are removed. The optional flags retain decimal separators, thousand separators and scientific notation respectively.
+
+.Signature
+[source,php]
+----
+public static function floatSanitise(int|float|string|array $value, bool $allowFraction = false, bool $allowThousand = false, bool $allowScientific = false): false|float|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`int\|float\|string\|array`
+|The value or values to sanitise.
+
+|`$allowFraction`
+|`bool`
+|Whether to retain decimal separators.
+
+|`$allowThousand`
+|`bool`
+|Whether to retain thousand separators.
+
+|`$allowScientific`
+|`bool`
+|Whether to retain scientific notation.
+|===
+
+.Returns: `false\|float\|array` — The sanitised floating-point value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::floatSanitise('R 1,234.56');                       // '123456'
+SanitiseValue::floatSanitise('R 1,234.56', true);                 // '1234.56'
+SanitiseValue::floatSanitise('R 1,234.56', true, true);           // '1,234.56'
+SanitiseValue::floatSanitise('1.2e3', true, false, true);         // '1.2e3'
+----
+
+:leveloffset: 1
 
 :leveloffset!:
 

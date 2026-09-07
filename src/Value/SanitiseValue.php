@@ -98,9 +98,9 @@ class SanitiseValue {
      *
      * @param int|float|string|array $value The value or values to sanitise.
      *
-     * @return false|int|array The sanitised integer value or values.
+     * @return false|string|array The sanitised integer value or values.
      */
-    public static function intSanitise(int|float|string|array $value): false|int|array {
+    public static function intSanitise(int|float|string|array $value): false|string|array {
         // Single address — validate and return directly
         if (!is_array($value)) return filter_var($value, FILTER_SANITIZE_NUMBER_INT);
 
@@ -116,9 +116,9 @@ class SanitiseValue {
      * @param bool                   $allowThousand   Whether to retain thousand separators.
      * @param bool                   $allowScientific Whether to retain scientific notation.
      *
-     * @return false|float|array The sanitised floating-point value or values.
+     * @return false|string|array The sanitised floating-point value or values.
      */
-    public static function floatSanitise(int|float|string|array $value, bool $allowFraction = false, bool $allowThousand = false, bool $allowScientific = false): false|float|array {
+    public static function floatSanitise(int|float|string|array $value, bool $allowFraction = false, bool $allowThousand = false, bool $allowScientific = false): false|string|array {
         $flag = 0;
         $flag |= $allowFraction ? FILTER_FLAG_ALLOW_FRACTION : 0;
         $flag |= $allowThousand ? FILTER_FLAG_ALLOW_THOUSAND : 0;

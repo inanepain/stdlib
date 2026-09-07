@@ -202,9 +202,9 @@ class VerifyValue {
      * @param bool     $allowOctal When `true`, octal notation is accepted.
      * @param bool     $allowHex   When `true`, hexadecimal notation is accepted.
      *
-     * @return bool `true` when the value passes integer validation, `false` otherwise.
+     * @return mixed The validated integer, the `$default` fallback, or `false` when validation fails.
      */
-    public static function integerVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $allowOctal = false, bool $allowHex = false): bool {
+    public static function integerVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $allowOctal = false, bool $allowHex = false): mixed {
         $opts = static::buildOptions($default, $min, $max);
 
         // Conditionally enable alternative numeric base flags
@@ -231,9 +231,9 @@ class VerifyValue {
      * @param mixed $int     The value to validate as an integer.
      * @param array $options Named validation options (see above).
      *
-     * @return bool `true` when the value passes integer validation, `false` otherwise.
+     * @return mixed The validated integer, the `default` fallback, or `false` when validation fails.
      */
-    public static function intVerify(mixed $int, array $options = []): bool {
+    public static function intVerify(mixed $int, array $options = []): mixed {
         // Strip any unrecognised keys before forwarding to integerVerify
         $opts = array_intersect_key($options, [
             'default'    => null,
@@ -243,7 +243,7 @@ class VerifyValue {
             'allowHex'   => false,
         ]);
 
-        return static::integerVerify($int, FILTER_VALIDATE_INT, ...$opts);
+        return static::integerVerify($int, ...$opts);
     }
 
     /**
@@ -255,9 +255,9 @@ class VerifyValue {
      * @param null|int $max         Optional maximum allowed value (inclusive).
      * @param bool     $acceptFloat When `true`, values containing a thousand separator (`,`) are accepted.
      *
-     * @return bool `true` when the value passes float validation, `false` otherwise.
+     * @return mixed The validated float, the `$default` fallback, or `false` when validation fails.
      */
-    public static function floatVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $acceptFloat = false): bool {
+    public static function floatVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $acceptFloat = false): mixed {
         $opts = static::buildOptions($default, $min, $max);
 
         // Allow thousand-separator notation when requested (e.g. "1,234.56")
