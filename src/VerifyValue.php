@@ -113,6 +113,58 @@ class VerifyValue {
     }
 
     /**
+     * Validates an alphabetic string.
+     *
+     * @param string $value The value to validate.
+     *
+     * @return false|string The original value when alphabetic; otherwise, `false`.
+     */
+    public static function alphaVerify(string $value): false|string {
+        if (ctype_alpha($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates a value containing only decimal digits.
+     *
+     * @param mixed $value The value to validate.
+     *
+     * @return mixed The original value when it contains only decimal digits; otherwise, `false`.
+     */
+    public static function digitVerify(mixed $value): mixed {
+        if (ctype_digit($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates a value containing only hexadecimal digits.
+     *
+     * @param mixed $value The value to validate.
+     *
+     * @return mixed The original value when it contains only hexadecimal digits; otherwise, `false`.
+     */
+    public static function xdigitVerify(mixed $value): mixed {
+        if (ctype_xdigit($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates an alphanumeric string.
+     *
+     * @param string $value The value to validate.
+     *
+     * @return false|string The original value when alphanumeric; otherwise, `false`.
+     */
+    public static function alphaNumericVerify(string $value): false|string {
+        if (ctype_alnum($value)) return $value;
+
+        return false;
+    }
+
+    /**
      * Validates an email address or an array of email addresses.
      *
      * When an array is supplied, each element is validated individually, and the
