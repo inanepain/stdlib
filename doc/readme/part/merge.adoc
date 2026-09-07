@@ -19,7 +19,7 @@ both PHP arrays and `ArrayAccess`/`Iterator` implementations.
 
 `MergeMethod` controls how keys are handled during a merge:
 
-- `AddOnly` — only add keys that do not exist on the target; existing keys are left unchanged.
+- `AddOnly` — only add keys that don’t exist on the target; existing keys are left unchanged.
 - `UpdateOnly` (default) — only update keys that already exist on the target; new keys are ignored.
 - `AddAndUpdate` — add missing keys and update existing keys (full overlay/recursive replace).
 
@@ -32,13 +32,14 @@ Namespace: `Inane\Stdlib\Merge`
 
 Core static method:
 
-```php
+[source,php]
+----
 Iterator|array MergeTrait::mergeOptionsWithMethod(
     MergeMethod $mergeMethod,
     Iterator|array $target,
     Iterator|array ...$sources
 ): Iterator|array
-```
+----
 
 Convenience helpers (static):
 
@@ -48,18 +49,19 @@ Convenience helpers (static):
 
 Instance method (via `Merge` or any class using the trait):
 
-```php
+[source,php]
+----
 public MergeMethod $mergeMethod = MergeMethod::UpdateOnly; // default
 
 public function mergeOptions(Iterator|array $target, Iterator|array ...$sources): Iterator|array
-```
+----
 
 == Usage
 
 === Static helpers
 
-```php
-<?php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
 use Inane\Stdlib\Merge\Merge;
 
@@ -108,9 +110,9 @@ $source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
 
 $result = $merger->mergeOptions($target, $source);
 // [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
-```
+----
 
-== Behavior details
+== Behaviour details
 
 - The key existence on the target is determined as follows:
   - arrays: `array_key_exists($key, $target)`
@@ -132,15 +134,16 @@ assignments, allowing use with custom option containers.
 If you receive a user‑provided string (e.g. from config), you can map it to a
 `MergeMethod` case using `MergeMethod::tryFromName($name, $ignoreCase = false)`.
 
-```php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeMethod;
 
 $method = MergeMethod::tryFromName('addonly', true) ?? MergeMethod::UpdateOnly;
-```
+----
 
 == JavaScript counterpart
 
-For frontend experiments there is a simple ES module at
+For frontend experiments there’s a simple ES module at
 `public/js/inane/class-lib/MergeOptions.mjs` that mirrors the basic behaviour for merging option objects.
 
 == Tips

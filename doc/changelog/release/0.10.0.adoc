@@ -1,0 +1,20 @@
+= 0.10.0 (2026 Sep 07)
+:revnumber: 0.10.0
+:revdate: 2026-09-07
+
+* update: `CastAndAssignTrait` uses `VerifyValue`.
+* update: `Str` general code structure and convention improvements.
+* update: Renamed some classes.
+* new: Added PHPUnit tests.
+* update: Updated PHPUnit tests.
+* new: `OutputInterface` and `AbstractOutput` support passing `$inputDate` to `ouput` method making it more reusable.
+* new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.
+* new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they’re the same or their differences.
+* update: `EnumBitmaskTrait` most static methods that took an `enum` can now also take an `int`.
+* update: Add `FuzzyTime` to the README.
+* update: `FuzzyTimeTrait` add to unit tests.
+* update: `Options::get` added parameter `saveDefault` to store the default value if no value is found.
+* fix: `Options::merge` improved handling of *lists* (numerically indexed arrays).
+* update: `VerifyValue` moved into `Value` namespace.
+* update: `VerifyValue` got a few more methods.
+* new: `SanitiseValue` class added to compliment `VerifyValue`.

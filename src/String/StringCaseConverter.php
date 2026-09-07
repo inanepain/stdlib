@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace Inane\Stdlib\String;
 
 use Inane\Http\Exception\InvalidArgumentException;
+
 use function lcfirst;
 use function preg_replace;
 use function preg_replace_callback;
@@ -46,6 +47,52 @@ use function ucfirst;
  */
 class StringCaseConverter {
     /**
+     * Converts a string from its current case format to camelCase.
+     *
+     * @param string $string The input string to be converted.
+     *
+     * @return string The converted string in camelCase format.
+     */
+    public static function toCamel(string $string): string {
+        $from = static::caseFromString($string);
+
+        if ($from === Capitalisation::snake_case) {
+            return static::snakeToCamel($string);
+        }
+
+        try {
+            return static::convert($string, $from, Capitalisation::camelCase);
+        } catch (InvalidArgumentException $e) {
+            return $string;
+        }
+    }
+
+    /**
+     * Converts a given string to snake_case format.
+     *
+     * @param string $string The input string to be converted.
+     *
+     * @return string The converted string in snake_case format.
+     */
+    public static function toSnake(string $string): string {
+        $from = static::caseFromString($string);
+
+        if ($from === Capitalisation::camelCase) {
+            return static::camelToSnake($string);
+        }
+
+        if ($from === Capitalisation::PascalCase) {
+            return static::pascalToSnake($string);
+        }
+
+        try {
+            return static::convert($string, $from, Capitalisation::snake_case);
+        } catch (InvalidArgumentException $e) {
+            return $string;
+        }
+    }
+
+    /**
      * Converts a kebab-case string to camelCase.
      *
      * @param string $string The input string in kebab-case format.
@@ -57,6 +104,22 @@ class StringCaseConverter {
         return preg_replace_callback('/-([a-z])/', static function ($matches) {
             return strtoupper($matches[1]);
         }, $string);
+    }
+
+    /**
+     * Converts a snake_case string to camelCase or PascalCase.
+     *
+     * @param string $string The input string in snake_case format.
+     * @param bool $pascal If true, converts to PascalCase; otherwise, converts to camelCase. Default is false.
+     *
+     * @return string The converted string in camelCase or PascalCase.
+     */
+    public static function snakeToCamel(string $string, bool $pascal = false): string {
+        $string = strtolower(trim($string, '_'));
+        $camel = preg_replace_callback('/_([a-z])/', static function ($matches) {
+            return strtoupper($matches[1]);
+        }, $string);
+        return $pascal ? ucfirst($camel) : $camel;
     }
 
     /**
@@ -79,7 +142,10 @@ class StringCaseConverter {
      * @return string The converted string in kebab-case format.
      */
     public static function pascalToKebab(string $string): string {
-        return strtolower(preg_replace('/([A-Z])/', '-$1', lcfirst($string)));
+        return $string
+                |> lcfirst(...)
+                |> (fn($x) => preg_replace('/([A-Z])/', '-$1', $x))
+                |> strtolower(...);
     }
 
     /**
@@ -94,19 +160,14 @@ class StringCaseConverter {
     }
 
     /**
-     * Converts a snake_case string to camelCase or PascalCase.
+     * Converts a snake_case string to PascalCase.
      *
      * @param string $string The input string in snake_case format.
-     * @param bool $pascal If true, converts to PascalCase; otherwise, converts to camelCase. Default is false.
      *
-     * @return string The converted string in camelCase or PascalCase.
+     * @return string The converted string in PascalCase format.
      */
-    public static function snakeToCamel(string $string, bool $pascal = false): string {
-        $string = strtolower(trim($string, '_'));
-        $camel = preg_replace_callback('/_([a-z])/', static function ($matches) {
-            return strtoupper($matches[1]);
-        }, $string);
-        return $pascal ? ucfirst($camel) : $camel;
+    public static function snakeToPascal(string $string): string {
+        return ucfirst(self::snakeToCamel($string));
     }
 
     /**
@@ -129,18 +190,10 @@ class StringCaseConverter {
      * @return string The converted string in snake_case format.
      */
     public static function pascalToSnake(string $string): string {
-        return strtolower(preg_replace('/([A-Z])/', '_$1', lcfirst($string)));
-    }
-
-    /**
-     * Converts a snake_case string to PascalCase.
-     *
-     * @param string $string The input string in snake_case format.
-     *
-     * @return string The converted string in PascalCase format.
-     */
-    public static function snakeToPascal(string $string): string {
-        return ucfirst(self::snakeToCamel($string));
+        return $string
+                |> lcfirst(...)
+                |> (fn($x) => preg_replace('/([A-Z])/', '_$1', $x))
+                |> strtolower(...);
     }
 
     /**
@@ -180,7 +233,7 @@ class StringCaseConverter {
                 break;
         }
 
-        throw new InvalidArgumentException("Unsupported conversion: {$from->name} -> {$to->name}");
+        throw new InvalidArgumentException("Unsupported conversion: $from->name -> $to->name");
     }
 
     /**

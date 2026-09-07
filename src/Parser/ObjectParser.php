@@ -59,8 +59,8 @@ class ObjectParser {
      * @see \Inane\Dumper\Dumper::$useVarExport
      */
     public int $parseDepth {
-        get => isset($this->parseDepth) ? $this->parseDepth : static::$depth;
-        set(int $value) {
+        get => $this->parseDepth ?? static::$depth;
+        set {
             $this->parseDepth = $value;
         }
     }
@@ -91,8 +91,8 @@ class ObjectParser {
             $keys = array_keys($array);
             $spaces = str_repeat(' ', $level * 4);
             $output .= '[';
-            foreach ($keys as $key) $output .= PHP_EOL . "{$spaces}    [$key] => " . $this->parseVariable($array[$key], $level + 1). ',';
-            $output .= PHP_EOL . "{$spaces}]";
+            foreach ($keys as $key) $output .= PHP_EOL . "$spaces    [$key] => " . $this->parseVariable($array[$key], $level + 1). ',';
+            $output .= PHP_EOL . "$spaces]";
         }
 
         return $output;
@@ -111,8 +111,8 @@ class ObjectParser {
         $output = '';
         $className = get_class($object);
 
-        if (($id = array_search($object, $cache, true)) !== false) $output .= "{$className}#" . (++$id) . '(...)';
-        else if ($this->parseDepth <= $level) $output .= "{$className}(...)";
+        if (($id = array_search($object, $cache, true)) !== false) $output .= "$className#" . (++$id) . '(...)';
+        else if ($this->parseDepth <= $level) $output .= "$className(...)";
         else {
             $id = array_push($cache, $object);
             $members = (array)$object;
@@ -121,10 +121,10 @@ class ObjectParser {
             $output .= "$className#$id {";
 
             foreach ($keys as $key) {
-                $keyDisplay = strtr(trim("$key"), ["\0" => ':']);
-                $output .= PHP_EOL . "{$spaces}    [$keyDisplay] => " . $this->parseVariable($members[$key], $level + 1, $cache);
+                $keyDisplay = strtr(trim((string)$key), ["\0" => ':']);
+                $output .= PHP_EOL . "$spaces    [$keyDisplay] => " . $this->parseVariable($members[$key], $level + 1, $cache);
             }
-            $output .= PHP_EOL . "{$spaces}}";
+            $output .= PHP_EOL . "$spaces}";
         }
         return $output;
     }
@@ -142,7 +142,7 @@ class ObjectParser {
     private function parseVariable(mixed $var, int $level = 0, array &$cache = []): string {
         return match (gettype($var)) {
             'boolean' => $var ? 'true' : 'false',
-            'integer', 'double' => "$var",
+            'integer', 'double' => (string)$var,
             'string' => "'".str_replace("'", "\'", $var)."'",
             'resource' => '{resource}',
             'NULL' => 'null',

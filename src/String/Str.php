@@ -32,6 +32,7 @@ use Inane\Stdlib\{
     Object\MagicPropertyTrait};
 use Random\RandomException;
 use Stringable;
+
 use function array_merge;
 use function basename;
 use function count;
@@ -54,6 +55,7 @@ use function substr_replace;
 use function trim;
 use function ucwords;
 use function uniqid;
+
 use const null;
 use const STR_PAD_RIGHT;
 
@@ -61,8 +63,8 @@ use const STR_PAD_RIGHT;
  * Str
  *
  * @version 0.7.2
- * @property-read public length
- * @property public      string
+ * @property-read int $length
+ * @property string   $string
  *
  */
 class Str implements Stringable {
@@ -72,6 +74,7 @@ class Str implements Stringable {
      * Capitalisation
      */
     protected Capitalisation $case = Capitalisation::Ignore;
+
     /**
      * Storage buffer
      *
@@ -79,7 +82,8 @@ class Str implements Stringable {
      *
      * @var ArrayObject
      */
-    protected static $buffer;
+    protected static ArrayObject $buffer;
+
     /**
      * The id used to access the buffer.
      */
@@ -94,8 +98,8 @@ class Str implements Stringable {
         /**
          * Represents a string value.
          *
-         * @property protected string $value
-         */ protected string $value = ''
+         * @property-protected string $value
+         */ protected string $value = '',
     ) {}
 
     /**
@@ -141,12 +145,15 @@ class Str implements Stringable {
      *
      * @throws InvalidPropertyException when requested property does not exist
      */
-    public function __get($property) {
-        if (!in_array($property, ['length', 'string'])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: {$property}");
+    public function __get(string $property) {
+        if (!in_array($property, [
+            'length',
+            'string',
+        ])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: $property");
 
         $methods = [
             'length' => 'length',
-            'string' => 'getString'
+            'string' => 'getString',
         ];
 
         return $this->{$methods[$property]}();
@@ -162,20 +169,17 @@ class Str implements Stringable {
      *
      * @throws InvalidPropertyException|ParseMethodException when requested property does not exist
      */
-    public function __set($property, $value) {
-        if (!in_array($property, ['string'])) throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: {$property}");
+    public function __set(string $property, mixed $value) {
+        if ($property !== 'string') throw new InvalidPropertyException("Invalid Property:\n\tStr has no property: $property");
 
         $methods = [
             'length' => 'length',
-            'string' => 'setString'
+            'string' => 'setString',
         ];
 
         $this->{$methods[$property]}($value);
 
         return $this;
-
-        $method = $this->parseMethodName($property, 'set');
-        $this->$method($value);
     }
 
     /**
@@ -196,7 +200,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function baseName(string $suffix = ''): Str {
+    public function baseName(string $suffix = ''): self {
         $this->value = basename($this->value, $suffix);
 
         return $this;
@@ -356,8 +360,8 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function prepend(string $str): Str {
-        $this->value = "{$str}{$this->value}";
+    public function prepend(string $str): self {
+        $this->value = "$str$this->value";
 
         return $this;
     }
@@ -370,7 +374,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function replaceLast(string $search, string $replace): Str {
+    public function replaceLast(string $search, string $replace): self {
         $this->value = self::str_replace_last($search, $replace, $this->value);
 
         return $this;
@@ -386,7 +390,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function replace(string $search, string $replace, ?int $limit = null): Str {
+    public function replace(string $search, string $replace, ?int $limit = null): self {
         $this->value = Str::str_replace($search, $replace, $this->value, $limit);
 
         return $this;
@@ -399,7 +403,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function setString(string $string): Str {
+    public function setString(string $string): self {
         $this->value = $string;
 
         return $this;
@@ -416,7 +420,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function pad(int $length, string $padString = ' ', int $type = STR_PAD_RIGHT): Str {
+    public function pad(int $length, string $padString = ' ', int $type = STR_PAD_RIGHT): self {
         $this->value = str_pad($this->value, $length, $padString, $type);
 
         return $this;
@@ -531,7 +535,7 @@ class Str implements Stringable {
      * @return Str
      * @throws RandomException
      */
-    public static function stringWithRandomCharacters(int $length = 6): Str {
+    public static function stringWithRandomCharacters(int $length = 6): self {
         $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
         $max = count($characters) - 1;
 
@@ -552,7 +556,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function toCase(Capitalisation $case, bool $removeSpaces = false): Str {
+    public function toCase(Capitalisation $case, bool $removeSpaces = false): self {
         $this->value = static::str_to_case($this->value, $case, $removeSpaces);
         $this->case = $case;
 
@@ -566,7 +570,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function trim(string $chars = ' ,:-./\\`";'): Str {
+    public function trim(string $chars = ' ,:-./\\`";'): self {
         $this->value = trim($this->value, $chars);
 
         return $this;
@@ -580,7 +584,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public function highlight(?Highlight $highlight = null, bool $removeOpenTag = true): Str {
+    public function highlight(?Highlight $highlight = null, bool $removeOpenTag = true): self {
         if ($highlight === null) $highlight = Highlight::DEFAULT;
 
         $highlight->apply();
@@ -596,7 +600,8 @@ class Str implements Stringable {
         $text = trim($text);                                                                                                                            // remove line breaks
         $text = preg_replace("|\\</span\\>\$|", '', $text, 1);                                                                                          // remove suffix 2
         $text = trim($text);                                                                                                                            // remove line breaks
-        $this->value = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4", $text);  // remove custom added "<?php "
+        $this->value = preg_replace("|^(\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>)(&lt;\\?php&nbsp;)(.*?)(\\</span\\>)|", "\$1\$3\$4",
+            $text);                                                                                                                                     // remove custom added "<?php "
 
         return $this;
     }
@@ -609,7 +614,7 @@ class Str implements Stringable {
      *
      * @return Str
      */
-    public static function highlightText(string $text, ?Highlight $highlight = null): Str {
+    public static function highlightText(string $text, ?Highlight $highlight = null): self {
         if (is_null($highlight)) $highlight = Highlight::DEFAULT;
 
         return new static($text)->highlight($highlight);

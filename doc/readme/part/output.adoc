@@ -11,6 +11,7 @@ The Output tools are located in the `Inane\Stdlib\Output` namespace.
 - `OutputInterface` — defines the `output()` method.
 - `AbstractOutput` — base implementation handling input data storage and lazy-processing.
 - `ArrayOutput` — converts input to a PHP array (supports JSON, Serialized, Objects).
+- `ArrayStringShortSyntaxOutput` — converts input to a PHP short array syntax string.
 - `JsonStringOutput` — converts input to a JSON string.
 - `SerializedOutput` — converts input to a PHP serialized string.
 - `XmlOutput` — converts input to a `SimpleXMLElement` object.
@@ -89,10 +90,31 @@ $output = new SerializedOutput(['a', 'b', 'c']);
 echo $output->output(); // a:3:{i:0;s:1:"a";i:1;s:1:"b";i:2;s:1:"c";}
 ----
 
+=== ArrayStringShortSyntaxOutput
+
+Converts input data into a PHP short array syntax string (`[]`). It first uses
+`ArrayOutput` to normalise input into an array, then transforms the result to
+short syntax.
+
+[source,php]
+----
+use Inane\Stdlib\Output\ArrayStringShortSyntaxOutput;
+
+$data = ['name' => 'Ada', 'count' => 2];
+$output = new ArrayStringShortSyntaxOutput($data);
+echo $output->output();
+/*
+[
+  'name' => 'Ada',
+  'count' => 2,
+]
+*/
+----
+
 === XmlOutput
 
 Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
-to normalize the input before conversion.
+to normalise the input before conversion.
 
 [source,php]
 ----
@@ -129,12 +151,101 @@ To create a new output format, extend `AbstractOutput` and implement the `output
 use Inane\Stdlib\Output\AbstractOutput;
 
 class MyCustomOutput extends AbstractOutput {
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        // Store input and clear cache if required.
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             // ... custom conversion logic ...
+            // Store output in cache.
             $this->outputData = "processed data";
         }
         return $this->outputData;
     }
 }
+----
+
+== Example
+
+A more complete example, using an `Output` class as a property.
+
+[source,php]
+----
+$opt = new \Inane\Stdlib\Options([
+    'one' => $data,
+    'two' => [
+        'two' => 2,
+        'three' => [
+            'four' => 'five',
+        ],
+    ],
+]);
+
+final class SomeThing {
+    /**
+     * Handles the output data and processes it appropriately.
+     *
+     * @param mixed $outputHandler The handler responsible for managing and processing the output.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If the output handler encounters a processing error.
+     */
+    private \Inane\Stdlib\Output\OutputInterface $outputHandler;
+
+    /**
+     * Initializes the class with the given input data.
+     *
+     * @param mixed $inputData The data to be processed by the class.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the input data is invalid.
+     */
+    public function __construct(protected mixed $inputData) {}
+
+    /**
+     * Sets the output handler to be used.
+     *
+     * @param \Inane\Stdlib\Output\OutputInterface $outputHandler The output handler to set.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the provided output handler is invalid.
+     */
+    public function setOutput(\Inane\Stdlib\Output\OutputInterface $outputHandler): void {
+        $this->outputHandler = $outputHandler;
+    }
+
+    /**
+     * Processes the input data and returns the output.
+     *
+     * @return mixed The result of processing the input data.
+     *
+     * @throws \Exception If an error occurs during output processing.
+     */
+    public function output(): mixed {
+        return $this->outputHandler->output($this->inputData);
+    }
+}
+
+
+echo "\nREUSABLE:\n";
+$thing = new SomeThing($opt);
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlStringOutput());
+echo "\nXMLString:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlOutput());
+echo "\nXML:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\ArrayOutput());
+echo "\nARRAY:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\JsonStringOutput());
+echo "\nJSON:\n";
+var_dump($thing->output());
+
 ----

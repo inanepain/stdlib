@@ -23,10 +23,14 @@
 
 declare(strict_types = 1);
 
-namespace Inane\Stdlib;
+namespace Inane\Stdlib\Value;
 
 use function array_combine;
 use function array_intersect_key;
+use function ctype_alnum;
+use function ctype_alpha;
+use function ctype_digit;
+use function ctype_xdigit;
 use function filter_var;
 use function implode;
 use function is_string;
@@ -73,8 +77,8 @@ class VerifyValue {
      * `$min`, or `$max` is provided; otherwise returns a bare flags array.
      *
      * @param mixed    $default The fallback value returned when validation fails. Pass `false` to omit.
-     * @param int|null $min     Optional minimum range value (inclusive).
-     * @param int|null $max     Optional maximum range value (inclusive).
+     * @param null|int $min     Optional minimum range value (inclusive).
+     * @param null|int $max     Optional maximum range value (inclusive).
      *
      * @return array Filter options array suitable for passing to `filter_var`.
      */
@@ -82,9 +86,9 @@ class VerifyValue {
         $options = [];
 
         // Only include keys that were explicitly provided
-        if ($default !== false) $options['default']   = $default;
-        if ($min !== null)      $options['min_range'] = $min;
-        if ($max !== null)      $options['max_range'] = $max;
+        if ($default !== false) $options['default'] = $default;
+        if ($min !== null) $options['min_range'] = $min;
+        if ($max !== null) $options['max_range'] = $max;
 
         if (!empty($options)) return [
             'options' => $options,
@@ -103,13 +107,65 @@ class VerifyValue {
      * @param mixed $value         The value to validate and convert to boolean.
      * @param bool  $nullOnFailure When `true`, returns `null` on failure instead of `false`.
      *
-     * @return bool|null The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
+     * @return null|bool The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
      */
     public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?bool {
         // Map the null-on-failure preference to the appropriate filter flag
         $onFailure = $nullOnFailure ? FILTER_NULL_ON_FAILURE : 0;
 
         return filter_var($value, FILTER_VALIDATE_BOOLEAN, $onFailure);
+    }
+
+    /**
+     * Validates an alphabetic string.
+     *
+     * @param string $value The value to validate.
+     *
+     * @return false|string The original value when alphabetic; otherwise, `false`.
+     */
+    public static function alphaVerify(string $value): false|string {
+        if (ctype_alpha($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates a value containing only decimal digits.
+     *
+     * @param mixed $value The value to validate.
+     *
+     * @return mixed The original value when it contains only decimal digits; otherwise, `false`.
+     */
+    public static function digitVerify(mixed $value): mixed {
+        if (ctype_digit($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates a value containing only hexadecimal digits.
+     *
+     * @param mixed $value The value to validate.
+     *
+     * @return mixed The original value when it contains only hexadecimal digits; otherwise, `false`.
+     */
+    public static function xdigitVerify(mixed $value): mixed {
+        if (ctype_xdigit($value)) return $value;
+
+        return false;
+    }
+
+    /**
+     * Validates an alphanumeric string.
+     *
+     * @param string $value The value to validate.
+     *
+     * @return false|string The original value when alphanumeric; otherwise, `false`.
+     */
+    public static function alphaNumericVerify(string $value): false|string {
+        if (ctype_alnum($value)) return $value;
+
+        return false;
     }
 
     /**
@@ -141,19 +197,19 @@ class VerifyValue {
      *
      * @param mixed    $int        The value to validate as an integer.
      * @param mixed    $default    Fallback value returned on validation failure. Pass `false` to omit.
-     * @param int|null $min        Optional minimum allowed value (inclusive).
-     * @param int|null $max        Optional maximum allowed value (inclusive).
+     * @param null|int $min        Optional minimum allowed value (inclusive).
+     * @param null|int $max        Optional maximum allowed value (inclusive).
      * @param bool     $allowOctal When `true`, octal notation is accepted.
      * @param bool     $allowHex   When `true`, hexadecimal notation is accepted.
      *
-     * @return bool `true` when the value passes integer validation, `false` otherwise.
+     * @return mixed The validated integer, the `$default` fallback, or `false` when validation fails.
      */
-    public static function integerVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $allowOctal = false, bool $allowHex = false): bool {
+    public static function integerVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $allowOctal = false, bool $allowHex = false): mixed {
         $opts = static::buildOptions($default, $min, $max);
 
         // Conditionally enable alternative numeric base flags
         if ($allowOctal) $opts['flags'] |= FILTER_FLAG_ALLOW_OCTAL;
-        if ($allowHex)   $opts['flags'] |= FILTER_FLAG_ALLOW_HEX;
+        if ($allowHex) $opts['flags'] |= FILTER_FLAG_ALLOW_HEX;
 
         return filter_var($int, FILTER_VALIDATE_INT, $opts);
     }
@@ -175,9 +231,9 @@ class VerifyValue {
      * @param mixed $int     The value to validate as an integer.
      * @param array $options Named validation options (see above).
      *
-     * @return bool `true` when the value passes integer validation, `false` otherwise.
+     * @return mixed The validated integer, the `default` fallback, or `false` when validation fails.
      */
-    public static function intVerify(mixed $int, array $options = []): bool {
+    public static function intVerify(mixed $int, array $options = []): mixed {
         // Strip any unrecognised keys before forwarding to integerVerify
         $opts = array_intersect_key($options, [
             'default'    => null,
@@ -187,7 +243,7 @@ class VerifyValue {
             'allowHex'   => false,
         ]);
 
-        return static::integerVerify($int, FILTER_VALIDATE_INT, ...$opts);
+        return static::integerVerify($int, ...$opts);
     }
 
     /**
@@ -195,13 +251,13 @@ class VerifyValue {
      *
      * @param mixed    $int         The value to validate as a float.
      * @param mixed    $default     Fallback value returned on validation failure. Pass `false` to omit.
-     * @param int|null $min         Optional minimum allowed value (inclusive).
-     * @param int|null $max         Optional maximum allowed value (inclusive).
+     * @param null|int $min         Optional minimum allowed value (inclusive).
+     * @param null|int $max         Optional maximum allowed value (inclusive).
      * @param bool     $acceptFloat When `true`, values containing a thousand separator (`,`) are accepted.
      *
-     * @return bool `true` when the value passes float validation, `false` otherwise.
+     * @return mixed The validated float, the `$default` fallback, or `false` when validation fails.
      */
-    public static function floatVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $acceptFloat = false): bool {
+    public static function floatVerify(mixed $int, mixed $default = false, ?int $min = null, ?int $max = null, bool $acceptFloat = false): mixed {
         $opts = static::buildOptions($default, $min, $max);
 
         // Allow thousand-separator notation when requested (e.g. "1,234.56")
@@ -218,9 +274,9 @@ class VerifyValue {
      *
      * @param mixed       $value   The value to validate.
      * @param string      $pattern A valid PCRE regular expression (including delimiters).
-     * @param string|null $default Optional fallback string returned when validation fails.
+     * @param null|string $default Optional fallback string returned when validation fails.
      *
-     * @return string|null The matched value, the default fallback, or `null` on failure.
+     * @return null|string The matched value, the default fallback, or `null` on failure.
      */
     public static function regexVerify(mixed $value, string $pattern, ?string $default = null): ?string {
         $options = ['regexp' => $pattern,];
@@ -239,7 +295,7 @@ class VerifyValue {
      * @param mixed $value    The value to validate as a domain name.
      * @param bool  $hostname When `true`, applies stricter hostname validation rules (`FILTER_FLAG_HOSTNAME`).
      *
-     * @return string|null The validated domain string, or `null` if validation fails.
+     * @return null|string The validated domain string, or `null` if validation fails.
      */
     public static function domainVerify(mixed $value, bool $hostname = false): ?string {
         $flags = 0;
@@ -260,14 +316,14 @@ class VerifyValue {
      * remaining version. When both are `false`, the filter still runs, but no
      * version flag is set, which may yield unexpected results.
      *
-     * @param mixed $value       The value to validate as an IP address.
-     * @param bool  $allowV4     Accept IPv4 addresses (default `true`).
-     * @param bool  $allowV6     Accept IPv6 addresses (default `true`).
-     * @param bool  $denyPrivate Reject private-range addresses (e.g. `192.168.x.x`).
+     * @param mixed $value        The value to validate as an IP address.
+     * @param bool  $allowV4      Accept IPv4 addresses (default `true`).
+     * @param bool  $allowV6      Accept IPv6 addresses (default `true`).
+     * @param bool  $denyPrivate  Reject private-range addresses (e.g. `192.168.x.x`).
      * @param bool  $denyReserved Reject reserved-range addresses (e.g. `0.0.0.0`).
-     * @param bool  $globalOnly  Accept only globally routable addresses.
+     * @param bool  $globalOnly   Accept only globally routable addresses.
      *
-     * @return string|null The validated IP address string, or `null` if validation fails.
+     * @return null|string The validated IP address string, or `null` if validation fails.
      */
     public static function ipVerify(mixed $value, bool $allowV4 = true, bool $allowV6 = true, bool $denyPrivate = false, bool $denyReserved = false, bool $globalOnly = false,
     ): ?string {
@@ -279,12 +335,12 @@ class VerifyValue {
         } elseif ($allowV6 && !$allowV4) {
             $flags |= FILTER_FLAG_IPV6;
         }
-        // If both are true → no version flag (accept both); if both false → undefined behaviour
+        // If both are true → no version flag, accept both; if both false → undefined behaviour
 
         // Range policies — each flag independently restricts the accepted address space
-        if ($denyPrivate)  $flags |= FILTER_FLAG_NO_PRIV_RANGE;
+        if ($denyPrivate) $flags |= FILTER_FLAG_NO_PRIV_RANGE;
         if ($denyReserved) $flags |= FILTER_FLAG_NO_RES_RANGE;
-        if ($globalOnly)   $flags |= FILTER_FLAG_GLOBAL_RANGE;
+        if ($globalOnly) $flags |= FILTER_FLAG_GLOBAL_RANGE;
 
         $result = filter_var($value, FILTER_VALIDATE_IP, $flags);
 
@@ -295,23 +351,23 @@ class VerifyValue {
      * Validates a MAC address and optionally normalises its format.
      *
      * PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as
-     * separators. When `$normalize` is `true` the validated address is stripped
+     * separators. When `$normalise` is `true`, the validated address is stripped
      * of its original separators and rebuilt using `$separator`.
      *
      * @param mixed  $value     The value to validate as a MAC address.
-     * @param bool   $normalize When `true`, the returned address is normalised to a consistent separator.
+     * @param bool   $normalise When `true`, the returned address is normalised to a consistent separator.
      * @param string $separator The separator character used when normalising (default `:`).
      *
-     * @return string|null The validated (and optionally normalised) MAC address, or `null` if validation fails.
+     * @return null|string The validated (and optionally normalised) MAC address, or `null` if validation fails.
      */
-    public static function macVerify(mixed $value, bool $normalize = false, string $separator = ':'): ?string {
+    public static function macVerify(mixed $value, bool $normalise = false, string $separator = ':'): ?string {
         $result = filter_var($value, FILTER_VALIDATE_MAC);
 
-        // Return null immediately when the value is not a valid MAC address
+        // Return null immediately when the value isn't a valid MAC address
         if ($result === false) return null;
 
-        // Return the raw validated value when normalisation is not requested
-        if (!$normalize) return $result;
+        // Return the raw validated value when normalisation isn't requested
+        if (!$normalise) return $result;
 
         // Normalise: strip all separator characters and rebuild with the chosen separator
         $hex = preg_replace('/[^0-9a-f]/i', '', $result);
@@ -319,7 +375,7 @@ class VerifyValue {
         // Defensive guard — a valid MAC must yield exactly 12 hex characters
         if (strlen($hex) !== 12) return null;
 
-        $hex    = strtolower($hex);
+        $hex = strtolower($hex);
         $chunks = str_split($hex, 2);
 
         return implode($separator, $chunks);

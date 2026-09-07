@@ -44,7 +44,7 @@ use const null;
 /**
  * Array Function Toolkit: Array object that handles an assortment of php array functions in an OO manner.
  *
- * AFT attempts to create a OO array with the `array_*` functions as methods.
+ * AFT attempts to create an OO array with the `array_*` functions as methods.
  * The various functions differ, and AFT uses rule groups to handle these differences.
  *
  * This is more for shits and giggles, like many of my classes, than any real use case.

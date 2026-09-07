@@ -26,6 +26,10 @@ namespace Inane\Stdlib\Converters;
 
 use Iterator;
 use Traversable;
+
+use function is_object;
+use function method_exists;
+
 use const true;
 
 /**
@@ -48,6 +52,7 @@ trait TraversableToArray {
     protected static function iteratorToArrayDeep(Traversable $iterator, bool $use_keys = true): array {
         $array = [];
         foreach ($iterator as $key => $value) {
+            if (is_object($value) && method_exists($value, 'toArray')) $value = $value->toArray();
             if ($value instanceof Iterator) $value = static::iteratorToArrayDeep($value, $use_keys);
 
             if ($use_keys) $array[$key] = $value;

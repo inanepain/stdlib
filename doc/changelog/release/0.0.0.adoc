@@ -1,16 +1,5 @@
-= 0.9.0-dev (2026 Xxx xx)
-:revnumber: 0.9.0-dev
-:revdate: 2026-XX-XX
+= 0.11.0-dev (2026 Xxx xx)
+:revnumber: 0.11.0
+:revdate: 2026-xx-xx
 :revremark: -dev
 :version-label: Unconfirmed
-
-* update: `JSONable` got `JsonSerializable`.
-* new: `VerifyValue` - wrapper around `filter_var`.
-* new: `ArrayToCodeTrait` - export an array as its code.
-* new: `Merge` and related classes for customisable merging.
-* new: `AbstractOutput` and related classes for use with *Output Strategy*.
-** `ArrayOutput`
-** `JsonStringOutput`
-** `SerializedOutput`
-** `XmlOutput`
-** `XmlStringOutput`

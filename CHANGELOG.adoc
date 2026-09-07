@@ -3,8 +3,8 @@
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities are used throughout the inanepain libraries.
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.8.0
-:revdate: 2026-02-23
+:revnumber: 0.10.0
+:revdate: 2026-09-07
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -18,16 +18,39 @@
 
 :leveloffset: +2
 
-= 0.9.0-dev (2026 Xxx xx)
-:revnumber: 0.9.0-dev
-:revdate: 2026-XX-XX
-:revremark: -dev
-:version-label: Unconfirmed
+= 0.10.0 (2026 Sep 07)
+:revnumber: 0.10.0
+:revdate: 2026-09-07
+
+* update: `CastAndAssignTrait` uses `VerifyValue`.
+* update: `Str` general code structure and convention improvements.
+* update: Renamed some classes.
+* new: Added PHPUnit tests.
+* update: Updated PHPUnit tests.
+* new: `OutputInterface` and `AbstractOutput` support passing `$inputDate` to `ouput` method making it more reusable.
+* new: `ArrayStringShortSyntaxOutput` outputs *PHP* code (short syntax) of an `array`.
+* new: `\Inane\Stdlib\ArrayUtil::compareArrays` compare arrays returns `true` if they’re the same or their differences.
+* update: `EnumBitmaskTrait` most static methods that took an `enum` can now also take an `int`.
+* update: Add `FuzzyTime` to the README.
+* update: `FuzzyTimeTrait` add to unit tests.
+* update: `Options::get` added parameter `saveDefault` to store the default value if no value is found.
+* fix: `Options::merge` improved handling of *lists* (numerically indexed arrays).
+* update: `VerifyValue` moved into `Value` namespace.
+* update: `VerifyValue` got a few more methods.
+* new: `SanitiseValue` class added to compliment `VerifyValue`.
+
+:leveloffset!:
+:leveloffset: +2
+
+= 0.9.0 (2026 May 26)
+:revnumber: 0.9.0
+:revdate: 2026-05-26
 
 * update: `JSONable` got `JsonSerializable`.
 * new: `VerifyValue` - wrapper around `filter_var`.
 * new: `ArrayToCodeTrait` - export an array as its code.
 * new: `Merge` and related classes for customisable merging.
+* new: `EnumBitmaskTrait` using bitmask with an enum.
 * new: `AbstractOutput` and related classes for use with *Output Strategy*.
 ** `ArrayOutput`
 ** `JsonStringOutput`

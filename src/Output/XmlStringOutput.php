@@ -26,8 +26,20 @@ namespace Inane\Stdlib\Output;
 
 /**
  * XmlStringOutput
+ *
+ * An output handler that converts input data to XML format and returns it as a string.
+ *
+ * @package Inane\Stdlib\Output
+ * @author  Philip Michael Raab<philip@cathedral.co.za>
  */
 class XmlStringOutput extends AbstractOutput {
+    /**
+     * Checks if a string is valid XML.
+     *
+     * @param string $string The string to check for XML validity.
+     *
+     * @return bool True if the string is valid XML, false otherwise.
+     */
     protected static function isXmlString(string $string): bool {
         $string = trim($string);
 
@@ -43,11 +55,17 @@ class XmlStringOutput extends AbstractOutput {
     }
 
     /**
-     * @inheritDoc
+     * Converts the input data to XML format and returns it as a string.
+     *
+     * @param mixed $inputData The data to convert.
+     *
+     * @return string The input data converted to XML format.
      */
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
-            $xo = new \Inane\Stdlib\Output\XmlOutput($this->inputData);
+            $xo = new XmlOutput($this->inputData);
             $this->outputData = $xo->output()->asXML();
         }
 

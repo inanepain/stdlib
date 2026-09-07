@@ -1,12 +1,13 @@
 = inanepain/stdlib image:./icon.png[title=inanepain/stdlib,25]
+// tag::tagConfig[]
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
 :homepage: https://gitgithub.com/inanepain/stdlib
-:revnumber: 0.8.0
-:revdate: 2026-02-23
+:revnumber: 0.10.0
+:revdate: 2026-09-07
 :experimental:
 :hide-uri-scheme:
 :icons: font
@@ -18,6 +19,7 @@
 :pkg-vendor: inanepain
 :pkg-name: stdlib
 :pkg-id: {pkg-vendor}/{pkg-name}
+// end::tagConfig[]
 
 == image:./icon.png[title={pkg-id},25] {pkg-id}
 
@@ -43,6 +45,109 @@ composer require {pkg-id}
 
 :leveloffset: +1
 
+= Enum Bitmask
+
+This section documents the `BitmaskEnumTrait` used to add bitmask (flags) behaviour to backed `enum`s.
+
+== Overview
+
+`BitmaskEnumTrait` provides a concise API for working with integer bitmasks on PHP 8.5+ backed enums. It enables:
+
+- Combining multiple enum cases into a single integer mask
+- Checking if any or all cases are set in a mask
+- Testing for and modifying individual flags (both statically and via instance helpers)
+- Listing the set enum cases from a mask
+
+Trait location:
+
+- Namespace: `Inane\Stdlib\Bitmask`
+- File: `lib/inanepain/stdlib/src/Bitmask/EnumBitmaskTrait.php`
+
+== Requirements and conventions
+
+- Use on backed enums with `int` values only.
+- Each enum case should represent a single bit: use powers of two (e.g. `1 << 0`, `1 << 1`, `1 << 2`, …).
+- Masks are plain integers (`int`).
+
+== API
+
+Static helpers on the enum using the trait:
+
+- `parseBitmask(mixed $mask): int` — Normalises arbitrary input into an `int` mask (null-safe, defaults to `0`).
+- `combine(self ...$flags): int` — ORs cases to a single mask.
+- `hasAny(int $mask): bool` — True if any defined case is present in the mask.
+- `hasAll(int $mask): bool` — True if all defined cases are present in the mask.
+- `has(int $mask, self $flag): bool` — True if the given case is present in the mask.
+- `add(int $mask, self $flag): int` — Returns a mask with the case added.
+- `remove(int $mask, self $flag): int` — Returns a mask with the case removed.
+- `list(int $mask): array<self>` — Returns the enum cases present in the mask.
+
+Instance helpers in an enum case:
+
+- `in(int $mask): bool` — True if this case is present in the mask.
+- `addTo(int $mask): int` — Returns a mask with this case added.
+- `removeFrom(int $mask): int` — Returns a mask with this case removed.
+
+NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to “any”/“all” checks over `self::cases()`.
+
+== Example: Permission flags
+
+The following example shows a typical permission enum using the trait.
+
+.Example: Permissions
+[source,php]
+----
+<?php
+declare(strict_types=1);
+
+use Inane\Stdlib\Bitmask\BitmaskEnumTrait;
+
+enum Permission: int {
+    use BitmaskEnumTrait;
+
+    case Read    = 1 << 0; // 1
+    case Write   = 1 << 1; // 2
+    case Execute = 1 << 2; // 4
+    case Delete  = 1 << 3; // 8
+}
+
+// Build a mask from multiple flags
+$mask = Permission::combine(Permission::Read, Permission::Write); // 3
+
+// Normalise input
+$mask = Permission::parseBitmask($mask); // still 3
+
+// Check across the enum
+$hasAny = Permission::hasAny($mask); // true (at least one flag set)
+$hasAll = Permission::hasAll($mask); // false (not all flags set)
+
+// Check a specific flag
+$canRead  = Permission::has($mask, Permission::Read); // true
+$canExec  = Permission::has($mask, Permission::Execute); // false
+
+// The same checks via instance helpers
+$canRead2 = Permission::Read->in($mask); // true
+$canExec2 = Permission::Execute->in($mask); // false
+
+// Modify mask
+$mask = Permission::add($mask, Permission::Delete);        // add Delete
+$mask = Permission::Write->removeFrom($mask);               // remove Write
+
+// List set flags
+$set = Permission::list($mask); // [Permission::Read, Permission::Delete]
+----
+
+== Tips
+
+- When defining new flags, always shift from 0 upwards (`1 << n`) and avoid overlapping values.
+- Store masks as integers in persistence layers. The trait makes converting to/from cases trivial.
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
 = Output Strategy
 
 The Output component provides a consistent strategy for converting data into
@@ -56,6 +161,7 @@ The Output tools are located in the `Inane\Stdlib\Output` namespace.
 - `OutputInterface` — defines the `output()` method.
 - `AbstractOutput` — base implementation handling input data storage and lazy-processing.
 - `ArrayOutput` — converts input to a PHP array (supports JSON, Serialized, Objects).
+- `ArrayStringShortSyntaxOutput` — converts input to a PHP short array syntax string.
 - `JsonStringOutput` — converts input to a JSON string.
 - `SerializedOutput` — converts input to a PHP serialized string.
 - `XmlOutput` — converts input to a `SimpleXMLElement` object.
@@ -134,10 +240,31 @@ $output = new SerializedOutput(['a', 'b', 'c']);
 echo $output->output(); // a:3:{i:0;s:1:"a";i:1;s:1:"b";i:2;s:1:"c";}
 ----
 
+=== ArrayStringShortSyntaxOutput
+
+Converts input data into a PHP short array syntax string (`[]`). It first uses
+`ArrayOutput` to normalise input into an array, then transforms the result to
+short syntax.
+
+[source,php]
+----
+use Inane\Stdlib\Output\ArrayStringShortSyntaxOutput;
+
+$data = ['name' => 'Ada', 'count' => 2];
+$output = new ArrayStringShortSyntaxOutput($data);
+echo $output->output();
+/*
+[
+  'name' => 'Ada',
+  'count' => 2,
+]
+*/
+----
+
 === XmlOutput
 
 Converts input data into a `SimpleXMLElement`. It uses `ArrayOutput` internally
-to normalize the input before conversion.
+to normalise the input before conversion.
 
 [source,php]
 ----
@@ -174,14 +301,103 @@ To create a new output format, extend `AbstractOutput` and implement the `output
 use Inane\Stdlib\Output\AbstractOutput;
 
 class MyCustomOutput extends AbstractOutput {
-    public function output(): string {
+    public function output(mixed $inputData = null): string {
+        // Store input and clear cache if required.
+        $this->setInputData($inputData);
+
         if (!isset($this->outputData)) {
             // ... custom conversion logic ...
+            // Store output in cache.
             $this->outputData = "processed data";
         }
         return $this->outputData;
     }
 }
+----
+
+== Example
+
+A more complete example, using an `Output` class as a property.
+
+[source,php]
+----
+$opt = new \Inane\Stdlib\Options([
+    'one' => $data,
+    'two' => [
+        'two' => 2,
+        'three' => [
+            'four' => 'five',
+        ],
+    ],
+]);
+
+final class SomeThing {
+    /**
+     * Handles the output data and processes it appropriately.
+     *
+     * @param mixed $outputHandler The handler responsible for managing and processing the output.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If the output handler encounters a processing error.
+     */
+    private \Inane\Stdlib\Output\OutputInterface $outputHandler;
+
+    /**
+     * Initializes the class with the given input data.
+     *
+     * @param mixed $inputData The data to be processed by the class.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the input data is invalid.
+     */
+    public function __construct(protected mixed $inputData) {}
+
+    /**
+     * Sets the output handler to be used.
+     *
+     * @param \Inane\Stdlib\Output\OutputInterface $outputHandler The output handler to set.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException If the provided output handler is invalid.
+     */
+    public function setOutput(\Inane\Stdlib\Output\OutputInterface $outputHandler): void {
+        $this->outputHandler = $outputHandler;
+    }
+
+    /**
+     * Processes the input data and returns the output.
+     *
+     * @return mixed The result of processing the input data.
+     *
+     * @throws \Exception If an error occurs during output processing.
+     */
+    public function output(): mixed {
+        return $this->outputHandler->output($this->inputData);
+    }
+}
+
+
+echo "\nREUSABLE:\n";
+$thing = new SomeThing($opt);
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlStringOutput());
+echo "\nXMLString:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\XmlOutput());
+echo "\nXML:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\ArrayOutput());
+echo "\nARRAY:\n";
+var_dump($thing->output());
+
+$thing->setOutputHandler(new \Inane\Stdlib\Output\JsonStringOutput());
+echo "\nJSON:\n";
+var_dump($thing->output());
+
 ----
 
 :leveloffset!:
@@ -211,7 +427,7 @@ both PHP arrays and `ArrayAccess`/`Iterator` implementations.
 
 `MergeMethod` controls how keys are handled during a merge:
 
-- `AddOnly` — only add keys that do not exist on the target; existing keys are left unchanged.
+- `AddOnly` — only add keys that don’t exist on the target; existing keys are left unchanged.
 - `UpdateOnly` (default) — only update keys that already exist on the target; new keys are ignored.
 - `AddAndUpdate` — add missing keys and update existing keys (full overlay/recursive replace).
 
@@ -224,13 +440,14 @@ Namespace: `Inane\Stdlib\Merge`
 
 Core static method:
 
-```php
+[source,php]
+----
 Iterator|array MergeTrait::mergeOptionsWithMethod(
     MergeMethod $mergeMethod,
     Iterator|array $target,
     Iterator|array ...$sources
 ): Iterator|array
-```
+----
 
 Convenience helpers (static):
 
@@ -240,18 +457,19 @@ Convenience helpers (static):
 
 Instance method (via `Merge` or any class using the trait):
 
-```php
+[source,php]
+----
 public MergeMethod $mergeMethod = MergeMethod::UpdateOnly; // default
 
 public function mergeOptions(Iterator|array $target, Iterator|array ...$sources): Iterator|array
-```
+----
 
 == Usage
 
 === Static helpers
 
-```php
-<?php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
 use Inane\Stdlib\Merge\Merge;
 
@@ -300,9 +518,9 @@ $source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
 
 $result = $merger->mergeOptions($target, $source);
 // [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
-```
+----
 
-== Behavior details
+== Behaviour details
 
 - The key existence on the target is determined as follows:
   - arrays: `array_key_exists($key, $target)`
@@ -324,15 +542,16 @@ assignments, allowing use with custom option containers.
 If you receive a user‑provided string (e.g. from config), you can map it to a
 `MergeMethod` case using `MergeMethod::tryFromName($name, $ignoreCase = false)`.
 
-```php
+[source,php]
+----
 use Inane\Stdlib\Merge\MergeMethod;
 
 $method = MergeMethod::tryFromName('addonly', true) ?? MergeMethod::UpdateOnly;
-```
+----
 
 == JavaScript counterpart
 
-For frontend experiments there is a simple ES module at
+For frontend experiments there’s a simple ES module at
 `public/js/inane/class-lib/MergeOptions.mjs` that mirrors the basic behaviour for merging option objects.
 
 == Tips
@@ -347,9 +566,15 @@ For frontend experiments there is a simple ES module at
 
 :leveloffset: +1
 
-= VerifyValue
+= Value
 
-Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains, and regex-matched strings.
+Classes that verify or sanitise values. Mostly using `filter_var`.
+
+:leveloffset: +1
+
+= Verify Value
+
+Utility class providing static methods for validating and verifying common value types such as booleans, emails, integers, floats, IP addresses, MAC addresses, domains and regex-matched strings.
 
 All methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults.
 
@@ -381,7 +606,7 @@ public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?b
 |When `true`, returns `null` on failure instead of `false`.
 |===
 
-.Returns: `bool\|null` — The boolean result, or `null` when conversion fails and `$nullOnFailure` is `true`.
+.Returns: `bool\|null` — The boolean result or `null` when conversion fails and `$nullOnFailure` is `true`.
 
 .Example
 [source,php]
@@ -389,6 +614,122 @@ public static function boolVerify(mixed $value, bool $nullOnFailure = false): ?b
 VerifyValue::boolVerify('yes');          // true
 VerifyValue::boolVerify('off');          // false
 VerifyValue::boolVerify('maybe', true);  // null
+----
+
+=== alphaVerify
+
+Validates an alphabetic string.
+
+.Signature
+[source,php]
+----
+public static function alphaVerify(string $value): false|string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string`
+|The value to validate.
+|===
+
+.Returns: `false\|string` — The original value when alphabetic; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::alphaVerify('Hello');     // 'Hello'
+VerifyValue::alphaVerify('Hello123');  // false
+----
+
+=== digitVerify
+
+Validates a value containing only decimal digits.
+
+.Signature
+[source,php]
+----
+public static function digitVerify(mixed $value): mixed
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate.
+|===
+
+.Returns: `mixed` — The original value when it contains only decimal digits; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::digitVerify('12345');  // '12345'
+VerifyValue::digitVerify('12.45');  // false
+----
+
+=== xdigitVerify
+
+Validates a value containing only hexadecimal digits.
+
+.Signature
+[source,php]
+----
+public static function xdigitVerify(mixed $value): mixed
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`mixed`
+|The value to validate.
+|===
+
+.Returns: `mixed` — The original value when it contains only hexadecimal digits; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::xdigitVerify('1A2b3C');  // '1A2b3C'
+VerifyValue::xdigitVerify('0x1A');    // false
+----
+
+=== alphaNumericVerify
+
+Validates an alphanumeric string.
+
+.Signature
+[source,php]
+----
+public static function alphaNumericVerify(string $value): false|string
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string`
+|The value to validate.
+|===
+
+.Returns: `false\|string` — The original value when alphanumeric; otherwise, `false`.
+
+.Example
+[source,php]
+----
+VerifyValue::alphaNumericVerify('abc123');   // 'abc123'
+VerifyValue::alphaNumericVerify('abc 123');  // false
 ----
 
 === emailVerify
@@ -413,7 +754,7 @@ public static function emailVerify(string|array $value): false|string|array
 |A single email address string, or an array of email address strings.
 |===
 
-.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input, or `false` if a single address fails validation.
+.Returns: `false\|string\|array` — The validated email string, an associative array of results for array input or `false` if a single address fails validation.
 
 .Example
 [source,php]
@@ -478,7 +819,7 @@ VerifyValue::integerVerify('0x1A', false, null, null, false, true);  // true
 
 === intVerify
 
-Validates an integer value using a named options array.
+Validates an integer value using an option array.
 
 A convenience wrapper around `integerVerify()` that accepts a named options array instead of individual parameters. Unrecognised keys are silently ignored.
 
@@ -587,7 +928,7 @@ public static function regexVerify(mixed $value, string $pattern, ?string $defau
 |Optional fallback string returned when validation fails.
 |===
 
-.Returns: `string\|null` — The matched value, the default fallback, or `null` on failure.
+.Returns: `string\|null` — The matched value, the default fallback or `null` on failure.
 
 .Example
 [source,php]
@@ -621,7 +962,7 @@ public static function domainVerify(mixed $value, bool $hostname = false): ?stri
 |When `true`, applies stricter hostname validation rules.
 |===
 
-.Returns: `string\|null` — The validated domain string, or `null` if validation fails.
+.Returns: `string\|null` — The validated domain string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -673,7 +1014,7 @@ public static function ipVerify(mixed $value, bool $allowV4 = true, bool $allowV
 |Accept only globally routable addresses.
 |===
 
-.Returns: `string\|null` — The validated IP address string, or `null` if validation fails.
+.Returns: `string\|null` — The validated IP address string or `null` if validation fails.
 
 .Example
 [source,php]
@@ -688,12 +1029,12 @@ VerifyValue::ipVerify('not-an-ip');                           // null
 
 Validates a MAC address and optionally normalises its format.
 
-PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as separators. When `$normalize` is `true` the validated address is stripped of its original separators and rebuilt using `$separator`.
+PHP's `filter_var` accepts colons (`:`), hyphens (`-`), and dots (`.`) as separators. When `$normalise` is `true`, the validated address is stripped of its original separators and rebuilt using `$separator`.
 
 .Signature
 [source,php]
 ----
-public static function macVerify(mixed $value, bool $normalize = false, string $separator = ':'): ?string
+public static function macVerify(mixed $value, bool $normalise = false, string $separator = ':'): ?string
 ----
 
 .Parameters
@@ -705,7 +1046,7 @@ public static function macVerify(mixed $value, bool $normalize = false, string $
 |`mixed`
 |The value to validate as a MAC address.
 
-|`$normalize`
+|`$normalise`
 |`bool`
 |When `true`, the returned address is normalised to a consistent separator.
 
@@ -714,7 +1055,7 @@ public static function macVerify(mixed $value, bool $normalize = false, string $
 |The separator character used when normalising (default `:`).
 |===
 
-.Returns: `string\|null` — The validated (and optionally normalised) MAC address, or `null` if validation fails.
+.Returns: `string\|null` — The validated (and optionally normalised) MAC address or `null` if validation fails.
 
 .Example
 [source,php]
@@ -724,6 +1065,270 @@ VerifyValue::macVerify('00-1A-2B-3C-4D-5E', true);              // '00:1a:2b:3c:
 VerifyValue::macVerify('00.1A.2B.3C.4D.5E', true, '-');         // '00-1a-2b-3c-4d-5e'
 VerifyValue::macVerify('not-a-mac');                            // null
 ----
+
+:leveloffset: 1
+
+<<<
+
+:leveloffset: +1
+
+= Sanitise Value
+
+Utility class providing static methods for sanitising common value types such as strings containing markup, emails, URLs, integers and floats.
+
+Most methods wrap PHP's native `filter_var` function with a consistent, expressive API and sensible defaults. Each method accepts either a single value or an array of values.
+
+== Methods
+
+=== stripTags
+
+Removes HTML and PHP tags from a string or each string in an array.
+
+.Signature
+[source,php]
+----
+public static function stripTags(string|array $string, array|string|null $allowedTags = null): string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$string`
+|`string\|array`
+|The value to sanitise.
+
+|`$allowedTags`
+|`array\|string\|null`
+|Tags permitted in the result.
+|===
+
+.Returns: `string\|array` — The sanitised value.
+
+.Example
+[source,php]
+----
+SanitiseValue::stripTags('<p>Hello <b>World</b></p>');            // 'Hello World'
+SanitiseValue::stripTags('<p>Hello <b>World</b></p>', '<b>');     // 'Hello <b>World</b>'
+SanitiseValue::stripTags(['<i>a</i>', '<i>b</i>']);               // ['a', 'b']
+----
+
+=== emailSanitise
+
+Sanitises an email address or each address in an array.
+
+.Signature
+[source,php]
+----
+public static function emailSanitise(string|array $value, bool $stripTags = false): false|string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string\|array`
+|The email address or addresses to sanitise.
+
+|`$stripTags`
+|`bool`
+|Whether to remove tags before sanitising.
+|===
+
+.Returns: `false\|string\|array` — The sanitised email value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::emailSanitise('us(er)@example.com');                  // 'user@example.com'
+SanitiseValue::emailSanitise('<b>user</b>@example.com', true);       // 'user@example.com'
+SanitiseValue::emailSanitise(['a b@c.com', 'd@e.com']);              // ['ab@c.com', 'd@e.com']
+----
+
+=== urlSanitise
+
+Sanitises a URL or each URL in an array.
+
+.Signature
+[source,php]
+----
+public static function urlSanitise(string|array $value, bool $stripTags = false): false|string|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`string\|array`
+|The URL or URLs to sanitise.
+
+|`$stripTags`
+|`bool`
+|Whether to remove tags before sanitising.
+|===
+
+.Returns: `false\|string\|array` — The sanitised URL value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::urlSanitise('http://exa mple.com/pa th');           // 'http://example.com/path'
+SanitiseValue::urlSanitise('<b>http://example.com</b>', true);     // 'http://example.com'
+----
+
+=== intSanitise
+
+Sanitises an integer value or each value in an array by removing all characters except digits, plus and minus signs.
+
+.Signature
+[source,php]
+----
+public static function intSanitise(int|float|string|array $value): false|int|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`int\|float\|string\|array`
+|The value or values to sanitise.
+|===
+
+.Returns: `false\|int\|array` — The sanitised integer value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::intSanitise('R 1 234.56');          // '123456'
+SanitiseValue::intSanitise('-42abc');              // '-42'
+SanitiseValue::intSanitise(['1a', '2b']);          // ['1', '2']
+----
+
+=== floatSanitise
+
+Sanitises a floating-point value or each value in an array.
+
+By default, all characters except digits, plus and minus signs are removed. The optional flags retain decimal separators, thousand separators and scientific notation respectively.
+
+.Signature
+[source,php]
+----
+public static function floatSanitise(int|float|string|array $value, bool $allowFraction = false, bool $allowThousand = false, bool $allowScientific = false): false|float|array
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$value`
+|`int\|float\|string\|array`
+|The value or values to sanitise.
+
+|`$allowFraction`
+|`bool`
+|Whether to retain decimal separators.
+
+|`$allowThousand`
+|`bool`
+|Whether to retain thousand separators.
+
+|`$allowScientific`
+|`bool`
+|Whether to retain scientific notation.
+|===
+
+.Returns: `false\|float\|array` — The sanitised floating-point value or values.
+
+.Example
+[source,php]
+----
+SanitiseValue::floatSanitise('R 1,234.56');                       // '123456'
+SanitiseValue::floatSanitise('R 1,234.56', true);                 // '1234.56'
+SanitiseValue::floatSanitise('R 1,234.56', true, true);           // '1,234.56'
+SanitiseValue::floatSanitise('1.2e3', true, false, true);         // '1.2e3'
+----
+
+:leveloffset: 1
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
+= FuzzyTime
+
+This section documents the `FuzzyTimeTrait` used to express a point in time the way a person would say it out loud.
+
+== Overview
+
+`FuzzyTimeTrait` converts a time into a spoken-style English phrase such as `quarter past nine`. It provides:
+
+* Rounding of minutes to the nearest five minutes
+* `past` phrasing up to and including half past the hour
+* `to` phrasing with the following hour after half past
+* Hour roll-over when the rounded minutes reach sixty
+
+Trait location:
+
+* Namespace: `Inane\Stdlib\Parser`
+* File: `lib/inanepain/stdlib/src/Parser/FuzzyTimeTrait.php`
+
+== Requirements and conventions
+
+* Use on any class that needs fuzzy time wording; the API is static, so no state is added.
+* Accepted input is a `DateTime`, an `Inane\Datetime\Timestamp`, or `null` for the current time.
+* Output is a twelve-hour phrase without a meridiem indicator: `one o'clock` covers both 01:00 and 13:00.
+
+== API
+
+Static helper on the class using the trait:
+
+* `fuzzyClock(null|\DateTime|Timestamp $time = null): string` — Returns the time in words, defaulting to now.
+
+NOTE: `numToWords()` it’s an internal helper and isn’t part of the public API.
+
+== Example: Time in words
+
+[source,php]
+----
+<?php
+declare(strict_types=1);
+
+use Inane\Stdlib\Parser\FuzzyTimeTrait;
+
+final class Clock {
+    use FuzzyTimeTrait;
+}
+
+// Exact hour
+Clock::fuzzyClock(new DateTime('2026-07-04 13:00:00')); // one o'clock
+
+// Minutes rounded to the nearest five, phrased as past
+Clock::fuzzyClock(new DateTime('2026-07-04 09:13:00')); // quarter past nine
+
+// After half past, phrased as to the next hour
+Clock::fuzzyClock(new DateTime('2026-07-04 09:34:00')); // twenty-five to ten
+
+// Rounding up to sixty minutes rolls the hour over
+Clock::fuzzyClock(new DateTime('2026-07-04 23:58:00')); // twelve o'clock
+
+// Current time
+Clock::fuzzyClock();
+----
+
+== Tips
+
+* Set the timezone on the supplied `DateTime`; the wording follows whatever local time the object reports.
+* Because the phrasing is rounded, it suits summaries and labels rather than anything needing exact times.
 
 :leveloffset!:
 

@@ -1,12 +1,13 @@
 = inanepain/stdlib image:./icon.png[title=inanepain/stdlib,25]
+// tag::tagConfig[]
 :author: Philip Michael Raab
 :email: <philip@cathedral.co.za>
 :description: Common classes that cover a wide range of cases that are used throughout the inanepain libraries.
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
 :homepage: https://gitgithub.com/inanepain/stdlib
-:revnumber: 0.8.0
-:revdate: 2026-02-23
+:revnumber: 0.10.0
+:revdate: 2026-09-07
 :experimental:
 :hide-uri-scheme:
 :icons: font
@@ -18,6 +19,7 @@
 :pkg-vendor: inanepain
 :pkg-name: stdlib
 :pkg-id: {pkg-vendor}/{pkg-name}
+// end::tagConfig[]
 
 == image:./icon.png[title={pkg-id},25] {pkg-id}
 
@@ -31,6 +33,10 @@ include::part/install.adoc[leveloffset=+1]
 
 <<<
 
+include::part/enum-bitmask.adoc[leveloffset=+1]
+
+<<<
+
 include::part/output.adoc[leveloffset=+1]
 
 <<<
@@ -39,7 +45,11 @@ include::part/merge.adoc[leveloffset=+1]
 
 <<<
 
-include::part/verify-value.adoc[leveloffset=+1]
+include::part/value.adoc[leveloffset=+1]
+
+<<<
+
+include::part/fuzzy-time.adoc[leveloffset=+1]
 
 <<<
 

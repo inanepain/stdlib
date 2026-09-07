@@ -37,9 +37,9 @@ use function substr;
  */
 class StringUtility {
     /**
-     * Find longest common substring
+     * Find the longest common substring
      *
-     * finds the stem (longest common substring) from the string array
+     * finds the stem (the longest common substring) from the string array
      *
      * @param string[] $strings list of string to search
      *

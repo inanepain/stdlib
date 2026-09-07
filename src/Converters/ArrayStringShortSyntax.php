@@ -25,17 +25,10 @@ declare(strict_types=1);
 namespace Inane\Stdlib\Converters;
 
 /**
- * Arrayable
+ * ArrayCodeShortSyntax
  *
- * Array Export Interface. Methods to export an object as a standard array type.
- *
- * @version 0.1.1
+ * @package Inane\Stdlib\Converters
  */
-interface Arrayable {
-    /**
-     * Return Array representation of data
-     *
-     * @return array as Array
-     */
-    public function toArray(): array;
+class ArrayStringShortSyntax {
+    use ArrayStringShortSyntaxTrait;
 }

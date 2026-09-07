@@ -34,14 +34,7 @@ use function var_export;
  *
  * @package Inane\Stdlib\Converters
  */
-trait ArrayToCodeTrait {
-    /**
-     * Get the code string representation of the array
-     *
-     * @return string
-     */
-    abstract public function arrayCode(): string;
-
+trait ArrayStringShortSyntaxTrait {
     /**
      * Convert an array to its PHP code string representation
      *
@@ -49,17 +42,11 @@ trait ArrayToCodeTrait {
      *
      * @return string
      */
-    public static function arrayToCode(array $array): string {
+    public static function arrayToString(array $array): string {
         // Convert var_export's 'array()' syntax to short array syntax '[]'
         return preg_replace(
-            [
-                "/array \\(/",
-                "/\\)(,?)/"
-            ],
-            [
-                '[',
-                ']$1'
-            ],
+            ['/array \\(/', '/\\)(,?)/'],
+            ['[', ']$1'],
             var_export($array, true)
         );
     }
