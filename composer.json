@@ -49,9 +49,10 @@
     "require": {
         "php": ">=8.5",
         "psr/container": "*",
+        "ext-ctype": "*",
         "ext-intl": "*",
-        "ext-simplexml": "*",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {},
     "scripts": {

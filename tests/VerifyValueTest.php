@@ -24,7 +24,7 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Tests;
 
-use Inane\Stdlib\VerifyValue;
+use Inane\Stdlib\Value\VerifyValue;
 use PHPUnit\Framework\TestCase;
 
 /**

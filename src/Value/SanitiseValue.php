@@ -25,6 +25,20 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Value;
 
+use function array_map;
+use function filter_var;
+use function is_array;
+use function strip_tags;
+
+use const FILTER_FLAG_ALLOW_FRACTION;
+use const FILTER_FLAG_ALLOW_SCIENTIFIC;
+use const FILTER_FLAG_ALLOW_THOUSAND;
+use const FILTER_REQUIRE_ARRAY;
+use const FILTER_SANITIZE_EMAIL;
+use const FILTER_SANITIZE_NUMBER_FLOAT;
+use const FILTER_SANITIZE_NUMBER_INT;
+use const FILTER_SANITIZE_URL;
+
 /**
  * Provides static value sanitisation helpers.
  */
@@ -32,15 +46,15 @@ class SanitiseValue {
     /**
      * Removes HTML and PHP tags from a string or each string in an array.
      *
-     * @param string|array       $string      The value to sanitise.
-     * @param array|string|null  $allowedTags Tags permitted in the result.
+     * @param string|array      $string      The value to sanitise.
+     * @param null|array|string $allowedTags Tags permitted in the result.
      *
      * @return string|array The sanitised value.
      */
     public static function stripTags(string|array $string, array|string|null $allowedTags = null): string|array {
         if (!is_array($string)) return strip_tags($string, $allowedTags);
 
-        return array_map(fn(string $v): string => strip_tags($v, $allowedTags), $string);
+        return array_map(static fn(string $v): string => strip_tags($v, $allowedTags), $string);
     }
 
     /**
