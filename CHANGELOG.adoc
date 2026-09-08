@@ -18,6 +18,21 @@
 
 :leveloffset: +2
 
+= 0.11.0-dev (2026 Xxx xx)
+:revnumber: 0.11.0
+:revdate: 2026-xx-xx
+:revremark: -dev
+:version-label: Unconfirmed
+
+* update: `ClassUtility` updated to use `ClassIdTrait`.
+* PHPUnit:
+** new: Created tests for `ClassUtility`.
+* Documentation:
+** new: Added a section for `ClassUtility`.
+
+:leveloffset!:
+:leveloffset: +2
+
 = 0.10.0 (2026 Sep 07)
 :revnumber: 0.10.0
 :revdate: 2026-09-07
