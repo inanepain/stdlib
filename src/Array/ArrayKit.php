@@ -10,17 +10,17 @@
  *
  * PHP version 8.5
  *
- * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package inanepain\stdlib
+ * @author   Philip Michael Raab<philip@cathedral.co.za>
+ * @package  inanepain\stdlib
  * @category stdlib
  *
- * @license UNLICENSE
- * @license https://unlicense.org/UNLICENSE UNLICENSE
+ * @license  UNLICENSE
+ * @license  https://unlicense.org/UNLICENSE UNLICENSE
  *
  * _version_ $version
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Inane\Stdlib\Array;
 
@@ -31,7 +31,6 @@ use Inane\Stdlib\{
 use Random\RandomException;
 
 use function array_key_exists;
-use function call_user_func;
 use function count;
 use function function_exists;
 use function in_array;
@@ -49,31 +48,31 @@ use const null;
  *
  * This is more for shits and giggles, like many of my classes, than any real use case.
  * But it does allow for easy chaining of array functions a can neaten code in various situations.
- * Of course those or more side effects than planned features, but it does not make them any less nifty.
+ * Of course those or more side effects than planned features, but it doesn't make them any less nifty.
  *
- * @todo convert individual rule properties to a single rules array property
- * @todo enable adding custom rules by setting allowModifications to true
+ * @todo    convert individual rule properties to a single rules array property
+ * @todo    enable adding custom rules by setting allowModifications to true
  *
  * plain method listed bellow have been tested, but only their simplest use case.
- * @method int       count()																Counts all elements in the array
- * @method string    implode(string $separator, array $array)								Join array elements with a string
+ * @method int       count()                                                                Counts all elements in the array
+ * @method string    implode(string $separator, array $array)                                Join array elements with a string
  *
  * `array_` methods listed bellow have been tested, but only their simplest use case.
- * @method array     column(int|string|null $key, int|string|null $index = null))   		Return the values from a single column in the input array
- * @method ArrayKit  fill(int $start_index, int $count, mixed $value)               		Fill an array with values
- * @method array     filter(callable $func)                                         		Filters elements this array using a callback function
- * @method ArrayKit  flip()                                                         		Exchanges all keys with their associated values in an array
- * @method bool      keyExists(string|int $key)                                     		Checks if the given key or index exists in the array
- * @method array     map(callable $func)                                            		Applies the callback to the elements of this array
- * @method ArrayKit  merge(array $array)                                            		Merges an array into this array
- * @method mixed     pop()                                                          		Pop the element off the end of array
- * @method int       push(mixed $values)                                            		Push one or more elements onto the end of array
- * @method mixed     shift()                                                        		Shift an element off the beginning of array
- * @method array     slice(int $offset, ?int $length = null, bool $preserve_keys = false)	Extract a slice of the array
- * @method array     splice(int $offset, ?int $length = null, mixed $replacement = [])		Remove a portion of the array and replace it with something else
- * @method int|float sum()                                                          		Calculate the sum of values in an array
- * @method int       unshift(mixed $values)                                         		Prepend one or more elements to the beginning of an array
- * @method array     walk(callable $func)                                           		Apply a user supplied function to every member of this array
+ * @method array     column(int|string|null $key, int|string|null $index = null))        Return the values from a single column in the input array
+ * @method ArrayKit  fill(int $start_index, int $count, mixed $value)                    Fill an array with values
+ * @method array     filter(callable $func)                                                Filters elements this array using a callback function
+ * @method ArrayKit  flip()                                                                Exchanges all keys with their associated values in an array
+ * @method bool      keyExists(string|int $key)                                            Checks if the given key or index exists in the array
+ * @method array     map(callable $func)                                                    Applies the callback to the elements of this array
+ * @method ArrayKit  merge(array $array)                                                    Merges an array into this array
+ * @method mixed     pop()                                                                Pop the element off the end of array
+ * @method int       push(mixed $values)                                                    Push one or more elements onto the end of array
+ * @method mixed     shift()                                                                Shift an element off the beginning of array
+ * @method array     slice(int $offset, ?int $length = null, bool $preserve_keys = false)    Extract a slice of the array
+ * @method array     splice(int $offset, ?int $length = null, mixed $replacement = [])        Remove a portion of the array and replace it with something else
+ * @method int|float sum()                                                                Calculate the sum of values in an array
+ * @method int       unshift(mixed $values)                                                Prepend one or more elements to the beginning of an array
+ * @method array     walk(callable $func)                                                Apply a user supplied function to every member of this array
  *
  * @version 0.2.1
  */
@@ -108,7 +107,7 @@ class ArrayKit implements Arrayable, ArrayAccess {
     ];
 
     /**
-     * List of array functions that only have the array as argument
+     * List of array functions that only have the array as an argument
      *
      * @var array
      */
@@ -148,13 +147,15 @@ class ArrayKit implements Arrayable, ArrayAccess {
     ];
 
     /**
-     * List of array functions that return a ArrayKit instance
+     * List of array functions that return an ArrayKit instance
      *
      * @var array
      */
     private static array $returnInstance = [
         'array_flip',
+        'array_map',
         'array_merge',
+        'array_walk',
     ];
 
     /**
@@ -188,10 +189,11 @@ class ArrayKit implements Arrayable, ArrayAccess {
     /**
      * Constructor
      *
+     * @param array $data initial array data
+     *
      * @return void
      */
-    public function __construct(private array $data = []) {
-    }
+    public function __construct(private array $data = []) {}
 
     /**
      * Whether an offset exists
@@ -205,6 +207,51 @@ class ArrayKit implements Arrayable, ArrayAccess {
     }
 
     /**
+     * Get a value by property access
+     *
+     * @param mixed $name the key to retrieve.
+     *
+     * @return mixed the value or null when the key is absent.
+     */
+    public function __get(mixed $name): mixed {
+        return $this->offsetGet($name);
+    }
+
+    /**
+     * Check a key is set by property access
+     *
+     * @param mixed $name the key to check for.
+     *
+     * @return bool true if the key exists.
+     */
+    public function __isset(mixed $name): bool {
+        return $this->offsetExists($name);
+    }
+
+    /**
+     * Set a value by property access
+     *
+     * @param mixed $name  the key to assign the value to.
+     * @param mixed $value the value to set.
+     *
+     * @return void
+     */
+    public function __set(mixed $name, mixed $value): void {
+        $this->offsetSet($name, $value);
+    }
+
+    /**
+     * Remove a key by property access
+     *
+     * @param mixed $name the key to remove.
+     *
+     * @return void
+     */
+    public function __unset(mixed $name): void {
+        $this->offsetUnset($name);
+    }
+
+    /**
      * Offset to retrieve
      *
      * @param mixed $offset The offset to retrieve.
@@ -212,18 +259,28 @@ class ArrayKit implements Arrayable, ArrayAccess {
      * @return mixed Can return all value types.
      */
     public function offsetGet(mixed $offset): mixed {
-        return $this->offsetExists($offset) ? $this->data[$offset] : null;
+        if ($this->offsetExists($offset)) {
+            // nested arrays are wrapped, keeping the toolkit available on subarrays
+            if (is_array($data = $this->data[$offset])) {
+                return new static($data);
+            }
+
+            return $data;
+        }
+
+        return null;
     }
 
     /**
      * Assign a value to the specified offset
      *
      * @param mixed $offset The offset to assign the value to.
-     * @param mixed $value The value to set.
+     * @param mixed $value  The value to set.
      *
      * @return void No value is returned.
      */
     public function offsetSet(mixed $offset, mixed $value): void {
+        // a null offset appends the value, mirroring `$array[] = $value`
         if (is_null($offset)) $this->data[] = $value;
         else $this->data[$offset] = $value;
     }
@@ -242,46 +299,55 @@ class ArrayKit implements Arrayable, ArrayAccess {
     /**
      * to array
      *
-     * @return array
+     * @return array the data as a plain array.
      */
     public function toArray(): array {
         return $this->data;
     }
 
     /**
-     * __invoke
+     * Call an array function as a method on the data
      *
-     * @param string $name of array method
-     * @param array $arguments method arguments
+     * The method name resolves to either a plain function or its `array_` counterpart,
+     * which is then invoked according to the rule group the function belongs to.
      *
-     * @return \Inane\Stdlib\Array\ArrayKit|array|int|bool|null
+     * @param string $name      of array method
+     * @param array  $arguments method arguments
+     *
+     * @return null|ArrayKit|array|bool|int|string the function result, this instance or null when no matching function exists.
      */
     public function __call(string $name, array $arguments): static|array|bool|int|string|null {
+        // plain functions keep their name, the rest gain the `array_` prefix
         if (in_array($name, static::$plain, true)) {
             $func = $name;
         } else $func = 'array_' . Inflector::underscore($name);
 
         if (function_exists($func)) {
+            // untested functions still run, the caller simply gets a warning
             if (!in_array($func, static::$enable, true))
                 trigger_error("Untested function: `$func`");
 
             if (count($arguments) === 0 && in_array($func, static::$self, true))
                 $result = $func($this->data);
-            else if (in_array($func, static::$before, true))
+            elseif (in_array($func, static::$before, true))
                 $result = $func($this->data, ...$arguments);
-            else if (in_array($func, static::$other, true))
+            elseif (in_array($func, static::$other, true))
                 $result = $func(...$arguments);
             else {
+                // remaining functions expect the array as their last argument
                 $arguments[] = $this->data;
-                $result = @call_user_func($func, ...$arguments);
+                $result = @$func(...$arguments);
             }
 
             if (in_array($func, static::$returnInstance, true)) return new static($result);
 
+            // storing functions replace the data allowing further chaining
             if (in_array($func, static::$store, true)) {
                 $this->data = $result;
+
                 return $this;
             }
+
             return $result;
         }
 
@@ -291,8 +357,9 @@ class ArrayKit implements Arrayable, ArrayAccess {
     /**
      * Random Item
      *
-     * @return mixed
-     * @throws RandomException
+     * @return mixed a randomly chosen item from the array.
+     *
+     * @throws RandomException if an appropriate source of randomness cannot be found.
      */
     public function randomItem(): mixed {
         return $this->data[random_int(0, count($this->data) - 1)];
