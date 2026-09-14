@@ -344,7 +344,7 @@ final class SomeThing {
     private \Inane\Stdlib\Output\OutputInterface $outputHandler;
 
     /**
-     * Initializes the class with the given input data.
+     * Initialises the class with the given input data.
      *
      * @param mixed $inputData The data to be processed by the class.
      *
