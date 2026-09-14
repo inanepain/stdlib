@@ -1264,6 +1264,353 @@ SanitiseValue::floatSanitise('1.2e3', true, false, true);         // '1.2e3'
 
 :leveloffset: +1
 
+= Control
+
+Controlling execution flow and conditions.
+
+:leveloffset: +1
+
+= StepLimiter
+
+Step class for tracking progress towards a limit.
+
+`StepLimiter` counts how many times it’s been asked to continue and reports whether the configured limit has been reached. It suits retry loops, paged batches, throttled iterations and any routine that should run a fixed number of times.
+
+* Namespace: `Inane\Stdlib\Control`
+* File: `lib/inanepain/stdlib/src/Control/StepLimiter.php`
+
+IMPORTANT: Reading `$canContinue` (or invoking the object) consumes a step; the internal counter is incremented on every read. Use `$current` and `$remaining` when you only need to inspect progress.
+
+== Construction
+
+.Signature
+[source,php]
+----
+public function __construct(int $limit = 1)
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$limit`
+|`int`
+|Target number of steps. Negative values are clamped to `0`.
+|===
+
+.Example
+[source,php]
+----
+use Inane\Stdlib\Control\StepLimiter;
+
+$limiter = new StepLimiter(3);   // three steps allowed
+$single  = new StepLimiter();    // default limit of one
+$none    = new StepLimiter(-5);  // clamped to zero, never continues
+----
+
+TIP: The static factory `StepLimiter::withLimit()` offers the same construction in a fluent form.
+
+== Properties
+
+[cols="1,1,1,3"]
+|===
+|Property |Type |Access |Description
+
+|`$limit`
+|`int`
+|read-only
+|The target limit is set on construction.
+
+|`$current`
+|`int`
+|read-only
+|Number of steps consumed so far.
+
+|`$remaining`
+|`int`
+|read-only
+|Steps left before the limit is reached, never less than `0`.
+
+|`$canContinue`
+|`bool`
+|read-only
+|Consumes a step and returns `false` once the limit is exceeded.
+|===
+
+NOTE: `$current` may exceed `$limit` when `$canContinue` is read after the limit has been reached; `$remaining` stays at `0`.
+
+== Methods
+
+=== withLimit
+
+Creates a new instance with the specified limit, a static alternative to the constructor that reads well when chaining.
+
+.Signature
+[source,php]
+----
+public static function withLimit(int $limit = 1): self
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$limit`
+|`int`
+|Target number of steps. Negative values are clamped to `0`.
+|===
+
+.Returns: `self` — A new `StepLimiter` configured with the given limit.
+
+.Example
+[source,php]
+----
+use Inane\Stdlib\Control\StepLimiter;
+
+$limiter = StepLimiter::withLimit(3);  // three steps allowed
+$single  = StepLimiter::withLimit();   // default limit of one
+$none    = StepLimiter::withLimit(-5); // clamped to zero, never continues
+----
+
+NOTE: `withLimit()` is equivalent to `new StepLimiter($limit)`; pick whichever reads better at the call site.
+
+=== __invoke
+
+Invokes the canContinue check, making the object callable.
+
+.Signature
+[source,php]
+----
+public function __invoke(): bool
+----
+
+.Returns: `bool` — `true` while steps remain; `false` once the limit is exceeded.
+
+.Example
+[source,php]
+----
+$limiter = new StepLimiter(2);
+
+$limiter();  // true
+$limiter();  // true
+$limiter();  // false
+----
+
+== Usage
+
+.Limiting a loop
+[source,php]
+----
+use Inane\Stdlib\Control\StepLimiter;
+
+$limiter = new StepLimiter(3);
+
+while ($limiter->canContinue) {
+    // executes three times
+    process();
+}
+----
+
+.Limiting retries
+[source,php]
+----
+$attempts = new StepLimiter(5);
+
+do {
+    $result = fetch();
+} while ($result === null && $attempts());
+
+if ($result === null) {
+    // five attempts exhausted
+}
+----
+
+.Inspecting progress
+[source,php]
+----
+$limiter = new StepLimiter(3);
+
+$limiter->canContinue;  // true
+$limiter->current;      // 1
+$limiter->remaining;    // 2
+$limiter->limit;        // 3
+----
+
+:leveloffset: 1
+
+<<<
+
+:leveloffset: +1
+
+= Toggle
+
+Represents a toggleable state with associated values.
+
+`Toggle` alternates between two states on every read, optionally returning a pair of associated values instead of a plain boolean. It suits alternating table row classes, flip-flopping labels, zebra striping and any routine that needs to switch between two outcomes.
+
+* Namespace: `Inane\Stdlib\Control`
+* File: `lib/inanepain/stdlib/src/Control/Toggle.php`
+
+IMPORTANT: Reading `$nextState`, `$nextValue` or `$next` (and invoking the object) changes the state. Use `$state` and `$value` to inspect the current state without altering it.
+
+== Construction
+
+.Signature
+[source,php]
+----
+public function __construct(
+    bool $initialState = true,
+    bool $useValue = false,
+    null|bool|string|int|float|object $on = true,
+    null|bool|string|int|float|object $off = false,
+)
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$initialState`
+|`bool`
+|The state returned by the first toggle.
+
+|`$useValue`
+|`bool`
+|When `true`, `$next` and `__invoke()` return the associated values rather than the boolean state.
+
+|`$on`
+|`null\|bool\|string\|int\|float\|object`
+|The value used while the state is on.
+
+|`$off`
+|`null\|bool\|string\|int\|float\|object`
+|The value that is used when the state is off.
+|===
+
+.Throws: `InvalidArgumentException` — When invalid types are supplied for `$on` or `$off`.
+
+NOTE: The state is stored inverted on construction so that the first toggle yields `$initialState`. Consequently `$state` and `$value` report the opposite of `$initialState` until the first toggle.
+
+.Example
+[source,php]
+----
+use Inane\Stdlib\Control\Toggle;
+
+$boolean = new Toggle();                                         // boolean toggle starts on
+$classes = new Toggle(true, true, 'row-odd', 'row-even');        // value toggle
+----
+
+== Properties
+
+[cols="1,1,1,3"]
+|===
+|Property |Type |Access |Description
+
+|`$state`
+|`bool`
+|read-only
+|The current state, unchanged by reading.
+
+|`$value`
+|`null\|bool\|string\|int\|float\|object`
+|read-only
+|`$on` or `$off` for the current state, unchanged by reading.
+
+|`$nextState`
+|`bool`
+|read-only
+|Toggles the state and returns the new boolean state.
+
+|`$nextValue`
+|`null\|bool\|string\|int\|float\|object`
+|read-only
+|Toggles the state and returns the matching value.
+
+|`$next`
+|`null\|bool\|string\|int\|float\|object`
+|read-only
+|Toggles the state and returns either the value or the boolean state, according to `$useValue`.
+|===
+
+== Methods
+
+=== __invoke
+
+Invokes the toggle logic, making the object callable.
+
+.Signature
+[source,php]
+----
+public function __invoke(?bool $getValue = null): null|bool|string|int|float|object
+----
+
+.Parameters
+[cols="1,1,3"]
+|===
+|Parameter |Type |Description
+
+|`$getValue`
+|`bool\|null`
+|Mode selector: `true` returns the associated value, `false` returns the boolean state, and `null` (default) follows the `$useValue` flag set on construction.
+|===
+
+.Returns: `null\|bool\|string\|int\|float\|object` — The new state or its associated value.
+
+.Example
+[source,php]
+----
+$toggle = new Toggle(true, false, 'on', 'off');
+
+$toggle();       // true   (follows $useValue)
+$toggle(true);   // 'off'  (value mode)
+$toggle(false);  // true   (boolean mode)
+----
+
+== Usage
+
+.Alternating row classes
+[source,php]
+----
+use Inane\Stdlib\Control\Toggle;
+
+$row = new Toggle(true, true, 'odd', 'even');
+
+foreach ($items as $item) {
+    echo "<tr class=\"{$row->next}\">...</tr>";
+}
+----
+
+.Boolean flip-flop
+[source,php]
+----
+$flag = new Toggle();
+
+$flag->nextState;  // true
+$flag->nextState;  // false
+$flag->state;      // false, reading doesn't toggle
+----
+
+.Starting off
+[source,php]
+----
+$toggle = new Toggle(false, true, 'on', 'off');
+
+$toggle->value;      // 'on', the inverted initial state
+$toggle->nextValue;  // 'off', the first toggle
+$toggle->nextValue;  // 'on'
+----
+
+:leveloffset: 1
+
+:leveloffset!:
+
+<<<
+
+:leveloffset: +1
+
 = FuzzyTime
 
 This section documents the `FuzzyTimeTrait` used to express a point in time the way a person would say it out loud.

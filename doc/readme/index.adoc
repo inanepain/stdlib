@@ -49,6 +49,10 @@ include::part/value.adoc[leveloffset=+1]
 
 <<<
 
+include::part/control.adoc[leveloffset=+1]
+
+<<<
+
 include::part/fuzzy-time.adoc[leveloffset=+1]
 
 <<<
