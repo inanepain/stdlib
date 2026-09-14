@@ -29,6 +29,9 @@
 ** new: Created tests for `ClassUtility`.
 * Documentation:
 ** new: Added a section for `ClassUtility`.
+* new: Classes
+** \Inane\Stdlib\Control\StepLimiter – Step class for tracking progress towards a limit.
+** \Inane\Stdlib\Control\Toggle – Represents a toggleable state with associated values.
 
 :leveloffset!:
 :leveloffset: +2
