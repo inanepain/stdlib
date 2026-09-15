@@ -169,6 +169,9 @@ class MyCustomOutput extends AbstractOutput {
 
 A more complete example, using an `Output` class as a property.
 
+.Complete Eample
+[%collapsible]
+====
 [source,php]
 ----
 $opt = new \Inane\Stdlib\Options([
@@ -249,3 +252,4 @@ echo "\nJSON:\n";
 var_dump($thing->output());
 
 ----
+====

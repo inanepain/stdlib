@@ -95,6 +95,8 @@ NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to “any�
 The following example shows a typical permission enum using the trait.
 
 .Example: Permissions
+[%collapsible]
+====
 [source,php]
 ----
 <?php
@@ -136,6 +138,7 @@ $mask = Permission::Write->removeFrom($mask);               // remove Write
 // List set flags
 $set = Permission::list($mask); // [Permission::Read, Permission::Delete]
 ----
+====
 
 == Tips
 
@@ -319,6 +322,9 @@ class MyCustomOutput extends AbstractOutput {
 
 A more complete example, using an `Output` class as a property.
 
+.Complete Eample
+[%collapsible]
+====
 [source,php]
 ----
 $opt = new \Inane\Stdlib\Options([
@@ -399,6 +405,7 @@ echo "\nJSON:\n";
 var_dump($thing->output());
 
 ----
+====
 
 :leveloffset!:
 
@@ -468,6 +475,9 @@ public function mergeOptions(Iterator|array $target, Iterator|array ...$sources)
 
 === Static helpers
 
+.Static Helpers Example
+[%collapsible]
+====
 [source,php]
 ----
 use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
@@ -519,6 +529,7 @@ $source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
 $result = $merger->mergeOptions($target, $source);
 // [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
 ----
+====
 
 == Behaviour details
 
@@ -1645,6 +1656,9 @@ NOTE: `numToWords()` it’s an internal helper and isn’t part of the public AP
 
 == Example: Time in words
 
+.Fuzzy Time Example
+[%collapsible]
+====
 [source,php]
 ----
 <?php
@@ -1671,6 +1685,7 @@ Clock::fuzzyClock(new DateTime('2026-07-04 23:58:00')); // twelve o'clock
 // Current time
 Clock::fuzzyClock();
 ----
+====
 
 == Tips
 
