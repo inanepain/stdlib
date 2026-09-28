@@ -28,9 +28,6 @@ namespace Inane\Stdlib\Output;
  * XmlStringOutput
  *
  * An output handler that converts input data to XML format and returns it as a string.
- *
- * @package Inane\Stdlib\Output
- * @author  Philip Michael Raab<philip@cathedral.co.za>
  */
 class XmlStringOutput extends AbstractOutput {
     /**

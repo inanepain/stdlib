@@ -31,8 +31,6 @@ use function var_export;
  * Array to Code Trait
  *
  * Provides a method to convert an array to its PHP code string representation using short array syntax.
- *
- * @package Inane\Stdlib\Converters
  */
 trait ArrayStringShortSyntaxTrait {
     /**
