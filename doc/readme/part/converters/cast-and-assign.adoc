@@ -1,0 +1,71 @@
+= Cast and Assign
+
+`CastAndAssignTrait` provides static methods for assigning a value according to the current type of a variable. It belongs to `Inane\Stdlib\Converters` and must be used in a class; its methods update the supplied variable by reference.
+
+== castAndAssign
+
+.Signature
+[source,php]
+----
+public static function castAndAssign(mixed &$var, mixed $value, bool $preserveNull = true): void
+----
+
+The existing value of `$var` determines the conversion:
+
+[cols="1,3"]
+|===
+|Current type |Assignment
+
+|`null`
+|Remains `null` by default. With `$preserveNull` set to `false`, `$value` is assigned directly without conversion.
+
+|`int` or `float`
+|Accepts numeric values and numeric strings, then casts to the current numeric type; rejects non-numeric input.
+
+|`string`
+|Casts scalar input to a string; rejects arrays and objects.
+
+|`bool`
+|Uses `VerifyValue::boolVerify()` to recognise boolean values such as `"yes"`, `"on"`, `"off"` and `"0"`. Invalid input throws an exception.
+
+|`array`
+|Accepts only arrays, assigning the input as-is.
+
+|Enum case
+|Delegates to `castEnum()`.
+
+|Object
+|Delegates to `castObject()`.
+|===
+
+The current type is read before the assignment: passing a typed property by reference still requires the resulting value to satisfy that property's declared type. An unsupported type raises `InvalidArgumentException`.
+
+IMPORTANT: On invalid boolean input, the target becomes `null` before `InvalidArgumentException` is thrown. Other validation branches reject input before assigning it.
+
+== castEnum
+
+.Signature
+[source,php]
+----
+public static function castEnum(UnitEnum &$enum, mixed $value): void
+----
+
+Accepts another case of the same enum. A backed enum also accepts a matching backing value (using `from()`); a pure enum accepts a case name with an exact case. A mismatched value for a pure enum raises `InvalidArgumentException`.
+
+NOTE: An invalid backed-enum value currently propagates PHP's native `ValueError` rather than `InvalidArgumentException`.
+
+== castObject
+
+.Signature
+[source,php]
+----
+public static function castObject(object &$object, mixed $value): void
+----
+
+If `$value` is an instance of the target object's class, it replaces the object directly. For array input, hydration is attempted in this order:
+
+. Call the class's static `fromArray($value)` method and replace the object with its return value.
+. Call the existing object's `hydrate($value)` method, retaining its identity.
+. Otherwise, construct a replacement using reflection and the array entries as constructor arguments.
+
+Non-array input that doesn’t match the target class raises `InvalidArgumentException`. Constructor hydration can also propagate reflection, argument or type errors when the array doesn’t fit the constructor.

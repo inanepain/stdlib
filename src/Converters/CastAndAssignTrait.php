@@ -44,7 +44,7 @@ use function method_exists;
  */
 trait CastAndAssignTrait {
     /**
-     * Casts and assigns a value to a variable according to its type. Supports various data types including
+     * Casts and assigns a value to a variable according to its type. Supports various data types, including
      * primitive types (int, float, string, bool, array) and custom types (enums, objects). Optionally preserves
      * the null state of the variable.
      *
