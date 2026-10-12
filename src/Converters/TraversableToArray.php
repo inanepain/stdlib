@@ -10,17 +10,17 @@
  *
  * PHP version 8.5
  *
- * @author Philip Michael Raab<philip@cathedral.co.za>
- * @package inanepain\stdlib
+ * @author   Philip Michael Raab<philip@cathedral.co.za>
+ * @package  inanepain\stdlib
  * @category stdlib
  *
- * @license UNLICENSE
- * @license https://unlicense.org/UNLICENSE UNLICENSE
+ * @license  UNLICENSE
+ * @license  https://unlicense.org/UNLICENSE UNLICENSE
  *
  * _version_ $version
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Inane\Stdlib\Converters;
 
@@ -45,13 +45,13 @@ trait TraversableToArray {
      * to arrays as well. Optionally preserves keys if $use_keys is true.
      *
      * @param Traversable $iterator The traversable object to convert.
-     * @param bool $use_keys Whether to preserve keys in the resulting array.
+     * @param bool        $use_keys Whether to preserve keys in the resulting array.
      *
      * @return array The resulting array representation of the traversable.
      */
     protected static function iteratorToArrayDeep(Traversable $iterator, bool $use_keys = true): array {
         $array = [];
-        foreach ($iterator as $key => $value) {
+        foreach($iterator as $key => $value) {
             if (is_object($value) && method_exists($value, 'toArray')) $value = $value->toArray();
             if ($value instanceof Iterator) $value = static::iteratorToArrayDeep($value, $use_keys);
 

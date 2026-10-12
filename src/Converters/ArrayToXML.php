@@ -29,7 +29,6 @@ use SimpleXMLElement;
 
 use function htmlspecialchars;
 use function is_array;
-use function is_null;
 use function is_numeric;
 
 use const false;
@@ -62,7 +61,7 @@ trait ArrayToXML {
      * @return SimpleXMLElement XML string of $array
      */
     protected static function arrayToXML(array $array, ?SimpleXMLElement $xmlObj = null, bool $unique = false, ?string $tagName = null): SimpleXMLElement {
-        if (is_null($xmlObj)) $xmlObj = new SimpleXMLElement('<?xml version="1.0"?><data></data>');
+        if ($xmlObj === null) $xmlObj = new SimpleXMLElement('<?xml version="1.0"?><data></data>');
 
         foreach ($array as $key => $value) {
             if (is_numeric($key))
@@ -70,7 +69,7 @@ trait ArrayToXML {
             if (is_array($value))
                 static::arrayToXML($value, $xmlObj->addChild($key), $unique, Inflector::singularise($key));
             else
-                $xmlObj->addChild("$key", htmlspecialchars((string)$value));
+                $xmlObj->addChild((string)$key, htmlspecialchars((string)$value));
         }
 
         return $xmlObj;

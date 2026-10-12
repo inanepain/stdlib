@@ -24,13 +24,14 @@ declare(strict_types = 1);
 
 namespace Inane\Stdlib\Output;
 
-use Inane\Stdlib\String\Inflector;
+use Inane\Stdlib\Converters\ArrayToXML;
 use SimpleXMLElement;
 
-use function htmlspecialchars;
-use function is_array;
-use function is_null;
-use function is_numeric;
+use function is_string;
+use function libxml_clear_errors;
+use function libxml_use_internal_errors;
+use function simplexml_load_string;
+use function trim;
 
 /**
  * XmlOutput
@@ -38,6 +39,8 @@ use function is_numeric;
  * Provides functionality to convert input data to an XML format.
  */
 class XmlOutput extends AbstractOutput {
+    use ArrayToXML;
+
     /**
      * Determine if a string is a valid XML string.
      *
@@ -60,40 +63,11 @@ class XmlOutput extends AbstractOutput {
     }
 
     /**
-     * Convert $array to an XML string
-     *
-     * @param array                 $array   source data
-     * @param null|SimpleXMLElement $xmlObj  XML object to use as root
-     * @param bool                  $unique  appends the array index to tag names for plain arrays
-     * @param null|string           $tagName to use when converting plain arrays, mainly for internally use
-     *
-     * @return SimpleXMLElement XML string of $array
-     *
-     * @throws \Exception
-     */
-    protected static function arrayToXML(array $array, ?SimpleXMLElement $xmlObj = null, bool $unique = false, ?string $tagName = null): SimpleXMLElement {
-        if (is_null($xmlObj)) $xmlObj = new SimpleXMLElement('<?xml version="1.0"?><data></data>');
-
-        foreach($array as $key => $value) {
-            if (is_numeric($key))
-                $key = ($tagName ?? 'item') . ($unique ? $key : '');
-            if (is_array($value))
-                static::arrayToXML($value, $xmlObj->addChild($key), $unique, Inflector::singularise($key));
-            else
-                $xmlObj->addChild("$key", htmlspecialchars((string)$value));
-        }
-
-        return $xmlObj;
-    }
-
-    /**
      * @inheritDoc
      *
      * @param mixed $inputData The data to convert.
      *
      * @return SimpleXMLElement
-     *
-     * @throws \RuntimeException
      */
     public function output(mixed $inputData = null): SimpleXMLElement {
         $this->setInputData($inputData);
@@ -107,5 +81,19 @@ class XmlOutput extends AbstractOutput {
         }
 
         return $this->outputData;
+    }
+
+    /**
+     * Return object as an XML string
+     *
+     * @example
+     * return static::arrayToXML($this->data)->asXML();
+     *
+     * @return string
+     */
+    public function toXML(): string {
+        return $this->output()
+            ->asXML()
+        ;
     }
 }
