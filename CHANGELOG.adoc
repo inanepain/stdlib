@@ -3,8 +3,8 @@
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities are used throughout the inanepain libraries.
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.10.0
-:revdate: 2026-09-07
+:revnumber: 0.11.0
+:revdate: 2026-10-23
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -18,11 +18,9 @@
 
 :leveloffset: +2
 
-= 0.11.0-dev (2026 Xxx xx)
+= 0.11.0 (2026 Oct 23)
 :revnumber: 0.11.0
-:revdate: 2026-xx-xx
-:revremark: -dev
-:version-label: Unconfirmed
+:revdate: 2026-10-23
 
 * update: `ClassUtility` updated to use `ClassIdTrait`.
 * PHPUnit:
