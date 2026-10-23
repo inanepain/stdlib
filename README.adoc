@@ -6,8 +6,8 @@
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
 :copyright: Unlicense
 :homepage: https://gitgithub.com/inanepain/stdlib
-:revnumber: 0.11.0
-:revdate: 2026-10-23
+:revnumber: 0.12.0-dev
+:revdate: 2026-xx-xx
 :experimental:
 :hide-uri-scheme:
 :icons: font
