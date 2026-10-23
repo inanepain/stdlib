@@ -32,6 +32,9 @@ NOTE: `numToWords()` it’s an internal helper and isn’t part of the public AP
 
 == Example: Time in words
 
+.Fuzzy Time Example
+[%collapsible]
+====
 [source,php]
 ----
 <?php
@@ -58,6 +61,7 @@ Clock::fuzzyClock(new DateTime('2026-07-04 23:58:00')); // twelve o'clock
 // Current time
 Clock::fuzzyClock();
 ----
+====
 
 == Tips
 

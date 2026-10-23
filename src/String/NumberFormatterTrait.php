@@ -38,8 +38,7 @@ use Psr\Container\{
  *
  * Provides number formatting functionality with locale-specific support.
  * Maintains a cached collection of NumberFormatter instances for improved performance.
- *
- * @package Inane\Stdlib\String
+ * 
  * @version 0.1.0
  */
 trait NumberFormatterTrait {

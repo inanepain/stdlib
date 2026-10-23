@@ -26,36 +26,20 @@ namespace Inane\Stdlib\Utility;
 
 use Inane\File\File;
 use Inane\Stdlib\Exception\Exception;
-use function array_slice;
+use Inane\Stdlib\Parser\ClassIdTrait;
+
 use function count;
-use function explode;
-use function implode;
 use function is_string;
-use function strtolower;
 use function token_get_all;
+
 use const T_CLASS;
 use const T_NAMESPACE;
 
+/**
+ * Utility class for working with PHP class definitions.
+ */
 class ClassUtility {
-    /**
-     * Build a class id based on a class name.
-     *
-     * Some customisation is available.
-     *
-     * @param string $className fully qualified class name
-     * @param int $size number of parts used, namespace and class
-     * @param string $separator used when combining parts
-     * @param bool $lower convert to lowercase
-     *
-     * @return string class id
-     */
-    public static function classId(string $className, int $size = 1, string $separator = '/', bool $lower = true): string {
-        $ids = explode('\\', $className);
-        $cids =  array_slice($ids, $size * -1);
-        $id = implode($separator, $cids);
-
-        return $lower ? strtolower($id) : $id;
-    }
+    use ClassIdTrait;
 
     /**
      * Extracts the fully qualified class name from the given file.

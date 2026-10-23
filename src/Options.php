@@ -124,8 +124,6 @@ class Options implements OptionsInterface {
      * @param null|array|string|SystemArrayObject|ArrayObject|Options|OptionsInterface $data initial data in a variety of formates
      *
      * @param bool                                                                     $allowModifications
-     *
-     * @throws JsonException
      */
     public function __construct(
         /**

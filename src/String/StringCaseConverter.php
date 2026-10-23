@@ -42,8 +42,6 @@ use function ucfirst;
  *
  * - script-dir ⇄ scriptDir
  * - kebab-case ⇄ camelCase.
- *
- * @package inanepain\stdlib\String
  */
 class StringCaseConverter {
     /**

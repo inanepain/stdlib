@@ -28,6 +28,7 @@ use Inane\Stdlib\Converters\TraversableToArray;
 use Inane\Stdlib\Exception\JsonException;
 use Inane\Stdlib\Json;
 
+use function is_array;
 use function is_object;
 use function is_string;
 use function unserialize;
@@ -44,7 +45,6 @@ class ArrayOutput extends AbstractOutput {
      * @param mixed $inputData The input data to be processed or utilised by the class.
      *
      * @return array The processed representation of the input data in an array format.
-     * @throws JsonException
      */
     public function output(mixed $inputData = null): array {
         $this->setInputData($inputData);
@@ -54,11 +54,15 @@ class ArrayOutput extends AbstractOutput {
             if (is_string($data)) {
                 if (XmlOutput::isXmlString($data)) {
                     $data = new XmlOutput($data)->output();
-                } elseif(Json::isJsonString($data)) {
-                    $data = Json::decode($data, [
-                        'numeric' => true,
-                        'escape'  => true,
-                    ]);
+                } elseif (Json::isJsonString($data)) {
+                    try {
+                        $data = Json::decode($data, [
+                            'numeric' => true,
+                            'escape'  => true,
+                        ]);
+                    } catch (JsonException $e) {
+                        $data = [];
+                    }
                 } else {
                     $result = @unserialize($data, ['allowed_classes' => true]);
                     if ($result !== false) $data = $result;

@@ -38,20 +38,21 @@ use const true;
  */
 trait ClassIdTrait {
     /**
-     * Build a class id based on class name.
+     * Build a class id based on the class name.
      *
      * Some customisation is available.
      *
-     * @param int $size number of parts used, namespace and class
-     * @param string $separator used when combining parts
-     * @param bool $lower convert to lowercase
+     * @param int $size number of parts used, from the right. 0 means all parts.
+     * @param string $separator used when combining parts.
+     * @param bool $lower convert to lowercase.
+     * @param null|string $className fully qualified class name, uses current class if null.
      *
      * @return string class id
      */
-    public static function classId(int $size = 1, string $separator = '/', bool $lower = true): string {
-        $ids = explode('\\', static::class);
-        $cids =  array_slice($ids, $size * -1);
-        $id = implode($separator, $cids);
+    public static function classId(int $size = 0, string $separator = '/', bool $lower = true, ?string $className = null): string {
+        $ids = explode('\\', $className ?? static::class);
+        $cIds =  array_slice($ids, $size * -1);
+        $id = implode($separator, $cIds);
 
         return $lower ? strtolower($id) : $id;
     }

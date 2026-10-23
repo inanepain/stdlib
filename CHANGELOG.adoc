@@ -3,8 +3,8 @@
 :email: <philip@cathedral.co.za>
 :description: Common classes, tools and utilities are used throughout the inanepain libraries.
 :keywords: inanepain, inane, library, stdlib, json, xml, array, exception, notice, config
-:revnumber: 0.10.0
-:revdate: 2026-09-07
+:revnumber: 0.11.0
+:revdate: 2026-10-23
 :copyright: Unlicense
 :experimental:
 :hide-uri-scheme:
@@ -16,6 +16,24 @@
 
 == History
 
+:leveloffset: +2
+
+= 0.11.0 (2026 Oct 23)
+:revnumber: 0.11.0
+:revdate: 2026-10-23
+
+* update: `ClassUtility` updated to use `ClassIdTrait`.
+* PHPUnit:
+** new: Created tests for `ClassUtility`.
+** new: Created tests for `CaseAndAssign`.
+* Documentation:
+** new: Added a section for `ClassUtility`.
+** new: Added a section for `CaseAndAssign`.
+* new: Classes
+** \Inane\Stdlib\Control\StepLimiter – Step class for tracking progress towards a limit.
+** \Inane\Stdlib\Control\Toggle – Represents a toggleable state with associated values.
+
+:leveloffset!:
 :leveloffset: +2
 
 = 0.10.0 (2026 Sep 07)

@@ -1,0 +1,14 @@
+= 0.11.0 (2026 Oct 23)
+:revnumber: 0.11.0
+:revdate: 2026-10-23
+
+* update: `ClassUtility` updated to use `ClassIdTrait`.
+* PHPUnit:
+** new: Created tests for `ClassUtility`.
+** new: Created tests for `CaseAndAssign`.
+* Documentation:
+** new: Added a section for `ClassUtility`.
+** new: Added a section for `CaseAndAssign`.
+* new: Classes
+** \Inane\Stdlib\Control\StepLimiter – Step class for tracking progress towards a limit.
+** \Inane\Stdlib\Control\Toggle – Represents a toggleable state with associated values.

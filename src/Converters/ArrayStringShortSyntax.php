@@ -26,8 +26,6 @@ namespace Inane\Stdlib\Converters;
 
 /**
  * ArrayCodeShortSyntax
- *
- * @package Inane\Stdlib\Converters
  */
 class ArrayStringShortSyntax {
     use ArrayStringShortSyntaxTrait;

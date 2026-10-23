@@ -1,0 +1,69 @@
+= ClassUtility
+
+This section documents `ClassUtility`, a small helper for working out class information without loading the class.
+
+== Overview
+
+`ClassUtility` inspects PHP source with the tokeniser, so a file can be examined without being included. It provides:
+
+* Extraction of the fully qualified class name declared in a file
+* A class id helper, courtesy of `ClassIdTrait`
+
+Class location:
+
+* Namespace: `Inane\Stdlib\Utility`
+* File: `lib/inanepain/stdlib/src/Utility/ClassUtility.php`
+
+== Requirements and conventions
+
+* The API is static; there’s no need to create an instance.
+* A file may be given as a path `string` or an `Inane\File\File` instance.
+* Only the first class declared in a file is reported, which suits PSR-4 style one-class-per-file layouts.
+* An invalid or missing file raises `Inane\Stdlib\Exception\Exception`.
+
+== API
+
+* `getClassFromFile(string|File $file): ?string` — Returns the fully qualified class name declared in the file, or `null` when the file declares no class.
+* `classId(int $size = 0, string $separator = '/', bool $lower = true, ?string $className = null): string` — From `ClassIdTrait`, builds an id from the class name.
+
+== Example: Class name from a file
+
+[source,php]
+----
+<?php
+declare(strict_types=1);
+
+use Inane\File\File;
+use Inane\Stdlib\Utility\ClassUtility;
+
+// A namespaced class returns the fully qualified name
+ClassUtility::getClassFromFile('src/Utility/ClassUtility.php'); // Inane\Stdlib\Utility\ClassUtility
+
+// A `File` instance works just as well
+ClassUtility::getClassFromFile(new File('src/Utility/ClassUtility.php')); // Inane\Stdlib\Utility\ClassUtility
+
+// Without a namespace, only the class name comes back
+ClassUtility::getClassFromFile('legacy/Gamma.php'); // Gamma
+
+// A file with no class declaration
+ClassUtility::getClassFromFile('config/settings.php'); // null
+----
+
+== Example: Class id
+
+[source,php]
+----
+<?php
+declare(strict_types=1);
+
+use Inane\Stdlib\Utility\ClassUtility;
+
+ClassUtility::classId(1); // classutility
+ClassUtility::classId(2, '/', false); // Utility/ClassUtility
+----
+
+== Tips
+
+* Handy when scanning a directory to map files to classes, for example, when building a plugin or module registry.
+* Because it reads a source rather than reflecting, it’s safe to use on files you don’t wish to execute.
+* Wrap calls in a `try`/`catch` when scanning paths that may not exist.

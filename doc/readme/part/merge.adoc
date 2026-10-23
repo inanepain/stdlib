@@ -60,6 +60,9 @@ public function mergeOptions(Iterator|array $target, Iterator|array ...$sources)
 
 === Static helpers
 
+.Static Helpers Example
+[%collapsible]
+====
 [source,php]
 ----
 use Inane\Stdlib\Merge\MergeTrait; // used via Merge facade below
@@ -111,6 +114,7 @@ $source = [ 'b' => ['x' => false, 'y' => 2], 'c' => 3 ];
 $result = $merger->mergeOptions($target, $source);
 // [ 'a' => 1, 'b' => ['x' => false, 'y' => 2], 'c' => 3 ]
 ----
+====
 
 == Behaviour details
 

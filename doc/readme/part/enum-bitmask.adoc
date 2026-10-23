@@ -48,6 +48,8 @@ NOTE: Internally, `hasAny` and `hasAll` use array helpers equivalent to â€œanyâ€
 The following example shows a typical permission enum using the trait.
 
 .Example: Permissions
+[%collapsible]
+====
 [source,php]
 ----
 <?php
@@ -89,6 +91,7 @@ $mask = Permission::Write->removeFrom($mask);               // remove Write
 // List set flags
 $set = Permission::list($mask); // [Permission::Read, Permission::Delete]
 ----
+====
 
 == Tips
 

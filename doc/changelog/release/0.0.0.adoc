@@ -1,5 +1,5 @@
-= 0.11.0-dev (2026 Xxx xx)
-:revnumber: 0.11.0
+= 0.12.0-dev (2026 Xxx xx)
+:revnumber: 0.12.0
 :revdate: 2026-xx-xx
 :revremark: -dev
 :version-label: Unconfirmed
