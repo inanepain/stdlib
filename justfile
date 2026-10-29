@@ -4,39 +4,94 @@
 
 set shell := ["zsh", "-cu"]
 set positional-arguments
+set default-list := true
 
 project := "inane\\stdlib"
 
+#region base
 # list recipes
+[default]
 _default:
     @echo "{{project}}:"
     @just --list --list-heading ''
 
 # start
+[group: 'helpers']
+[arg('task', help="New task being run.")]
 _start task='':
     @echo "{{project}}: {{GREEN}}start{{NORMAL}}: {{task}}"
 
 # done
+[group: 'helpers']
+[arg('task', help="Completed task.")]
 _done task='':
     @echo "{{project}}: {{GREEN}}done{{NORMAL}} {{task}}"
 
+#endregion base
+
+#region git
 # git push all
 [group: 'GIT']
 git-push-all: (_start "Push All") && (_done "Push All")
     #!/usr/bin/env zsh
     git pushall
 
-# generate php part (v2) (all, cache, html)
-php-doc clear="all":
-	#!/usr/bin/env zsh
-	if [ -d .phpdoc ] && [[ "{{clear}}" = "all" || "{{clear}}" = "cache" ]]; then
-		echo "\tCleaning: cache..."
-		rm -fr .phpdoc
-	fi
-	if [ -d phpdoc ] && [[ "{{clear}}" = "all" || "{{clear}}" = "html" ]]; then
-		echo "\tCleaning: html..."
-		rm -fr phpdoc
-	fi
+#endregion git
 
-	mkdir -p phpdoc
-	phpdoc -d src -t phpdoc --title="{{project}}" --defaultpackagename="Inane"
+#region Servers
+# PlantUML Server
+[group: 'server']
+[arg('action', pattern='start|stop', help="Start or Stop server.")]
+serve-plantuml action='start':
+    #!/usr/bin/env zsh
+    if [[ "{{action}}" = "start" ]]; then
+    	echo "\tPlantUML: {{GREEN}}{{action}}ting...{{NORMAL}}"
+        launchctl load /Users/philip/Library/LaunchAgents/local.blackbetty.plantuml.plist
+    fi
+
+    if [[ "{{action}}" = "stop" ]]; then
+        echo "\tPlantUML: {{RED}}{{action}}ting...{{NORMAL}}"
+        launchctl unload /Users/philip/Library/LaunchAgents/local.blackbetty.plantuml.plist
+    fi
+
+#endregion Servers
+
+#region documentation
+# create or update all documentation.
+[group: 'doc']
+build-doc: (_start "Doc: ALL") && build-phpdoc build-asciidoc (_done "Doc: ALL")
+
+# generate php part (v2) (all, cache, html)
+[group: 'doc']
+build-phpdoc: (_start "PHPDoc: API") && (_done "PHPDoc: API")
+    #!/usr/bin/env zsh
+    if [ -d .phpdoc ]; then
+        echo "\tCleaning: cache..."
+        rm -fr .phpdoc
+    fi
+    if [ ! -z doc/api ]; then
+        echo "\tCleaning: api doc..."
+        rm  doc/api
+    fi
+
+    just serve-plantuml "start"
+
+    phpdoc -d src -t .phpdoc --title="{{project}}" --defaultpackagename="Inane"
+    ln -s $(realpath .phpdoc) doc/api
+
+    just serve-plantuml "stop"
+
+# compile asciidoc source into final files.
+[group: 'doc']
+build-asciidoc: (_start "Documentation") && (_done "Documentation")
+    #!/usr/bin/env zsh
+    echo build: doc: db
+
+    echo building: changelog...
+    asciidoctor-reducer -o CHANGELOG.adoc doc/changelog/index.adoc
+
+    echo building: readme...
+    asciidoctor-reducer -o README.adoc doc/readme/index.adoc
+    echo doc: db: built
+
+#endregion documentation
